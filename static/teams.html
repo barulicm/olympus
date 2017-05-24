@@ -1,0 +1,33 @@
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <script src="scripts/teams.js"></script>
+    <title>Olympus Tournament - Teams</title>
+</head>
+<body onload="onLoad()">
+<div class="navigation">
+    <a class="navigation" href="index.html">Home</a>
+</div>
+<h1>Teams</h1>
+
+<div style="float: right; border:solid">
+    <form name="newTeamForm" action="" onsubmit="addTeam(); return false;">
+        Team Number:<br>
+        <input type="text" name="number"><br>
+        Team Name:<br>
+        <input type="text" name="name"><br>
+        <input type="submit" value="Add Team">
+    </form>
+</div>
+
+<table border="1" id="teamsTable">
+<tbody>
+    <tr>
+        <th scope="col" onclick="sortTable(0)">Rank</th>
+        <th scope="col" onclick="sortTable(1)">Number</th>
+        <th scope="col" onclick="sortTable(2)">Name</th>
+    </tr>
+</tbody>
+</table>
+</body>
+</html>

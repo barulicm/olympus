@@ -1,0 +1,19 @@
+div.navigation {
+    font-family:"Helvetica";
+    text-decoration:none;
+    margin-bottom:10px;
+}
+
+a.navigation:link {
+    text-decoration:none;
+    font-size:22px;
+    font-weight:bold;
+    margin-right:40px;
+    color:#888888;
+}
+a.navigation:visited {
+    color:#888888;
+}
+a.navigation:hover {
+    color:#424242;
+}
