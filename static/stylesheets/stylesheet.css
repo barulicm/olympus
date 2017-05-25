@@ -1,5 +1,8 @@
-div.navigation {
+body {
     font-family:"Helvetica";
+}
+
+div.navigation {
     text-decoration:none;
     margin-bottom:10px;
 }

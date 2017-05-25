@@ -11,6 +11,8 @@ public:
 
     void nextPhase();
 
+    int currentPhase();
+
 private:
 
     int _currentPhase = 0;

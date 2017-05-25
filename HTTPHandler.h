@@ -9,6 +9,8 @@
 #include <cpprest/containerstream.h>
 #include <cpprest/producerconsumerstream.h>
 #include "common/Team.h"
+#include "JSExecutor.h"
+#include "common/Schedule.h"
 
 class HTTPHandler {
 public:
@@ -21,6 +23,10 @@ public:
 
 private:
     std::vector<Team> _teams;
+
+    Schedule _schedule;
+
+    JSExecutor _js;
 
     void handle_get(web::http::http_request message);
     void handle_put(web::http::http_request message);

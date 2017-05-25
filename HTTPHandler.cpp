@@ -11,7 +11,11 @@ HTTPHandler::HTTPHandler(utility::string_t url)
     m_listener.support(methods::POST, std::bind(&HTTPHandler::handle_post, this, std::placeholders::_1));
     m_listener.support(methods::DEL, std::bind(&HTTPHandler::handle_delete, this, std::placeholders::_1));
 
-    _teams = {{1,"0000","name1",{}},{2,"0001","name2",{}}};
+    _teams = {{0,"0000","name1",{{}}},{0,"0001","name2",{{}}},{0,"0002","name3",{{}}}};
+
+    ifstream fileIn{"resources/dynamic/BEST2017/CompareTeams.js"};
+    string fileContents{istreambuf_iterator<char>{fileIn},istreambuf_iterator<char>{}};
+    _js.loadFunctionsFromString(fileContents);
 }
 
 void HTTPHandler::handle_get(http_request message) {
@@ -36,7 +40,7 @@ void HTTPHandler::handle_get(http_request message) {
             if(team_iter != _teams.end()) {
                 message.reply(status_codes::OK, team_iter->toJSON().dump(), U("application/json")).wait();
             } else {
-                message.reply(status_codes::InternalError, U("INTERNAL ERROR"));
+                message.reply(status_codes::InternalError, U("INTERNAL ERROR")).wait();
             }
         }
     } else {
@@ -58,7 +62,7 @@ void HTTPHandler::handle_get(http_request message) {
                     try {
                         t.get();
                     } catch (...) {
-                        message.reply(status_codes::InternalError, U("INTERNAL ERROR"));
+                        message.reply(status_codes::InternalError, U("INTERNAL ERROR")).wait();
                     }
                 });
     }
@@ -77,10 +81,46 @@ void HTTPHandler::handle_put(http_request message) {
                 newTeam.name = j["name"];
                 _teams.push_back(newTeam);
                 string rep = U("Add team successful.");
-                message.reply(status_codes::OK, rep);
+                message.reply(status_codes::OK, rep).wait();
             } catch(...) {
                 string rep = U("Add team failed.");
-                message.reply(status_codes::InternalError, rep);
+                message.reply(status_codes::InternalError, rep).wait();
+            }
+        }).wait();
+    } else if(message.relative_uri().path() == "/scores/submit") {
+        message.extract_string().then([this,&message](utility::string_t body){
+            try {
+                json j = json::parse(body);
+
+                string teamNumber = j["teamNumber"];
+                int score = j["score"];
+
+                auto team_iter = find_if(_teams.begin(),_teams.end(),
+                                         [&teamNumber](const Team &t) {
+                                             return t.number == teamNumber;
+                                         });
+                if(team_iter != _teams.end()) {
+                    team_iter->scores[_schedule.currentPhase()].push_back(score);
+                    stable_sort(_teams.begin(), _teams.end(),
+                                [=](const Team &a, const Team &b){
+                                    json j = _js.callFunction("CompareTeams",{a.toJSON(),b.toJSON()});
+                                    return j["result"];
+                                });
+                    int rank = 1;
+                    _teams[0].rank=rank;
+                    for(size_t i = 1; i < _teams.size(); i++) {
+                        if(_js.callFunction("CompareTeams",{_teams[i-1].toJSON(),_teams[i].toJSON()})["result"]) {
+                            rank++;
+                        }
+                        _teams[i].rank = rank;
+                    }
+                }
+
+                string rep = U("Score submission successful.");
+                message.reply(status_codes::OK, rep).wait();
+            } catch(...) {
+                string rep = U("Score submission failed.");
+                message.reply(status_codes::InternalError, rep).wait();
             }
         }).wait();
     }
@@ -89,7 +129,7 @@ void HTTPHandler::handle_put(http_request message) {
 void HTTPHandler::handle_post(http_request message) {
     ucout <<  message.to_string() << endl;
 
-    message.reply(status_codes::OK,message.to_string());
+    message.reply(status_codes::OK,message.to_string()).wait();
     return ;
 }
 
@@ -97,6 +137,6 @@ void HTTPHandler::handle_delete(http_request message) {
     ucout <<  message.to_string() << endl;
 
     string rep = U("WRITE YOUR OWN DELETE OPERATION");
-    message.reply(status_codes::OK,rep);
+    message.reply(status_codes::OK,rep).wait();
     return;
 }

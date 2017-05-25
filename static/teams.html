@@ -1,6 +1,7 @@
 <html>
 <head>
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/teams.css" media="screen" />
     <script src="scripts/teams.js"></script>
     <title>Olympus Tournament - Teams</title>
 </head>
@@ -8,17 +9,7 @@
 <div class="navigation">
     <a class="navigation" href="index.html">Home</a>
 </div>
-<h1>Teams</h1>
-
-<div style="float: right; border:solid">
-    <form name="newTeamForm" action="" onsubmit="addTeam(); return false;">
-        Team Number:<br>
-        <input type="text" name="number"><br>
-        Team Name:<br>
-        <input type="text" name="name"><br>
-        <input type="submit" value="Add Team">
-    </form>
-</div>
+<h1 style="text-align: center;">Teams</h1>
 
 <table border="1" id="teamsTable">
 <tbody>
@@ -26,6 +17,13 @@
         <th scope="col" onclick="sortTable(0)">Rank</th>
         <th scope="col" onclick="sortTable(1)">Number</th>
         <th scope="col" onclick="sortTable(2)">Name</th>
+        <th scope="col"></th>
+    </tr>
+    <tr>
+        <td></td>
+        <td> <input type="text" name="newTeamNumber" title="Number" value="Number"> </td>
+        <td> <input type="text" name="newTeamName" title="Name" value="Name"> </td>
+        <td> <button class="addButton" onclick="addTeam()"></button> </td>
     </tr>
 </tbody>
 </table>

@@ -8,18 +8,24 @@ function onLoad() {
             var teamArr = JSON.parse(xhr.responseText);
             var i;
             for(i = 0; i  < teamArr.length; i++) {
+                // Populate Table Row
                 tabBody = document.getElementsByTagName("tbody").item(0);
                 row=document.createElement("tr");
                 rankCell=document.createElement("td");
                 numberCell=document.createElement("td");
                 nameCell=document.createElement("td");
+                delCell=document.createElement("td");
                 rankCell.appendChild(document.createTextNode(teamArr[i].rank));
                 numberCell.appendChild(document.createTextNode(teamArr[i].number));
                 nameCell.appendChild(document.createTextNode(teamArr[i].name));
+                delButton = document.createElement("button");
+                delButton.classList.add("deleteButton");
+                delCell.appendChild(delButton);
                 row.appendChild(rankCell);
                 row.appendChild(numberCell);
                 row.appendChild(nameCell);
-                tabBody.appendChild(row);
+                row.appendChild(delCell);
+                tabBody.insertBefore(row,tabBody.childNodes[tabBody.childNodes.length-2]);
             }
         }
     };
@@ -27,8 +33,8 @@ function onLoad() {
 
 function addTeam() {
     var jsonTeam = {};
-    jsonTeam.name = document.newTeamForm["name"].value;
-    jsonTeam.number = document.newTeamForm["number"].value;
+    jsonTeam.name = document.getElementsByName("newTeamName")[0].value;
+    jsonTeam.number = document.getElementsByName("newTeamNumber")[0].value;
     var jsonString = JSON.stringify(jsonTeam);
 
     var xhr = new XMLHttpRequest();
@@ -53,7 +59,7 @@ function sortTable(column_number) {
     while(switching) {
         switching = false;
         var rows = table.getElementsByTagName("tr");
-        for(i=1;i<(rows.length-1);i++) {
+        for(i=1;i<(rows.length-2);i++) {
             var shouldSwitch = false;
             var x = rows[i].getElementsByTagName("td")[column_number];
             var y = rows[i+1].getElementsByTagName("td")[column_number];

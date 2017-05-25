@@ -7,3 +7,7 @@ const std::vector<Match> &Schedule::matches() {
 void Schedule::nextPhase() {
     _currentPhase++;
 }
+
+int Schedule::currentPhase() {
+    return _currentPhase;
+}
