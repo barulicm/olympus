@@ -14,9 +14,9 @@
 
 class HTTPHandler {
 public:
-    HTTPHandler(){}
-    HTTPHandler(utility::string_t url);
-    virtual ~HTTPHandler(){}
+    HTTPHandler() = default;
+    HTTPHandler(utility::string_t url, const utility::string_t &competitionName);
+    virtual ~HTTPHandler() = default;
 
     pplx::task<void> open() { return m_listener.open(); }
     pplx::task<void> close() { return m_listener.close(); }
@@ -33,6 +33,14 @@ private:
     void handle_post(web::http::http_request message);
     void handle_delete(web::http::http_request message);
     web::http::experimental::listener::http_listener m_listener;
+
+    bool file_exists(std::string filename);
+
+    std::string mime_type_for_path(std::string path);
+
+    std::map<std::string,std::string> _mime_types;
+
+    utility::string_t competitionName;
 };
 
 

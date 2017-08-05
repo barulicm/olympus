@@ -28,7 +28,7 @@ function onLoad() {
                 tabBody.insertBefore(row,tabBody.childNodes[tabBody.childNodes.length-2]);
             }
         }
-    };
+    }
 }
 
 function addTeam() {
@@ -48,7 +48,7 @@ function addTeam() {
                 alert("Adding team failed.");
             }
         }
-    };
+    }
 }
 
 function sortTable(column_number) {

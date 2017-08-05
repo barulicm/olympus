@@ -6,7 +6,8 @@ json Team::toJSON() const {
     json j = {
             {"number",number},
             {"name",name},
-            {"rank",rank}
+            {"rank",rank},
+            {"displayScore",displayScore}
     };
     j["scores"] = json::array();
     for(const auto &phase : scores) {

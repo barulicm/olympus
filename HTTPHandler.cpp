@@ -3,25 +3,48 @@
 using namespace std;
 using namespace web::http;
 
-HTTPHandler::HTTPHandler(utility::string_t url)
-    : m_listener(url)
+HTTPHandler::HTTPHandler(utility::string_t url, const utility::string_t &competitionName)
+    : m_listener(url),
+      competitionName(competitionName)
 {
     m_listener.support(methods::GET, std::bind(&HTTPHandler::handle_get, this, std::placeholders::_1));
     m_listener.support(methods::PUT, std::bind(&HTTPHandler::handle_put, this, std::placeholders::_1));
     m_listener.support(methods::POST, std::bind(&HTTPHandler::handle_post, this, std::placeholders::_1));
     m_listener.support(methods::DEL, std::bind(&HTTPHandler::handle_delete, this, std::placeholders::_1));
 
-    _teams = {{0,"0000","name1",{{}}},{0,"0001","name2",{{}}},{0,"0002","name3",{{}}}};
+    _teams = {{0,"0000","name1",0,{{}}},{0,"0001","name2",0,{{}}},{0,"0002","name3",0,{{}}}};
 
-    ifstream fileIn{"resources/dynamic/BEST2017/CompareTeams.js"};
-    string fileContents{istreambuf_iterator<char>{fileIn},istreambuf_iterator<char>{}};
-    _js.loadFunctionsFromString(fileContents);
+    {
+        ifstream fileIn{"resources/dynamic/" + competitionName + "/scripts/CompareTeams.js"};
+        string fileContents{istreambuf_iterator<char>{fileIn}, istreambuf_iterator<char>{}};
+        _js.loadFunctionsFromString(fileContents);
+    }
+    {
+        ifstream fileIn{"resources/dynamic/" + competitionName + "/scripts/GetTeamScore.js"};
+        string fileContents{istreambuf_iterator<char>{fileIn}, istreambuf_iterator<char>{}};
+        _js.loadFunctionsFromString(fileContents);
+    }
+
+    _mime_types = {
+            {"html","text/html"},
+            {"css","text/css"},
+            {"js","text/javascript"},
+            {"bmp","image/bmp"},
+            {"gif","image/gif"},
+            {"jpg","image/jpeg"},
+            {"png","image/png"},
+            {"txt","text/plain"}
+    };
 }
 
 void HTTPHandler::handle_get(http_request message) {
     ucout << message.to_string() << endl;
 
     utility::string_t path = message.relative_uri().path();
+
+    if(path == "/") {
+        path = "/index.html";
+    }
 
     if(path.substr(0,6) == "/team/") {
         // Request for individual team data
@@ -43,28 +66,24 @@ void HTTPHandler::handle_get(http_request message) {
                 message.reply(status_codes::InternalError, U("INTERNAL ERROR")).wait();
             }
         }
-    } else {
-        // Request for static resource
-        if(path == "/") {
-            path = "/index.html";
-        }
+    } else if(file_exists("resources/dynamic/" + competitionName + path)) {
+        // Request for competition-specific resource
 
-        utility::string_t mimeType = U("text/html");
-        if(path.find(".css") != utility::string_t::npos) {
-            mimeType = U("text/css");
-        }
+        concurrency::streams::fstream::open_istream(U("resources/dynamic/" + competitionName + path), std::ios::in)
+                .then([=](concurrency::streams::istream is) {
+                    message.reply(status_codes::OK, is, mime_type_for_path(path)).wait();
+                }).wait();
+
+    } else if(file_exists("resources/static" + path)) {
+        // Request for static resource
 
         concurrency::streams::fstream::open_istream(U("resources/static" + path), std::ios::in)
                 .then([=](concurrency::streams::istream is) {
-                    message.reply(status_codes::OK, is, mimeType).wait();
-                })
-                .then([=](pplx::task<void> t) {
-                    try {
-                        t.get();
-                    } catch (...) {
-                        message.reply(status_codes::InternalError, U("INTERNAL ERROR")).wait();
-                    }
-                });
+                    message.reply(status_codes::OK, is, mime_type_for_path(path)).wait();
+                }).wait();
+
+    } else {
+        message.reply(status_codes::NotFound, U("PAGE NOT FOUND")).wait();
     }
 }
 
@@ -103,9 +122,14 @@ void HTTPHandler::handle_put(http_request message) {
                     team_iter->scores[_schedule.currentPhase()].push_back(score);
                     stable_sort(_teams.begin(), _teams.end(),
                                 [=](const Team &a, const Team &b){
-                                    json j = _js.callFunction("CompareTeams",{a.toJSON(),b.toJSON()});
-                                    return j["result"];
+                                    json response = _js.callFunction("CompareTeams",{a.toJSON(),b.toJSON()});
+                                    return response["result"];
                                 });
+                    for_each(_teams.begin(), _teams.end(),
+                             [=](Team &team){
+                                 json response = _js.callFunction("GetTeamScore",{team.toJSON()});
+                                 team.displayScore = response["score"];
+                             });
                     int rank = 1;
                     _teams[0].rank=rank;
                     for(size_t i = 1; i < _teams.size(); i++) {
@@ -130,7 +154,6 @@ void HTTPHandler::handle_post(http_request message) {
     ucout <<  message.to_string() << endl;
 
     message.reply(status_codes::OK,message.to_string()).wait();
-    return ;
 }
 
 void HTTPHandler::handle_delete(http_request message) {
@@ -138,5 +161,17 @@ void HTTPHandler::handle_delete(http_request message) {
 
     string rep = U("WRITE YOUR OWN DELETE OPERATION");
     message.reply(status_codes::OK,rep).wait();
-    return;
+}
+
+bool HTTPHandler::file_exists(string filename) {
+    ifstream f{filename};
+    return f.good();
+}
+
+std::string HTTPHandler::mime_type_for_path(std::string path) {
+    auto extension = path.substr(path.find_last_of('.') + 1);
+    auto mime_type = _mime_types[extension];
+    if(mime_type.empty())
+        mime_type = "text/plain";
+    return mime_type;
 }
