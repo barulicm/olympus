@@ -41,8 +41,8 @@ function addTeam() {
     xhr.open('PUT','team/add',true);
     xhr.send(jsonString);
     xhr.onreadystatechange = ()=>{
-        if(xhr.readyState == 4) {
-            if(xhr.status == 200) {
+        if(xhr.readyState === 4) {
+            if(xhr.status === 200) {
                 location.reload();
             } else {
                 alert("Adding team failed.");

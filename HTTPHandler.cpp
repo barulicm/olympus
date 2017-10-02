@@ -119,17 +119,26 @@ void HTTPHandler::handle_put(http_request message) {
                                              return t.number == teamNumber;
                                          });
                 if(team_iter != _teams.end()) {
+                    std::cout << "Found team: " << team_iter->name << std::endl;
                     team_iter->scores[_schedule.currentPhase()].push_back(score);
                     stable_sort(_teams.begin(), _teams.end(),
                                 [=](const Team &a, const Team &b){
                                     json response = _js.callFunction("CompareTeams",{a.toJSON(),b.toJSON()});
                                     return response["result"];
                                 });
+                    std::cout << "Teams sorted." << std::endl;
                     for_each(_teams.begin(), _teams.end(),
                              [=](Team &team){
+                                 std::cout << "Getting score for team " << team.name << std::endl;
                                  json response = _js.callFunction("GetTeamScore",{team.toJSON()});
+                                 std::cout << "Is Null: " << response.is_null() << std::endl;
+                                 std::cout << "Is Discarded: " << response.is_discarded() << std::endl;
+                                 std::cout << "\tStoring score." << std::endl;
+                                 std::cout << response << std::endl;
                                  team.displayScore = response["score"];
+                                 std::cout << "\tScore update done." << std::endl;
                              });
+                    std::cout << "Team display scores updated." << std::endl;
                     int rank = 1;
                     _teams[0].rank=rank;
                     for(size_t i = 1; i < _teams.size(); i++) {
@@ -138,13 +147,19 @@ void HTTPHandler::handle_put(http_request message) {
                         }
                         _teams[i].rank = rank;
                     }
+                    std::cout << "Team ranks updated." << std::endl;
+                } else {
+                    string rep = U("Score submission failed. Nonexistent team number.");
+                    message.reply(status_codes::BadRequest, rep).wait();
+                    return;
                 }
 
                 string rep = U("Score submission successful.");
                 message.reply(status_codes::OK, rep).wait();
-            } catch(...) {
+            } catch(const std::exception &e) {
                 string rep = U("Score submission failed.");
                 message.reply(status_codes::InternalError, rep).wait();
+                std::cerr << e.what() << std::endl;
             }
         }).wait();
     }
