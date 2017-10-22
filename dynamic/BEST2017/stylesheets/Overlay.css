@@ -1,0 +1,60 @@
+#logo {
+    display: block;
+    margin:0 0;
+    max-height: 100px;
+    min-height: 50px;
+}
+
+body {
+    background-color: magenta;
+}
+
+table {
+    border-collapse: collapse;
+    border: none;
+    width:100%;
+    height: 20%;
+    margin-left:0;
+    margin-right:0;
+    bottom:0;
+    position:fixed;
+    left: 0;
+
+}
+
+th {
+    background-color:#0f1f60;
+    color: white;
+}
+
+th, td {
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+    padding: 5px;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+#matchNumber {
+    font-size:64px;
+    font-weight:bold;
+    width: 10%;
+}
+
+#redTeam {
+    background-color: lightpink;
+}
+
+#blueTeam {
+    background-color: lightblue;
+}
+
+#greenTeam {
+    background-color: lightgreen;
+}
+
+#yellowTeam {
+    background-color: lightgoldenrodyellow;
+}
