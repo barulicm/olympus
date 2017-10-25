@@ -106,6 +106,27 @@ void HTTPHandler::handle_put(http_request message) {
                 message.reply(status_codes::InternalError, rep).wait();
             }
         }).wait();
+    } else if(message.relative_uri().path() == "/team/remove") {
+        message.extract_string().then([this,&message](utility::string_t body){
+            try {
+                json j = json::parse(body);
+                std::string teamNumber = j["number"];
+                auto findIter = std::find_if(_teams.begin(), _teams.end(), [&teamNumber](const auto &team){
+                    return team.number == teamNumber;
+                });
+                if(findIter == _teams.end()) {
+                    string rep = U("No such team.");
+                    message.reply(status_codes::BadRequest, rep).wait();
+                } else {
+                    _teams.erase(findIter);
+                    string rep = U("Remove team successful.");
+                    message.reply(status_codes::OK, rep).wait();
+                }
+            } catch(...) {
+                string rep = U("Remove team failed.");
+                message.reply(status_codes::InternalError, rep).wait();
+            }
+        }).wait();
     } else if(message.relative_uri().path() == "/scores/submit") {
         message.extract_string().then([this,&message](utility::string_t body){
             try {

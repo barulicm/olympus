@@ -20,6 +20,8 @@ function onLoad() {
                 nameCell.appendChild(document.createTextNode(teamArr[i].name));
                 delButton = document.createElement("button");
                 delButton.classList.add("deleteButton");
+                delButton.id = teamArr[i].number;
+                delButton.onclick = removeTeam;
                 delCell.appendChild(delButton);
                 row.appendChild(rankCell);
                 row.appendChild(numberCell);
@@ -31,24 +33,50 @@ function onLoad() {
     }
 }
 
-function addTeam() {
-    var jsonTeam = {};
-    jsonTeam.name = document.getElementsByName("newTeamName")[0].value;
-    jsonTeam.number = document.getElementsByName("newTeamNumber")[0].value;
-    var jsonString = JSON.stringify(jsonTeam);
+function removeTeam(evt) {
+    var teamNumber = evt.target.id;
+    var jsonData = {};
+    jsonData.number = teamNumber;
+    var jsonString = JSON.stringify(jsonData);
 
     var xhr = new XMLHttpRequest();
-    xhr.open('PUT','team/add',true);
+    xhr.open('PUT','team/remove',true);
     xhr.send(jsonString);
     xhr.onreadystatechange = ()=>{
         if(xhr.readyState === 4) {
             if(xhr.status === 200) {
                 location.reload();
             } else {
-                alert("Adding team failed.");
+                alert("Removing team " + teamNumber + " failed.");
             }
         }
     }
+}
+
+function addTeam() {
+    sendAddTeam(document.getElementsByName("newTeamName")[0].value,document.getElementsByName("newTeamNumber")[0].value, true, true);
+}
+
+function sendAddTeam(teamName, teamNumber, reload, async) {
+    var jsonTeam = {};
+    jsonTeam.name = teamName;
+    jsonTeam.number = teamNumber;
+    var jsonString = JSON.stringify(jsonTeam);
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('PUT','team/add',async);
+    xhr.onreadystatechange = ()=>{
+        if(xhr.readyState === 4) {
+            if(xhr.status === 200) {
+                if (reload) {
+                    location.reload();
+                }
+            } else {
+                alert("Adding team " + teamNumber + " failed. Status code " + xhr.status);
+            }
+        }
+    }
+    xhr.send(jsonString);
 }
 
 function sortTable(column_number) {
@@ -86,4 +114,33 @@ function sortTable(column_number) {
             }
         }
     }
+}
+
+function importTeams() {
+    var files = document.getElementById('importFile').files;
+    if(files.length === 0) {
+        alert("Please select a file first.");
+        return;
+    }
+    var file = files[0];
+    var reader = new FileReader();
+    reader.onload = (function(theFile) {
+        return function(e) {
+            var contents = e.target.result;
+            var lines = contents.split("\n");
+            for(var i = 0; i < lines.length; i++) {
+                if (lines[i].length === 0) {
+                    // Skip empty lines
+                    continue;
+                }
+                var tokens = lines[i].split(",");
+                var team_number = tokens[0];
+                var team_name = tokens[1];
+                sendAddTeam(team_name, team_number,false,false);
+            }
+            location.reload();
+        };
+    })(file);
+
+    reader.readAsText(file);
 }

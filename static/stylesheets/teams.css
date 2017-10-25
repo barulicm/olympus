@@ -40,3 +40,10 @@ button.deleteButton {
     width: 32px;
     outline:none;
 }
+
+#importForm {
+    background-color: #dddddd;
+    width:75%;
+    margin-left:auto;
+    margin-right:auto;
+}
