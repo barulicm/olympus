@@ -84,6 +84,7 @@ function sortTable(column_number) {
     var switching = true;
     var dir = "asc";
     var switchCount = 0;
+    var asNumeric = (column_number === 0 || column_number === 1);
     while(switching) {
         switching = false;
         var rows = table.getElementsByTagName("tr");
@@ -91,13 +92,19 @@ function sortTable(column_number) {
             var shouldSwitch = false;
             var x = rows[i].getElementsByTagName("td")[column_number];
             var y = rows[i+1].getElementsByTagName("td")[column_number];
+            var x_val = x.innerHTML.toLowerCase();
+            var y_val = y.innerHTML.toLowerCase();
+            if(asNumeric) {
+                x_val = parseInt(x_val);
+                y_val = parseInt(y_val);
+            }
             if(dir == "asc") {
-                if(x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                if(x_val > y_val) {
                     shouldSwitch = true;
                     break;
                 }
             } else if(dir == "desc") {
-                if(x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                if(x_val < y_val) {
                     shouldSwitch = true;
                     break;
                 }
