@@ -14,10 +14,6 @@ function onLoad() {
             var phaseInd;
             var tabBody = document.getElementsByTagName("tbody").item(0);
 
-            var phaseSelect = document.getElementById("currentPhase");
-
-            var matchSelect = document.getElementById("currentMatch");
-
             for(phaseInd = 0; phaseInd < phaseArr.length; phaseInd++) {
                 var phaseNameRow = document.createElement("tr");
                 var phaseNameCell = document.createElement("td");
@@ -25,11 +21,6 @@ function onLoad() {
                 phaseNameCell.setAttribute("colspan","5");
                 phaseNameRow.setAttribute("class", "phaseTitle");
                 phaseNameRow.appendChild(phaseNameCell);
-
-                var phaseOption = document.createElement("option");
-                phaseOption.setAttribute("value",phaseArr[phaseInd].name);
-                phaseOption.appendChild(document.createTextNode(phaseArr[phaseInd].name));
-                phaseSelect.appendChild(phaseOption);
 
                 tabBody.appendChild(phaseNameRow);
                 var matchArr = phaseArr[phaseInd]["matches"];
@@ -44,13 +35,6 @@ function onLoad() {
                     matchNumberCell.appendChild(document.createTextNode(matchArr[matchInd]["number"]));
                     matchRow.appendChild(matchNumberCell);
 
-                    if(phaseInd === currentPhaseIndex) {
-                        var matchOption = document.createElement("option");
-                        matchOption.setAttribute("value", matchArr[matchInd].number);
-                        matchOption.appendChild(document.createTextNode("Match " + matchArr[matchInd].number));
-                        matchSelect.appendChild(matchOption);
-                    }
-
                     var teamArr = matchArr[matchInd]["teams"];
                     var teamInd;
                     for(teamInd = 0; teamInd < teamArr.length; teamInd++) {
@@ -61,9 +45,6 @@ function onLoad() {
                     tabBody.appendChild(matchRow);
                 }
             }
-
-            phaseSelect.selectedIndex = currentPhaseIndex;
-            matchSelect.selectedIndex = currentMatchIndex;
 
         } else if(xhr.readyState === 4) {
             alert("Fail");

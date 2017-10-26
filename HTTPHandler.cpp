@@ -224,6 +224,11 @@ void HTTPHandler::handle_put(http_request message) {
                 }
                 _schedule.currentPhase = 0;
                 _schedule.currentMatch = 0;
+
+                for(auto &team : _teams) {
+                    team.scores.resize(_schedule.phases.size());
+                }
+
                 string rep = U("Schedule loading successful.");
                 message.reply(status_codes::OK, rep).wait();
 

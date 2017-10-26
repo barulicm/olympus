@@ -38,13 +38,6 @@ th, td {
     font-weight: bold;
 }
 
-#controls {
-    background-color: #dddddd;
-    width:75%;
-    margin-left:auto;
-    margin-right:auto;
-}
-
 td:nth-child(2) {
     background-color: lightpink;
 }
