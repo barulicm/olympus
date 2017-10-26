@@ -1,13 +1,13 @@
 #include "Schedule.h"
 
-const std::vector<Match> &Schedule::matches() {
-    return _matches[_currentPhase];
-}
-
-void Schedule::nextPhase() {
-    _currentPhase++;
-}
-
-int Schedule::currentPhase() {
-    return _currentPhase;
+nlohmann::json Schedule::toJSON() const {
+    json j {
+            {"currentPhase", currentPhase},
+            {"currentMatch", currentMatch}
+    };
+    j["phases"] = json::array();
+    for(const auto &phase : phases) {
+        j["phases"].push_back(phase.toJSON());
+    }
+    return j;
 }

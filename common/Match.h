@@ -3,14 +3,15 @@
 
 #include <vector>
 #include "Team.h"
+#include "../json.hpp"
 
-class Match {
-public:
+struct Match {
 
-    std::vector<Team> teams;
+    std::vector<std::string> team_numbers;
 
-private:
+    // TODO colors?
 
+    nlohmann::json toJSON() const;
 
 };
 

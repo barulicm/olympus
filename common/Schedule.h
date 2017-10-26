@@ -2,22 +2,29 @@
 #define OLYMPUS_SCHEDULE_H
 
 #include <vector>
-#include "Match.h"
+#include "Phase.h"
+#include "../json.hpp"
 
-class Schedule {
-public:
+struct Schedule {
+    std::vector<Phase> phases;
 
-    const std::vector<Match> &matches();
+    int currentPhase = 0;
 
-    void nextPhase();
+    int currentMatch = 0;
 
-    int currentPhase();
+    const Phase &getCurrentPhase() const {
+        return phases[currentPhase];
+    }
 
-private:
+    const Match &getCurrentMatch() const {
+        return phases[currentPhase].matches[currentMatch];
+    }
 
-    int _currentPhase = 0;
-    std::vector<std::vector<Match>> _matches;
+    bool isValid() const {
+        return currentPhase < phases.size() && currentMatch < phases[currentPhase].matches.size();
+    }
 
+    nlohmann::json toJSON() const;
 };
 
 

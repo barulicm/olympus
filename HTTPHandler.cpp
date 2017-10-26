@@ -12,8 +12,6 @@ HTTPHandler::HTTPHandler(utility::string_t url, const utility::string_t &competi
     m_listener.support(methods::POST, std::bind(&HTTPHandler::handle_post, this, std::placeholders::_1));
     m_listener.support(methods::DEL, std::bind(&HTTPHandler::handle_delete, this, std::placeholders::_1));
 
-    _teams = {{0,"0000","name1",0,{{}}},{0,"0001","name2",0,{{}}},{0,"0002","name3",0,{{}}}};
-
     {
         ifstream fileIn{"resources/dynamic/" + competitionName + "/scripts/CompareTeams.js"};
         string fileContents{istreambuf_iterator<char>{fileIn}, istreambuf_iterator<char>{}};
@@ -63,9 +61,31 @@ void HTTPHandler::handle_get(http_request message) {
             if(team_iter != _teams.end()) {
                 message.reply(status_codes::OK, team_iter->toJSON().dump(), U("application/json")).wait();
             } else {
-                message.reply(status_codes::InternalError, U("INTERNAL ERROR")).wait();
+                message.reply(status_codes::NotFound, U("No such team")).wait();
             }
         }
+    } else if (path.substr(0,10) == "/schedule/") {
+        auto sched_request = path.substr(10);
+        if(sched_request.substr(0,6) == "match/") {
+            auto match_number = sched_request.substr(6);
+            if(match_number == "current") {
+                if(_schedule.isValid()) {
+                    auto match = _schedule.phases[_schedule.currentPhase].matches[_schedule.currentMatch];
+                    auto matchJson = match.toJSON();
+                    matchJson["number"] = _schedule.currentMatch;
+                    message.reply(status_codes::OK, matchJson.dump(), U("application/json")).wait();
+                } else {
+                    message.reply(status_codes::OK, "{\"ERROR\":\"No Matches Scheduled\"}", U("application/json")).wait();
+                }
+            }
+
+        } else if(sched_request.substr(0,4) == "full") {
+            auto schedule_json = _schedule.toJSON();
+            message.reply(status_codes::OK, schedule_json.dump(), U("application/json")).wait();
+        } else {
+            message.reply(status_codes::NotFound, U("Unrecognized schedule request")).wait();
+        }
+
     } else if(file_exists("resources/dynamic/" + competitionName + path)) {
         // Request for competition-specific resource
 
@@ -88,8 +108,6 @@ void HTTPHandler::handle_get(http_request message) {
 }
 
 void HTTPHandler::handle_put(http_request message) {
-    ucout <<  message.to_string() << endl;
-
     if(message.relative_uri().path() == "/team/add") {
         message.extract_string().then([this,&message](utility::string_t body){
             try {
@@ -116,7 +134,7 @@ void HTTPHandler::handle_put(http_request message) {
                 });
                 if(findIter == _teams.end()) {
                     string rep = U("No such team.");
-                    message.reply(status_codes::BadRequest, rep).wait();
+                    message.reply(status_codes::NotFound, rep).wait();
                 } else {
                     _teams.erase(findIter);
                     string rep = U("Remove team successful.");
@@ -141,7 +159,7 @@ void HTTPHandler::handle_put(http_request message) {
                                          });
                 if(team_iter != _teams.end()) {
                     std::cout << "Found team: " << team_iter->name << std::endl;
-                    team_iter->scores[_schedule.currentPhase()].push_back(score);
+                    team_iter->scores[_schedule.currentPhase].push_back(score);
                     stable_sort(_teams.begin(), _teams.end(),
                                 [=](const Team &a, const Team &b){
                                     json response = _js.callFunction("CompareTeams",{a.toJSON(),b.toJSON()});
@@ -171,7 +189,7 @@ void HTTPHandler::handle_put(http_request message) {
                     std::cout << "Team ranks updated." << std::endl;
                 } else {
                     string rep = U("Score submission failed. Nonexistent team number.");
-                    message.reply(status_codes::BadRequest, rep).wait();
+                    message.reply(status_codes::NotFound, rep).wait();
                     return;
                 }
 
@@ -179,6 +197,41 @@ void HTTPHandler::handle_put(http_request message) {
                 message.reply(status_codes::OK, rep).wait();
             } catch(const std::exception &e) {
                 string rep = U("Score submission failed.");
+                message.reply(status_codes::InternalError, rep).wait();
+                std::cerr << e.what() << std::endl;
+            }
+        }).wait();
+    } else if(message.relative_uri().path() == "/schedule/load") {
+        message.extract_string().then([this,&message](utility::string_t body){
+            try {
+                _schedule.phases.clear();
+
+                json j = json::parse(body);
+
+                auto phases = j["phases"];
+
+                for(const auto &phase : phases) {
+                    _schedule.phases.emplace_back();
+                    _schedule.phases.back().name = phase["name"];
+                    auto matches = phase["matches"];
+                    for(const auto &match : matches) {
+                        _schedule.phases.back().matches.emplace_back();
+                        auto teams = match["teams"];
+                        for(const auto &team : teams) {
+                            _schedule.phases.back().matches.back().team_numbers.push_back(team);
+                        }
+                    }
+                }
+                _schedule.currentPhase = 0;
+                _schedule.currentMatch = 0;
+                string rep = U("Schedule loading successful.");
+                message.reply(status_codes::OK, rep).wait();
+
+                cout << _schedule.getCurrentPhase().matches.size() << endl;
+
+            } catch(const std::exception &e) {
+                string rep = U("Schedule loading failed. ");
+                rep += e.what();
                 message.reply(status_codes::InternalError, rep).wait();
                 std::cerr << e.what() << std::endl;
             }

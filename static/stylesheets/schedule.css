@@ -1,0 +1,62 @@
+table {
+    border-collapse: collapse;
+    border: none;
+    width:75%;
+    margin-left:auto;
+    margin-right:auto;
+}
+
+th {
+    background-color:#0f1f60;
+    color: white;
+}
+
+th, td {
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+    padding: 5px;
+}
+
+#importForm {
+    background-color: #dddddd;
+    width:75%;
+    margin-left:auto;
+    margin-right:auto;
+}
+
+.phaseTitle {
+    background-color:#0f1f60;
+    color: white;
+    font-weight: bold;
+}
+
+.matchNumber {
+    width: 40px;
+}
+
+.currentMatchClass {
+    font-weight: bold;
+}
+
+#controls {
+    background-color: #dddddd;
+    width:75%;
+    margin-left:auto;
+    margin-right:auto;
+}
+
+td:nth-child(2) {
+    background-color: lightpink;
+}
+
+td:nth-child(3) {
+    background-color: lightblue;
+}
+
+td:nth-child(4) {
+    background-color: lightgreen;
+}
+
+td:nth-child(5) {
+    background-color: lightgoldenrodyellow;
+}

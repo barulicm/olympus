@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/schedule.css" media="screen" />
+    <script src="scripts/schedule.js"></script>
+    <title>Olympus Tournament - Schedule</title>
+</head>
+<body onload="onLoad()">
+<div class="navigation">
+    <a class="navigation" href="index.html">Home</a>
+</div>
+<h1 style="text-align: center;">Schedule</h1>
+
+<div id="controls">
+<select id="currentPhase" name="currentPhase"></select>
+<select id="currentMatch" name="currentMatch"></select>
+</div>
+
+<table border="1" id="scheduleTable">
+    <tbody>
+
+    </tbody>
+</table>
+<div id="importForm">
+    <input type="file" id="importFile" name="file"/>
+    <button id="importButton" onclick="importSchedule()">Import</button>
+</div>
+</body>
+</html>
