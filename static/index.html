@@ -12,6 +12,7 @@
     <a class="navigation" href="schedule.html">Schedule</a>
     <a class="navigation" href="Scorecard.html">Scorecard</a>
     <a class="navigation" href="Display.html">Display</a>
+    <a class="navigation" href="results.html">Results</a>
 </div>
 
 <div class="importExportControls">
@@ -24,6 +25,10 @@
         <label>Load Schedule</label>
         <input type="file" id="importScheduleFile" name="file"/>
         <button id="importButton" onclick="importSchedule()">Import Schedule</button>
+    </div>
+    <div class="importExportGroup" id="tournamentControls">
+        <label>Run Tournament</label>
+        <button id="nextButton" onclick="nextButtonClicked()">Next</button>
     </div>
 </div>
 

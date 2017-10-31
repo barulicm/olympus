@@ -11,7 +11,7 @@
 #include "common/Team.h"
 #include "JSExecutor.h"
 #include "common/Schedule.h"
-#include "common/PhaseResults.h"
+#include "common/Results.h"
 
 class HTTPHandler {
 public:
@@ -27,7 +27,7 @@ private:
 
     Schedule _schedule;
 
-    PhaseResults _results;
+    TournamentResults _results;
 
     JSExecutor _js;
 

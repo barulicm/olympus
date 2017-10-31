@@ -27,7 +27,7 @@ function onLoad() {
                 var matchInd;
                 for(matchInd = 0; matchInd < matchArr.length; matchInd++) {
                     var matchRow = document.createElement("tr");
-                    if(matchInd === currentMatchIndex) {
+                    if(phaseInd === currentPhaseIndex && matchInd === currentMatchIndex) {
                         matchRow.setAttribute("class","currentMatchClass");
                     }
                     var matchNumberCell = document.createElement("td");

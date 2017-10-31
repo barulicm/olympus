@@ -30,9 +30,43 @@ function queryHasSchedule() {
     }
 }
 
+function queryHasNextMatch() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET','controlQuery',true);
+    xhr.setRequestHeader('query','hasNextMatch');
+    xhr.send();
+
+    xhr.onreadystatechange = ()=>{
+        if(xhr.readyState === 4 && xhr.status === 200) {
+            if (xhr.responseText === 'true') {
+                document.getElementById('nextButton').innerText = 'Next Match';
+            }
+        }
+    }
+}
+
+function queryHasNextPhase() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET','controlQuery',true);
+    xhr.setRequestHeader('query','hasNextPhase');
+    xhr.send();
+
+    xhr.onreadystatechange = ()=>{
+        if(xhr.readyState === 4 && xhr.status === 200) {
+            if (xhr.responseText === 'true') {
+                document.getElementById('nextButton').innerText = 'Next Phase';
+            } else {
+                document.getElementById('nextButton').className += ' disabledcontrol';
+            }
+        }
+    }
+}
+
 function onLoad() {
     queryHasTeams();
     queryHasSchedule();
+    queryHasNextPhase();
+    queryHasNextMatch();
 }
 
 function importTeams() {
@@ -112,4 +146,19 @@ function importSchedule() {
     })(file);
 
     reader.readAsText(file);
+}
+
+function nextButtonClicked() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('PUT','schedule/next',true);
+    xhr.onreadystatechange = ()=>{
+        if(xhr.readyState === 4) {
+            if(xhr.status === 200) {
+                location.reload();
+            } else {
+                alert(xhr.responseText);
+            }
+        }
+    }
+    xhr.send();
 }

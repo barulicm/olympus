@@ -15,7 +15,14 @@ struct Ranking {
 };
 
 struct PhaseResults {
-    std::vector<std::vector<Ranking>> rankings;
+    std::string phaseName;
+    std::vector<Ranking> rankings;
+
+    nlohmann::json toJSON() const;
+};
+
+struct TournamentResults {
+    std::vector<PhaseResults> phaseResults;
 
     nlohmann::json toJSON() const;
 };

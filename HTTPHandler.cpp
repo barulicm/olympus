@@ -88,6 +88,9 @@ void HTTPHandler::handle_get(http_request message) {
             message.reply(status_codes::NotFound, U("Unrecognized schedule request")).wait();
         }
 
+    } else if(path == "/results") {
+        auto resultsJson = _results.toJSON();
+        message.reply(status_codes::OK, resultsJson.dump(), U("application/json")).wait();
     } else if (path.substr(0,13) == "/controlQuery") {
         auto query = message.headers()["query"];
         std::string response;
@@ -95,6 +98,10 @@ void HTTPHandler::handle_get(http_request message) {
             response = ( !_teams.empty() ? "true" : "false");
         } else if(query == "hasSchedule") {
             response = ( !_schedule.phases.empty() ? "true" : "false");
+        } else if(query == "hasNextMatch") {
+            response = ( !_schedule.phases.empty() && (_schedule.currentMatch < (_schedule.getCurrentPhase().matches.size()-1)) ? "true" : "false");
+        } else if(query == "hasNextPhase") {
+            response = ( _schedule.currentPhase < (_schedule.phases.size()-1) ? "true" : "false");
         }
         message.reply(status_codes::OK, response, U("text/plain")).wait();
     } else if(file_exists("resources/dynamic/" + competitionName + path)) {
@@ -228,7 +235,11 @@ void HTTPHandler::handle_put(http_request message) {
                     team.scores.resize(_schedule.phases.size());
                 }
 
-                _results.rankings.resize(_schedule.phases.size());
+                _results.phaseResults.resize(_schedule.phases.size());
+
+                for(auto i = 0; i < _schedule.phases.size(); i++) {
+                    _results.phaseResults[i].phaseName = _schedule.phases[i].name;
+                }
 
                 string rep = U("Schedule loading successful.");
                 message.reply(status_codes::OK, rep).wait();
@@ -239,6 +250,17 @@ void HTTPHandler::handle_put(http_request message) {
                 std::cerr << e.what() << std::endl;
             }
         }).wait();
+    } else if(message.relative_uri().path() == "/schedule/next") {
+        if(_schedule.currentMatch < _schedule.getCurrentPhase().matches.size()-1) {
+            _schedule.currentMatch++;
+            message.reply(status_codes::OK, U("Next Match")).wait();
+        } else if(_schedule.currentPhase < _schedule.phases.size()-1) {
+            _schedule.currentPhase++;
+            _schedule.currentMatch = 0;
+            message.reply(status_codes::OK, U("Next Phase")).wait();
+        } else {
+            message.reply(status_codes::InternalError, U("Tournament is over.")).wait();
+        }
     }
 }
 
@@ -290,15 +312,15 @@ void HTTPHandler::updateRanks() {
 }
 
 void HTTPHandler::updateResults() {
-    auto currentPhaseResults = _results.rankings[_schedule.currentPhase];
+    auto &currentPhaseResults = _results.phaseResults[_schedule.currentPhase];
 
-    currentPhaseResults.clear();
+    currentPhaseResults.rankings.clear();
 
     auto teamNumbers = _schedule.getCurrentPhase().getInvolvedTeamNumbers();
 
     std::vector<Team> teams = getTeamsFromNumbers(teamNumbers.begin(), teamNumbers.end());
 
-    std::transform(teams.begin(), teams.end(), std::back_inserter(currentPhaseResults), [](const auto  &team){
+    std::transform(teams.begin(), teams.end(), std::back_inserter(currentPhaseResults.rankings), [](const auto  &team){
         return Ranking{team.rank, team.number};
     });
 }
