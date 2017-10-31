@@ -1,0 +1,35 @@
+.importExportControls {
+    display: inline-block;
+    float: left;
+    width: 33%;
+    background-color:#DDDDDD;
+    border-radius:5px;
+}
+
+.importExportGroup {
+    margin: 10px 10px 20px 10px;
+}
+
+.importExportGroup input[type="text"],
+.importExportGroup input[type="date"],
+.importExportGroup input[type="datetime"],
+.importExportGroup input[type="email"],
+.importExportGroup input[type="number"],
+.importExportGroup input[type="search"],
+.importExportGroup input[type="time"],
+.importExportGroup input[type="url"],
+.importExportGroup input[type="password"],
+.importExportGroup input[type="file"],
+.importExportGroup textarea,
+.importExportGroup select,
+.importExportGroup button,
+.importExportGroup output
+{
+    display: block;
+    margin-left: 20px;
+}
+
+.disabledcontrol {
+    pointer-events: none;
+    opacity: 0.4;
+}

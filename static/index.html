@@ -1,9 +1,11 @@
 <html>
 <head>
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/index.css" media="screen" />
+    <script src="scripts/index.js"></script>
     <title>Olympus Tournament</title>
 </head>
-<body>
+<body onload="onLoad()">
 <div class="navigation">
     <a class="navigation" href="index.html">Home</a>
     <a class="navigation" href="teams.html">Teams</a>
@@ -11,5 +13,19 @@
     <a class="navigation" href="Scorecard.html">Scorecard</a>
     <a class="navigation" href="Display.html">Display</a>
 </div>
+
+<div class="importExportControls">
+    <div class="importExportGroup" id="teamControls">
+        <label>Load Teams</label>
+        <input type="file" id="importTeamsFile" name="file"/>
+        <button id="importButton" onclick="importTeams()">Import Teams</button>
+    </div>
+    <div class="importExportGroup" id="scheduleControls">
+        <label>Load Schedule</label>
+        <input type="file" id="importScheduleFile" name="file"/>
+        <button id="importButton" onclick="importSchedule()">Import Schedule</button>
+    </div>
+</div>
+
 </body>
 </html>

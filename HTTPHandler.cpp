@@ -1,3 +1,4 @@
+#include <set>
 #include "HTTPHandler.h"
 
 using namespace std;
@@ -12,16 +13,9 @@ HTTPHandler::HTTPHandler(utility::string_t url, const utility::string_t &competi
     m_listener.support(methods::POST, std::bind(&HTTPHandler::handle_post, this, std::placeholders::_1));
     m_listener.support(methods::DEL, std::bind(&HTTPHandler::handle_delete, this, std::placeholders::_1));
 
-    {
-        ifstream fileIn{"resources/dynamic/" + competitionName + "/scripts/CompareTeams.js"};
-        string fileContents{istreambuf_iterator<char>{fileIn}, istreambuf_iterator<char>{}};
-        _js.loadFunctionsFromString(fileContents);
-    }
-    {
-        ifstream fileIn{"resources/dynamic/" + competitionName + "/scripts/GetTeamScore.js"};
-        string fileContents{istreambuf_iterator<char>{fileIn}, istreambuf_iterator<char>{}};
-        _js.loadFunctionsFromString(fileContents);
-    }
+    loadFunctionsFromJS("CompareTeams.js");
+    loadFunctionsFromJS("GetTeamScore.js");
+    loadFunctionsFromJS("SelectNextPhase.js");
 
     _mime_types = {
             {"html","text/html"},
@@ -36,7 +30,7 @@ HTTPHandler::HTTPHandler(utility::string_t url, const utility::string_t &competi
 }
 
 void HTTPHandler::handle_get(http_request message) {
-    ucout << message.to_string() << endl;
+//    ucout << message.to_string() << endl;
 
     utility::string_t path = message.relative_uri().path();
 
@@ -50,6 +44,14 @@ void HTTPHandler::handle_get(http_request message) {
         if(team_number == "all") {
             json j = json::array();
             for(const auto &team : _teams) {
+                j.push_back(team.toJSON());
+            }
+            message.reply(status_codes::OK, j.dump(), U("application/json")).wait();
+        } else if (team_number == "active") {
+            json j = json::array();
+            auto activeTeamNumbers = _schedule.getCurrentPhase().getInvolvedTeamNumbers();
+            std::vector<Team> activeTeams = getTeamsFromNumbers(activeTeamNumbers.begin(), activeTeamNumbers.end());
+            for(const auto &team : activeTeams) {
                 j.push_back(team.toJSON());
             }
             message.reply(status_codes::OK, j.dump(), U("application/json")).wait();
@@ -75,7 +77,7 @@ void HTTPHandler::handle_get(http_request message) {
                     matchJson["number"] = _schedule.currentMatch;
                     message.reply(status_codes::OK, matchJson.dump(), U("application/json")).wait();
                 } else {
-                    message.reply(status_codes::OK, "{\"ERROR\":\"No Matches Scheduled\"}", U("application/json")).wait();
+                    message.reply(status_codes::OK, R"rawdelim({"ERROR":"No Matches Scheduled"})rawdelim", U("application/json")).wait();
                 }
             }
 
@@ -86,6 +88,15 @@ void HTTPHandler::handle_get(http_request message) {
             message.reply(status_codes::NotFound, U("Unrecognized schedule request")).wait();
         }
 
+    } else if (path.substr(0,13) == "/controlQuery") {
+        auto query = message.headers()["query"];
+        std::string response;
+        if(query == "hasTeams") {
+            response = ( !_teams.empty() ? "true" : "false");
+        } else if(query == "hasSchedule") {
+            response = ( !_schedule.phases.empty() ? "true" : "false");
+        }
+        message.reply(status_codes::OK, response, U("text/plain")).wait();
     } else if(file_exists("resources/dynamic/" + competitionName + path)) {
         // Request for competition-specific resource
 
@@ -160,47 +171,35 @@ void HTTPHandler::handle_put(http_request message) {
                 if(team_iter != _teams.end()) {
                     std::cout << "Found team: " << team_iter->name << std::endl;
                     team_iter->scores[_schedule.currentPhase].push_back(score);
-                    stable_sort(_teams.begin(), _teams.end(),
-                                [=](const Team &a, const Team &b){
-                                    json response = _js.callFunction("CompareTeams",{a.toJSON(),b.toJSON()});
-                                    return response["result"];
-                                });
-                    std::cout << "Teams sorted." << std::endl;
-                    for_each(_teams.begin(), _teams.end(),
-                             [=](Team &team){
-                                 std::cout << "Getting score for team " << team.name << std::endl;
-                                 json response = _js.callFunction("GetTeamScore",{team.toJSON()});
-                                 std::cout << "Is Null: " << response.is_null() << std::endl;
-                                 std::cout << "Is Discarded: " << response.is_discarded() << std::endl;
-                                 std::cout << "\tStoring score." << std::endl;
-                                 std::cout << response << std::endl;
-                                 team.displayScore = response["score"];
-                                 std::cout << "\tScore update done." << std::endl;
-                             });
-                    std::cout << "Team display scores updated." << std::endl;
-                    int rank = 1;
-                    _teams[0].rank=rank;
-                    for(size_t i = 1; i < _teams.size(); i++) {
-                        if(_js.callFunction("CompareTeams",{_teams[i-1].toJSON(),_teams[i].toJSON()})["result"]) {
-                            rank++;
-                        }
-                        _teams[i].rank = rank;
-                    }
-                    std::cout << "Team ranks updated." << std::endl;
+
+                    updateRanks();
+
+                    updateResults();
+
+                    string rep = U("Score submission successful.");
+                    message.reply(status_codes::OK, rep).wait();
                 } else {
                     string rep = U("Score submission failed. Nonexistent team number.");
                     message.reply(status_codes::NotFound, rep).wait();
                     return;
                 }
-
-                string rep = U("Score submission successful.");
-                message.reply(status_codes::OK, rep).wait();
             } catch(const std::exception &e) {
                 string rep = U("Score submission failed.");
                 message.reply(status_codes::InternalError, rep).wait();
+                std::cerr << "Score submission: Exception occurred:\n\t";
                 std::cerr << e.what() << std::endl;
             }
         }).wait();
+    } else if (message.relative_uri().path() == "/scores/rerank") {
+        try {
+            updateRanks();
+            message.reply(status_codes::OK, U("Score rerank successful.")).wait();
+        } catch(const std::exception &e) {
+            string rep = U("Score rerank failed.");
+            message.reply(status_codes::InternalError, rep).wait();
+            std::cerr << "Score rerank: Exception occurred:\n\t";
+            std::cerr << e.what() << std::endl;
+        }
     } else if(message.relative_uri().path() == "/schedule/load") {
         message.extract_string().then([this,&message](utility::string_t body){
             try {
@@ -229,11 +228,10 @@ void HTTPHandler::handle_put(http_request message) {
                     team.scores.resize(_schedule.phases.size());
                 }
 
+                _results.rankings.resize(_schedule.phases.size());
+
                 string rep = U("Schedule loading successful.");
                 message.reply(status_codes::OK, rep).wait();
-
-                cout << _schedule.getCurrentPhase().matches.size() << endl;
-
             } catch(const std::exception &e) {
                 string rep = U("Schedule loading failed. ");
                 rep += e.what();
@@ -268,4 +266,71 @@ std::string HTTPHandler::mime_type_for_path(std::string path) {
     if(mime_type.empty())
         mime_type = "text/plain";
     return mime_type;
+}
+
+void HTTPHandler::updateRanks() {
+    for_each(_teams.begin(), _teams.end(),
+             [=](Team &team){
+                 json response = _js.callFunction("GetTeamScore",{team.toJSON(),_schedule.currentPhase});
+                 team.displayScore = response["score"];
+             });
+    stable_sort(_teams.begin(), _teams.end(),
+                [=](const Team &a, const Team &b){
+                    json response = _js.callFunction("CompareTeams",{a.toJSON(),b.toJSON()});
+                    return response["result"];
+                });
+    int rank = 1;
+    _teams[0].rank=rank;
+    for(size_t i = 1; i < _teams.size(); i++) {
+        if(_js.callFunction("CompareTeams",{_teams[i-1].toJSON(),_teams[i].toJSON()})["result"]) {
+            rank++;
+        }
+        _teams[i].rank = rank;
+    }
+}
+
+void HTTPHandler::updateResults() {
+    auto currentPhaseResults = _results.rankings[_schedule.currentPhase];
+
+    currentPhaseResults.clear();
+
+    auto teamNumbers = _schedule.getCurrentPhase().getInvolvedTeamNumbers();
+
+    std::vector<Team> teams = getTeamsFromNumbers(teamNumbers.begin(), teamNumbers.end());
+
+    std::transform(teams.begin(), teams.end(), std::back_inserter(currentPhaseResults), [](const auto  &team){
+        return Ranking{team.rank, team.number};
+    });
+}
+
+void HTTPHandler::loadFunctionsFromJS(const std::string &scriptName) {
+    ifstream fileIn{"resources/dynamic/" + competitionName + "/scripts/" + scriptName};
+    string fileContents{istreambuf_iterator<char>{fileIn}, istreambuf_iterator<char>{}};
+    _js.loadFunctionsFromString(fileContents);
+}
+
+void HTTPHandler::fillNextPhase() {
+    auto currentPhase = _schedule.currentPhase;
+    std::set<std::string> nextPhaseTeamKeys;
+    auto nextPhase = _schedule.phases[currentPhase+1];
+
+    for(const auto &match : nextPhase.matches) {
+        for(const auto &team : match.team_numbers) {
+            nextPhaseTeamKeys.insert(team);
+        }
+    }
+
+    json nextPhaseMap = json::array();
+
+    for(const auto &teamKey : nextPhaseTeamKeys) {
+        nextPhaseMap.push_back({teamKey,""});
+    }
+
+    auto results = _results.toJSON();
+
+    auto ret = _js.callFunction("SelectNextPhase", {results,currentPhase,nextPhaseMap});
+
+    std::map<std::string, std::string> nextPhaseReplacementMap;
+
+
 }

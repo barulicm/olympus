@@ -51,31 +51,3 @@ function onLoad() {
         }
     }
 }
-
-function importSchedule() {
-    var files = document.getElementById('importFile').files;
-    if(files.length === 0) {
-        alert("Please select a file first.");
-        return;
-    }
-    var file = files[0];
-    var reader = new FileReader();
-    reader.onload = (function(theFile) {
-        return function(e) {
-            var xhr = new XMLHttpRequest();
-            xhr.open('PUT','schedule/load',true);
-            xhr.onreadystatechange = ()=>{
-                if(xhr.readyState === 4) {
-                    if(xhr.status === 200) {
-                        location.reload();
-                    } else {
-                        alert("Loading schedule failed.\nStatus code: " + xhr.status + "\nResponse: " + xhr.responseText);
-                    }
-                }
-            }
-            xhr.send(e.target.result);
-        };
-    })(file);
-
-    reader.readAsText(file);
-}

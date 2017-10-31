@@ -122,32 +122,3 @@ function sortTable(column_number) {
         }
     }
 }
-
-function importTeams() {
-    var files = document.getElementById('importFile').files;
-    if(files.length === 0) {
-        alert("Please select a file first.");
-        return;
-    }
-    var file = files[0];
-    var reader = new FileReader();
-    reader.onload = (function(theFile) {
-        return function(e) {
-            var contents = e.target.result;
-            var lines = contents.split("\n");
-            for(var i = 0; i < lines.length; i++) {
-                if (lines[i].length === 0) {
-                    // Skip empty lines
-                    continue;
-                }
-                var tokens = lines[i].split(",");
-                var team_number = tokens[0];
-                var team_name = tokens[1];
-                sendAddTeam(team_name, team_number,false,false);
-            }
-            location.reload();
-        };
-    })(file);
-
-    reader.readAsText(file);
-}

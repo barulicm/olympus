@@ -39,7 +39,7 @@ th, td {
 }
 
 td:nth-child(2) {
-    background-color: lightpink;
+    background-color: lightgoldenrodyellow;
 }
 
 td:nth-child(3) {
@@ -47,9 +47,9 @@ td:nth-child(3) {
 }
 
 td:nth-child(4) {
-    background-color: lightgreen;
+    background-color: lightpink;
 }
 
 td:nth-child(5) {
-    background-color: lightgoldenrodyellow;
+    background-color: lightgreen;
 }

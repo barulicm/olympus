@@ -1,6 +1,8 @@
 function CompareTeams(a, b)
 {
     var result = {};
-    result.result = (a.number < b.number);
+    var scoreA = a.displayScore;
+    var scoreB = b.displayScore;
+    result.result = (scoreA > scoreB);
     return result;
 }

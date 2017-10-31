@@ -13,7 +13,7 @@ public:
     int rank;
     std::string number;
     std::string name;
-    double displayScore;
+    double displayScore = 0.0;
     std::vector<std::vector<int>> scores;
 
     json toJSON() const;

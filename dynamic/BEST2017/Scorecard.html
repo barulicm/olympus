@@ -10,13 +10,14 @@
 <body onload="onLoad()">
 <div class="navigation">
     <a class="navigation" href="index.html">Home</a>
+    <a class="navigation" href="teams.html">Teams</a>
+    <a class="navigation" href="schedule.html">Schedule</a>
+    <a class="navigation" href="Scorecard.html">Scorecard</a>
+    <a class="navigation" href="Display.html">Display</a>
 </div>
 <img id="logo" src="images/GameLogo.png"/>
 
-<!-- TODO https://www.sanwebe.com/2014/08/css-html-forms-designs#Form_Style_7 -->
-
-<form class="form-style-7" oninput="scoreOutput.value=calculateScore(parseInt(flames.value),parseInt(drums.value),rescue.checked,parseInt(rescueBonus.value))"
-      onsubmit="submitScore(team.value,calculateScore(parseInt(flames.value),parseInt(drums.value),rescue.checked,parseInt(rescueBonus.value)))">
+<form class="form-style-7" oninput="scoreOutput.value=calculateScore(parseInt(flames.value),parseInt(drums.value),rescue.checked,parseInt(rescueBonus.value))">
 
     <h1>Scorecard</h1>
 
@@ -58,7 +59,7 @@
         </tr>
         <tr>
             <td colspan="2">
-                <input type="submit" class="button" id="submitButton">
+                <input type="button" class="button" id="submitButton" onclick="submitScore(team.value,calculateScore(parseInt(flames.value),parseInt(drums.value),rescue.checked,parseInt(rescueBonus.value)))" value="Submit">
             </td>
         </tr>
         </tbody>

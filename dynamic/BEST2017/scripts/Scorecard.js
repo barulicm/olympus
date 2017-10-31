@@ -41,7 +41,6 @@ function submitScore(team,score) {
     var jsonData = {};
     var endOfTeamNumber = team.indexOf(" ");
     jsonData.teamNumber = team.substring(0,endOfTeamNumber);
-    alert(jsonData.teamNumber);
     jsonData.score = score;
 
     var xhr = new XMLHttpRequest();
@@ -52,7 +51,7 @@ function submitScore(team,score) {
             if(xhr.status === 200) {
                 location.reload();
             } else {
-                alert("Adding team failed. Status: " + xhr.status);
+                alert("Submitting score failed.\nStatus: " + xhr.status + "\nMessage: " + xhr.responseText);
             }
         }
     }

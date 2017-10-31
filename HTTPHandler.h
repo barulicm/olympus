@@ -11,6 +11,7 @@
 #include "common/Team.h"
 #include "JSExecutor.h"
 #include "common/Schedule.h"
+#include "common/PhaseResults.h"
 
 class HTTPHandler {
 public:
@@ -26,6 +27,8 @@ private:
 
     Schedule _schedule;
 
+    PhaseResults _results;
+
     JSExecutor _js;
 
     void handle_get(web::http::http_request message);
@@ -37,6 +40,28 @@ private:
     bool file_exists(std::string filename);
 
     std::string mime_type_for_path(std::string path);
+
+    void updateRanks();
+
+    void updateResults();
+
+    void loadFunctionsFromJS(const std::string &scriptName);
+
+    void fillNextPhase();
+
+    template<typename InputIterator>
+    std::vector<Team> getTeamsFromNumbers(InputIterator first, InputIterator last) {
+        std::vector<Team> teams;
+        std::transform(first, last, std::back_inserter(teams), [this](const auto &teamNumber){
+            auto find_res = std::find_if(_teams.begin(), _teams.end(), [&teamNumber](const auto &team){ return team.number == teamNumber; });
+            if(find_res != _teams.end()) {
+                return Team(*find_res);
+            } else {
+                return Team();
+            }
+        });
+        return teams;
+    }
 
     std::map<std::string,std::string> _mime_types;
 

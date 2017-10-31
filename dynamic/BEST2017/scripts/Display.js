@@ -1,11 +1,20 @@
 function onLoad() {
     var xhr = new XMLHttpRequest();
-    xhr.open('GET','team/all',true);
+    xhr.open('GET','team/active',true);
     xhr.send();
 
     xhr.onreadystatechange = ()=>{
-        if(xhr.readyState == 4 && xhr.status == 200) {
+        if(xhr.readyState === 4 && xhr.status === 200) {
             var teamArr = JSON.parse(xhr.responseText);
+
+            teamArr.sort(function(a, b){
+                var keyA = a.rank;
+                var keyB = b.rank;
+                if(keyA < keyB) return -1;
+                if(keyA > keyB) return 1;
+                return 0;
+            });
+
             var i;
             for(i = 0; i  < teamArr.length; i++) {
                 // Populate Table Row
