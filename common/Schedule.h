@@ -12,8 +12,16 @@ struct Schedule {
 
     int currentMatch = 0;
 
+    Phase &getCurrentPhase() {
+        return phases[currentPhase];
+    }
+
     const Phase &getCurrentPhase() const {
         return phases[currentPhase];
+    }
+
+    Match &getCurrentMatch() {
+        return phases[currentPhase].matches[currentMatch];
     }
 
     const Match &getCurrentMatch() const {

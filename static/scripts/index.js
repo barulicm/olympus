@@ -62,11 +62,32 @@ function queryHasNextPhase() {
     }
 }
 
+function getDynamicPageList() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET','pages/dynamic',true);
+    xhr.send();
+
+    xhr.onreadystatechange = ()=>{
+        if(xhr.readyState === 4 && xhr.status === 200) {
+            var pageArr = JSON.parse(xhr.responseText);
+            var pageInd;
+            var pageListDiv = document.getElementById("dynamicPageList");
+            for(pageInd = 0; pageInd < pageArr.length; pageInd++) {
+                var linkElement = document.createElement("a");
+                linkElement.setAttribute("href",pageArr[pageInd] + ".html");
+                linkElement.innerText = pageArr[pageInd];
+                pageListDiv.appendChild(linkElement);
+            }
+        }
+    }
+}
+
 function onLoad() {
     queryHasTeams();
     queryHasSchedule();
     queryHasNextPhase();
     queryHasNextMatch();
+    getDynamicPageList();
 }
 
 function importTeams() {

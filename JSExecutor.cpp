@@ -4,8 +4,12 @@
 
 using namespace std;
 
+static void js_fatal_error_handler(void *, const char *msg) {
+    throw std::runtime_error(msg);
+}
+
 JSExecutor::JSExecutor() {
-    _context = duk_create_heap_default();
+    _context = duk_create_heap(nullptr, nullptr, nullptr, nullptr, js_fatal_error_handler);
 }
 
 JSExecutor::~JSExecutor() {

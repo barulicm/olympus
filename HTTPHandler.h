@@ -31,6 +31,8 @@ private:
 
     JSExecutor _js;
 
+    nlohmann::json _defaultCustomFields;
+
     void handle_get(web::http::http_request message);
     void handle_put(web::http::http_request message);
     void handle_post(web::http::http_request message);
@@ -48,6 +50,8 @@ private:
     void loadFunctionsFromJS(const std::string &scriptName);
 
     void fillNextPhase();
+
+    void loadDefaultCustomFields();
 
     template<typename InputIterator>
     std::vector<Team> getTeamsFromNumbers(InputIterator first, InputIterator last) {

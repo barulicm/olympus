@@ -1,6 +1,40 @@
-function selectNextPhase(phaseResults, currentPhase, nextPhaseMap) {
+function selectNextPhase(phaseResults, teams, currentPhase, nextPhaseMap) {
+    if (currentPhase === 0) {
+        // Next phase is wildcard, so pick teams based on notebook scores
+        teams.sort(function(a, b){
+            var keyA = a.customFields.notebookScore;
+            var keyB = b.customFields.notebookScore;
+            if(keyA < keyB) return  1;
+            if(keyA > keyB) return -1;
+            return 0;
+        });
+        var seedRankings = phaseResults.phases[0].rankings;
+        seedRankings.sort(function (a, b){
+            var keyA = a[0];
+            var keyB = b[0];
+            if(keyA < keyB) return -1;
+            if(keyA > keyB) return 1;
+            return 0;
+        });
+        var top7Teams = [];
+        var top7Ind;
+        for(top7Ind = 0; top7Ind < top7Teams.length; top7Ind++) {
+            top7Teams[top7Ind] = seedRankings[top7Ind];
+        }
+        var isNotTop7Team = function(t){
+            return top7Teams.indexOf(t.number) === -1;
+        };
+        var wildcardCandidates = teams.filter(isNotTop7Team);
+        var mapInd;
+        for(mapInd = 0; mapInd < nextPhaseMap.length; mapInd++) {
+            var teamKey = nextPhaseMap[mapInd][0];
+            var parsedIndex = parseInt(teamKey[9]);
+            nextPhaseMap[mapInd][1] = wildcardCandidates[parsedIndex].number;
+        }
+    } else {
+        // Normal phase transition based on previous phase results
 
-
+    }
 
     return nextPhaseMap;
 }

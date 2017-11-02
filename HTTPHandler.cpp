@@ -1,4 +1,7 @@
 #include <set>
+#include <boost/filesystem/path.hpp>
+#include <boost/filesystem.hpp>
+#include <boost/foreach.hpp>
 #include "HTTPHandler.h"
 
 using namespace std;
@@ -16,6 +19,7 @@ HTTPHandler::HTTPHandler(utility::string_t url, const utility::string_t &competi
     loadFunctionsFromJS("CompareTeams.js");
     loadFunctionsFromJS("GetTeamScore.js");
     loadFunctionsFromJS("SelectNextPhase.js");
+    loadFunctionsFromJS("DefaultCustomFields.js");
 
     _mime_types = {
             {"html","text/html"},
@@ -27,6 +31,8 @@ HTTPHandler::HTTPHandler(utility::string_t url, const utility::string_t &competi
             {"png","image/png"},
             {"txt","text/plain"}
     };
+
+    loadDefaultCustomFields();
 }
 
 void HTTPHandler::handle_get(http_request message) {
@@ -104,6 +110,21 @@ void HTTPHandler::handle_get(http_request message) {
             response = ( _schedule.currentPhase < (_schedule.phases.size()-1) ? "true" : "false");
         }
         message.reply(status_codes::OK, response, U("text/plain")).wait();
+    } else if(path == "/pages/dynamic") {
+        auto j = json::array();
+
+        boost::filesystem::path targetDir("./resources/dynamic");
+
+        boost::filesystem::recursive_directory_iterator iter(targetDir), eod;
+
+        BOOST_FOREACH(boost::filesystem::path const& i, make_pair(iter, eod)){
+            if (is_regular_file(i) && i.extension().string() == ".html"){
+                auto filename = i.filename().string();
+                j.push_back(filename.substr(0,filename.size()-5));
+            }
+        }
+
+        message.reply(status_codes::OK, j.dump(), U("application/json")).wait();
     } else if(file_exists("resources/dynamic/" + competitionName + path)) {
         // Request for competition-specific resource
 
@@ -131,6 +152,7 @@ void HTTPHandler::handle_put(http_request message) {
             try {
                 json j = json::parse(body);
                 Team newTeam;
+                newTeam.customFields = _defaultCustomFields;
                 newTeam.rank = 0;
                 newTeam.number = j["number"];
                 newTeam.name = j["name"];
@@ -160,6 +182,27 @@ void HTTPHandler::handle_put(http_request message) {
                 }
             } catch(...) {
                 string rep = U("Remove team failed.");
+                message.reply(status_codes::InternalError, rep).wait();
+            }
+        }).wait();
+    } else if(message.relative_uri().path() == "/team/customFields") {
+        message.extract_string().then([this,&message](utility::string_t body){
+            try {
+                json j = json::parse(body);
+                auto teamNumber = j["teamNumber"];
+                auto findIter = std::find_if(_teams.begin(), _teams.end(), [&teamNumber](const auto &team) {
+                    return team.number == teamNumber;
+                });
+                if(findIter == _teams.end()) {
+                    string rep = U("No such team.");
+                    message.reply(status_codes::NotFound, rep).wait();
+                } else {
+                    (*findIter).customFields = j["customFields"];
+                    string rep = U("Setting custom fields successful.");
+                    message.reply(status_codes::OK, rep).wait();
+                }
+            } catch(std::exception &e) {
+                string rep = U(string("Setting custom fields failed.") + e.what());
                 message.reply(status_codes::InternalError, rep).wait();
             }
         }).wait();
@@ -229,7 +272,7 @@ void HTTPHandler::handle_put(http_request message) {
                     }
                 }
                 _schedule.currentPhase = 0;
-                _schedule.currentMatch = 0;
+                _schedule.currentMatch = 39;
 
                 for(auto &team : _teams) {
                     team.scores.resize(_schedule.phases.size());
@@ -251,15 +294,27 @@ void HTTPHandler::handle_put(http_request message) {
             }
         }).wait();
     } else if(message.relative_uri().path() == "/schedule/next") {
-        if(_schedule.currentMatch < _schedule.getCurrentPhase().matches.size()-1) {
-            _schedule.currentMatch++;
-            message.reply(status_codes::OK, U("Next Match")).wait();
-        } else if(_schedule.currentPhase < _schedule.phases.size()-1) {
-            _schedule.currentPhase++;
-            _schedule.currentMatch = 0;
-            message.reply(status_codes::OK, U("Next Phase")).wait();
-        } else {
-            message.reply(status_codes::InternalError, U("Tournament is over.")).wait();
+        try {
+            if (_schedule.currentMatch < _schedule.getCurrentPhase().matches.size() - 1) {
+                _schedule.currentMatch++;
+                message.reply(status_codes::OK, U("Next Match")).wait();
+            } else if (_schedule.currentPhase < _schedule.phases.size() - 1) {
+                fillNextPhase();
+                _schedule.currentPhase++;
+                _schedule.currentMatch = 0;
+                auto nextPhaseTeamNumbers = _schedule.getCurrentPhase().getInvolvedTeamNumbers();
+                for(auto &team : _teams) {
+                    auto find_iter = std::find(nextPhaseTeamNumbers.begin(), nextPhaseTeamNumbers.end(), team.number);
+                    if(find_iter != nextPhaseTeamNumbers.end()) {
+                        team.rank = 0;
+                    }
+                }
+                message.reply(status_codes::OK, U("Next Phase")).wait();
+            } else {
+                message.reply(status_codes::InternalError, U("Tournament is over.")).wait();
+            }
+        } catch(std::exception &e) {
+            message.reply(status_codes::InternalError, U(e.what())).wait();
         }
     }
 }
@@ -334,25 +389,46 @@ void HTTPHandler::loadFunctionsFromJS(const std::string &scriptName) {
 void HTTPHandler::fillNextPhase() {
     auto currentPhase = _schedule.currentPhase;
     std::set<std::string> nextPhaseTeamKeys;
-    auto nextPhase = _schedule.phases[currentPhase+1];
+    auto nextPhase = _schedule.phases[currentPhase + 1];
 
-    for(const auto &match : nextPhase.matches) {
-        for(const auto &team : match.team_numbers) {
+    for (const auto &match : nextPhase.matches) {
+        for (const auto &team : match.team_numbers) {
             nextPhaseTeamKeys.insert(team);
         }
     }
 
     json nextPhaseMap = json::array();
 
-    for(const auto &teamKey : nextPhaseTeamKeys) {
-        nextPhaseMap.push_back({teamKey,""});
+    for (const auto &teamKey : nextPhaseTeamKeys) {
+        nextPhaseMap.push_back({teamKey, ""});
     }
 
     auto results = _results.toJSON();
 
-    auto ret = _js.callFunction("SelectNextPhase", {results,currentPhase,nextPhaseMap});
+    auto teamsJson = json::array();
+    transform(_teams.begin(), _teams.end(), back_inserter(teamsJson),
+              [](const auto &team) { return team.toJSON(); });
+
+    auto ret = _js.callFunction("selectNextPhase", {results, teamsJson, currentPhase, nextPhaseMap});
 
     std::map<std::string, std::string> nextPhaseReplacementMap;
 
+    for(const auto &retPair : ret) {
+        nextPhaseReplacementMap[retPair[0]] = retPair[1];
+    }
 
+    for(auto &match : _schedule.phases[_schedule.currentPhase+1].matches) {
+        for(auto &teamNumber : match.team_numbers) {
+            teamNumber = nextPhaseReplacementMap[teamNumber];
+        }
+    }
+}
+
+void HTTPHandler::loadDefaultCustomFields() {
+    try {
+        _defaultCustomFields = _js.callFunction("DefaultCustomFields",{});
+    } catch (std::exception &e) {
+        std::cerr << "Error loading default custom fields:" << std::endl;
+        std::cerr << e.what() << std::endl;
+    }
 }
