@@ -28,12 +28,54 @@ function selectNextPhase(phaseResults, teams, currentPhase, nextPhaseMap) {
         var mapInd;
         for(mapInd = 0; mapInd < nextPhaseMap.length; mapInd++) {
             var teamKey = nextPhaseMap[mapInd][0];
-            var parsedIndex = parseInt(teamKey[9]);
+            var parsedIndex = parseInt(teamKey[9]) - 1;
             nextPhaseMap[mapInd][1] = wildcardCandidates[parsedIndex].number;
         }
     } else {
         // Normal phase transition based on previous phase results
+        var seedRankings = phaseResults.phases[0].rankings;
+        seedRankings.sort(function (a, b){
+            var keyA = a[0];
+            var keyB = b[0];
+            if(keyA < keyB) return -1;
+            if(keyA > keyB) return 1;
+            return 0;
+        });
 
+        var wildcardRankings = phaseResults.phases[1].rankings;
+        wildcardRankings.sort(function (a, b){
+            var keyA = a[0];
+            var keyB = b[0];
+            if(keyA < keyB) return -1;
+            if(keyA > keyB) return 1;
+            return 0;
+        });
+
+        var semifinalsRankings = phaseResults.phases[2].rankings;
+        semifinalsRankings.sort(function (a, b){
+            var keyA = a[0];
+            var keyB = b[0];
+            if(keyA < keyB) return -1;
+            if(keyA > keyB) return 1;
+            return 0;
+        });
+
+        var mapInd;
+        for(mapInd = 0; mapInd < nextPhaseMap.length; mapInd++) {
+            var teamKey = nextPhaseMap[mapInd][0];
+
+            var phaseKey = teamKey.substr(0,teamKey.indexOf(" "));
+
+            var parsedIndex = parseInt(teamKey.substr(teamKey.indexOf(" "))) - 1;
+
+            if(phaseKey === "Seeding") {
+                nextPhaseMap[mapInd][1] = seedRankings[parsedIndex][1];
+            } else if(phaseKey === "Wildcard") {
+                nextPhaseMap[mapInd][1] = wildcardRankings[parsedIndex][1];
+            } else if(phaseKey === "Semifinals") {
+                nextPhaseMap[mapInd][1] = semifinalsRankings[parsedIndex][1];
+            }
+        }
     }
 
     return nextPhaseMap;
