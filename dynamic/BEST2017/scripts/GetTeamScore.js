@@ -9,7 +9,6 @@ function add(a, b) {
 
 function GetTeamScore(team, currentPhase)
 {
-    // TODO FIXME team.scores is an array of arrays of scores b/c phases. Need to also give this function the current phase
     var result = {};
 
     switch(currentPhase) {
@@ -36,8 +35,8 @@ function GetTeamScore(team, currentPhase)
 
         case 2: // Semi-Finals
         case 3: // Finals
-            if(team.scores[1].length > 0) {
-                result.score = team.scores[1].reduce(add, 0);
+            if(team.scores[currentPhase].length > 0) {
+                result.score = team.scores[currentPhase].reduce(add, 0);
             } else {
                 result.score = 0;
             }

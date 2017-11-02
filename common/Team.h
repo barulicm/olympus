@@ -20,8 +20,6 @@ public:
 
     nlohmann::json customFields;
 
-    // TODO Add support for custom fields to bring BEST notebook scores into the system
-
     json toJSON() const;
 
 };
