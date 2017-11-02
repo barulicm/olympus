@@ -82,12 +82,35 @@ function getDynamicPageList() {
     }
 }
 
+function getCurrentMatchInfo() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET','schedule/match/current',true);
+    xhr.send();
+
+    xhr.onreadystatechange = ()=>{
+        if(xhr.readyState === 4 && xhr.status === 200) {
+            var matchInfo = JSON.parse(xhr.responseText);
+            var currentMatchDisplay = document.getElementById("currentMatchDisplay");
+            var phaseName = "Phase";
+            if("phase" in matchInfo) {
+                phaseName = matchInfo.phase;
+            }
+            var matchNumber = "_";
+            if("number" in matchInfo) {
+                matchNumber = matchInfo.number;
+            }
+            currentMatchDisplay.innerText = phaseName + " - Match " + matchNumber;
+        }
+    }
+}
+
 function onLoad() {
     queryHasTeams();
     queryHasSchedule();
     queryHasNextPhase();
     queryHasNextMatch();
     getDynamicPageList();
+    getCurrentMatchInfo();
 }
 
 function importTeams() {

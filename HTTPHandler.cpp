@@ -81,6 +81,7 @@ void HTTPHandler::handle_get(http_request message) {
                     auto match = _schedule.phases[_schedule.currentPhase].matches[_schedule.currentMatch];
                     auto matchJson = match.toJSON();
                     matchJson["number"] = _schedule.currentMatch;
+                    matchJson["phase"] = _schedule.getCurrentPhase().name;
                     message.reply(status_codes::OK, matchJson.dump(), U("application/json")).wait();
                 } else {
                     message.reply(status_codes::OK, R"rawdelim({"ERROR":"No Matches Scheduled"})rawdelim", U("application/json")).wait();
@@ -272,7 +273,7 @@ void HTTPHandler::handle_put(http_request message) {
                     }
                 }
                 _schedule.currentPhase = 0;
-                _schedule.currentMatch = 39;
+                _schedule.currentMatch = 0;
 
                 for(auto &team : _teams) {
                     team.scores.resize(_schedule.phases.size());
