@@ -10,7 +10,7 @@ function getInfo() {
             var matchNumber = json["number"];
 
             var matchNumberCell = document.getElementById("matchNumber");
-            matchNumberCell.innerHTML = matchNumber;
+            matchNumberCell.innerHTML = (parseInt(matchNumber)+1).toString();
 
             var teamArr = json["teams"];
 

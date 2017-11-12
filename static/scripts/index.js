@@ -97,7 +97,7 @@ function getCurrentMatchInfo() {
             }
             var matchNumber = "_";
             if("number" in matchInfo) {
-                matchNumber = matchInfo.number;
+                matchNumber = (parseInt(matchInfo.number)+1).toString();
             }
             currentMatchDisplay.innerText = phaseName + " - Match " + matchNumber;
         }

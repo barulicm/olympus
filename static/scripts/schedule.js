@@ -1,4 +1,4 @@
-function onLoad() {
+function getSchedule() {
     var xhr = new XMLHttpRequest();
     xhr.open('GET','schedule/full',true);
     xhr.send();
@@ -13,6 +13,8 @@ function onLoad() {
             var phaseArr = json["phases"];
             var phaseInd;
             var tabBody = document.getElementsByTagName("tbody").item(0);
+
+            tabBody.innerHTML = '';
 
             for(phaseInd = 0; phaseInd < phaseArr.length; phaseInd++) {
                 var phaseNameRow = document.createElement("tr");
@@ -50,4 +52,9 @@ function onLoad() {
             alert("Fail");
         }
     }
+}
+
+function onLoad() {
+    getSchedule();
+    setInterval(getSchedule, 5000);
 }

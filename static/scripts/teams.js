@@ -17,7 +17,10 @@ function onLoad() {
                 delCell=document.createElement("td");
                 rankCell.appendChild(document.createTextNode(teamArr[i].rank));
                 numberCell.appendChild(document.createTextNode(teamArr[i].number));
-                nameCell.appendChild(document.createTextNode(teamArr[i].name));
+                var teamNameLink = document.createElement("a");
+                teamNameLink.setAttribute("href", 'TeamDetails.html?team=' + teamArr[i].number);
+                teamNameLink.innerText = teamArr[i].name;
+                nameCell.appendChild(teamNameLink);
                 delButton = document.createElement("button");
                 delButton.classList.add("deleteButton");
                 delButton.id = teamArr[i].number;

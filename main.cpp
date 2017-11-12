@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
     cin >> competitionIndexIn;
     competitionIndexIn = min(competitionIndexIn, competitions.size());
 
-    on_initialize(U("http://localhost:34568"), competitions[competitionIndexIn]);
+    on_initialize(U("http://192.168.1.20:8080"), competitions[competitionIndexIn]);
 
     cout << "Press ENTER to exit." << endl;
 

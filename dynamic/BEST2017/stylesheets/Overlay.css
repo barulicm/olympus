@@ -45,16 +45,20 @@ tr:nth-child(even) {
 
 #redTeam {
     background-color: lightpink;
+    font-size: 64px;
 }
 
 #blueTeam {
     background-color: lightblue;
+    font-size: 64px;
 }
 
 #greenTeam {
     background-color: lightgreen;
+    font-size: 64px;
 }
 
 #yellowTeam {
     background-color: lightgoldenrodyellow;
+    font-size: 64px;
 }

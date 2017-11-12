@@ -6,6 +6,15 @@ function onLoad() {
     xhr.onreadystatechange = ()=>{
         if(xhr.readyState === 4 && xhr.status === 200) {
             var teamArr = JSON.parse(xhr.responseText);
+
+            teamArr.sort(function(a, b){
+                var keyA = parseInt(a.number);
+                var keyB = parseInt(b.number);
+                if(keyA < keyB) return -1;
+                if(keyA > keyB) return 1;
+                return 0;
+            });
+
             var i;
             for(i = 0; i  < teamArr.length; i++) {
                 // Populate Table Row
@@ -15,6 +24,7 @@ function onLoad() {
                 var scoreCell=document.createElement("td");
                 var scoreInput=document.createElement("input");
                 scoreInput.setAttribute("type","number");
+                scoreInput.setAttribute("step","0.01");
 
                 nameCell.appendChild(document.createTextNode(teamArr[i].number + " - " + teamArr[i].name));
 
@@ -64,10 +74,11 @@ function setScoreField(teamNumber, score) {
 
 function saveButtonClick() {
     var tableRows = document.getElementsByTagName("tr");
+    var success = true;
     var rowInd;
     for(rowInd = 1; rowInd < tableRows.length; rowInd++) {
         var nameAndNumber = tableRows[rowInd].children[0].innerText;
-        var score = parseInt(tableRows[rowInd].children[1].children[0].value);
+        var score = parseFloat(tableRows[rowInd].children[1].children[0].value);
         var n = nameAndNumber.indexOf(" - ");
         var number = nameAndNumber.substr(0,n);
         setScoreField(number, score);
