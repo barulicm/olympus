@@ -44,12 +44,14 @@ int main(int argc, char *argv[]) {
     auto i = 0;
     for(const auto &competition : competitions) {
         cout << i << " - " << competition << "\n";
+        i++;
     }
     size_t competitionIndexIn;
     cin >> competitionIndexIn;
     competitionIndexIn = min(competitionIndexIn, competitions.size());
 
-    on_initialize(U("http://192.168.1.20:8080"), competitions[competitionIndexIn]);
+//    on_initialize(U("http://192.168.1.20:8080"), competitions[competitionIndexIn]);
+    on_initialize(U("http://127.0.0.1:8080"), competitions[competitionIndexIn]);
 
     cout << "Press ENTER to exit." << endl;
 
