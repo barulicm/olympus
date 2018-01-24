@@ -7,7 +7,11 @@ function GetTeamScore(team, currentPhase)
 {
     var result = {};
 
-    result.score = Array.max(team.scores[currentPhase]);
+    if(team.scores[currentPhase].length === 0) {
+        result.score = 0;
+    } else {
+        result.score = Array.max(team.scores[currentPhase]);
+    }
 
     return result;
 }

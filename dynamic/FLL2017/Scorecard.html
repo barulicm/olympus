@@ -16,13 +16,14 @@
     <a class="navigation" href="Display.html">Display</a>
     <a class="navigation" href="results.html">Results</a>
 </div>
-<img id="logo" src="images/GameLogo.png"/>
+<img id="logo" src="images/hydro-dynamics-color.jpg"/>
 
-<form class="form-style-7" oninput="scoreOutput.value=calculateScore(M01.value,M02.value,M03.value,M04.value,M05.value,
-                                    M06.value,M07.value,M08a.value,M08b.value,M10a.value,M10b.value,M11a.value,
-                                    M11b.value,M11c.value,M12.value,M13a.value,M13b.value,M14a.value,M14b.value,
-                                    M15.value,M16a.value,M16b.value,M16c.value,M16d.value,M17a.value,M17b.value,
-                                    M18.value,Penalties.value)">
+<form class="form-style-7" onchange="scoreOutput.value=calculateScore(M01.value, M02.value, M03.value, M04.value,
+                                        M05.value, M06.value, M07.value, M08a.value, M08b.value, M09a.value, M09b.value,
+                                        M09c.value, M10a.value, M10b.value, M11a.value, M11b.value, M11c.value,
+                                        M12.value, M13a.value, M13b.value, M14a.value, M14b.value, M15.value,
+                                        M16a.value, M16b.value, M16c.value, M16d.value, M17a.value, M17b.value,
+                                        M18.value, Penalties.value)">
 
     <h1>Scorecard</h1>
 
@@ -30,7 +31,7 @@
         <tbody>
         <tr>
             <td>
-                <label for="team">Team</label>
+                <label for="team" class="grouptitle">Team</label>
                 <input type="text" id="team" name="team" list="teams">
                 <datalist id="teams">
                 </datalist>
@@ -38,163 +39,165 @@
         </tr>
         <tr>
             <td>
-                <label>M01 - Pipe Removal</label>
-                <input type="radio" name="M01" value="y">YES
-                <input type="radio" name="M01" value="n">NO
+                <label class="grouptitle">M01 - Pipe Removal</label>
+                <input type="radio" id="M01y" name="M01" value="y">
+                <label for="M01y">YES</label>
+                <input type="radio" id="M01n" name="M01" value="n" checked>
+                <label for="M01n">NO</label>
             </td>
         </tr>
         <tr>
             <td>
-                <label>M02 - Flow</label>
+                <label class="grouptitle">M02 - Flow</label>
                 <input type="radio" name="M02" value="y">YES
-                <input type="radio" name="M02" value="n">NO
+                <input type="radio" name="M02" value="n" checked>NO
             </td>
         </tr>
         <tr>
             <td>
-                <label>M03 - Pump Addition</label>
+                <label class="grouptitle">M03 - Pump Addition</label>
                 <input type="radio" name="M03" value="y">YES
-                <input type="radio" name="M03" value="n">NO
+                <input type="radio" name="M03" value="n" checked>NO
             </td>
         </tr>
         <tr>
             <td>
-                <label>M04 - Rain</label>
+                <label class="grouptitle">M04 - Rain</label>
                 <input type="radio" name="M04" value="y">YES
-                <input type="radio" name="M04" value="n">NO
+                <input type="radio" name="M04" value="n" checked>NO
             </td>
         </tr>
         <tr>
             <td>
-                <label>M05 - Filter</label>
+                <label class="grouptitle">M05 - Filter</label>
                 <input type="radio" name="M05" value="y">YES
-                <input type="radio" name="M05" value="n">NO
+                <input type="radio" name="M05" value="n" checked>NO
             </td>
         </tr>
         <tr>
             <td>
-                <label>M06 - Water Treatment</label>
+                <label class="grouptitle">M06 - Water Treatment</label>
                 <input type="radio" name="M06" value="y">YES
-                <input type="radio" name="M06" value="n">NO
+                <input type="radio" name="M06" value="n" checked>NO
             </td>
         </tr>
         <tr>
             <td>
-                <label>M07 - Fountain</label>
+                <label class="grouptitle">M07 - Fountain</label>
                 <input type="radio" name="M07" value="y">YES
-                <input type="radio" name="M07" value="n">NO
+                <input type="radio" name="M07" value="n" checked>NO
             </td>
         </tr>
         <tr>
             <td>
-                <label>M08 - Manhole Covers</label>
-                <input type="radio" name="M08a" value="0">0
+                <label class="grouptitle">M08 - Manhole Covers</label>
+                <input type="radio" name="M08a" value="0" checked>0
                 <input type="radio" name="M08a" value="1">1
                 <input type="radio" name="M08a" value="2">2<br>
                 <input type="radio" name="M08b" value="y">YES
-                <input type="radio" name="M08b" value="n">NO
+                <input type="radio" name="M08b" value="n" checked>NO
             </td>
         </tr>
         <tr>
             <td>
-                <label>M09 - Tripod</label>
+                <label class="grouptitle">M09 - Tripod</label>
                 <input type="radio" name="M09a" value="y">YES
-                <input type="radio" name="M09a" value="n">NO<br>
+                <input type="radio" name="M09a" value="n" checked>NO<br>
                 <input type="radio" name="M09b" value="y">YES
-                <input type="radio" name="M09b" value="n">NO<br>
+                <input type="radio" name="M09b" value="n" checked>NO<br>
                 <input type="radio" name="M09c" value="y">YES
-                <input type="radio" name="M09c" value="n">NO
+                <input type="radio" name="M09c" value="n" checked>NO
             </td>
         </tr>
         <tr>
             <td>
-                <label>M10 - Pipe Replacement</label>
+                <label class="grouptitle">M10 - Pipe Replacement</label>
                 <input type="radio" name="M10a" value="y">YES
-                <input type="radio" name="M10a" value="n">NO<br>
+                <input type="radio" name="M10a" value="n" checked>NO<br>
                 <input type="radio" name="M10b" value="y">YES
-                <input type="radio" name="M10b" value="n">NO
+                <input type="radio" name="M10b" value="n" checked>NO
             </td>
         </tr>
         <tr>
             <td>
-                <label>M11 - Pipe Construction</label>
+                <label class="grouptitle">M11 - Pipe Construction</label>
                 <input type="radio" name="M11a" value="y">YES
-                <input type="radio" name="M11a" value="n">NO<br>
+                <input type="radio" name="M11a" value="n" checked>NO<br>
                 <input type="radio" name="M11b" value="y">YES
-                <input type="radio" name="M11b" value="n">NO<br>
+                <input type="radio" name="M11b" value="n" checked>NO<br>
                 <input type="radio" name="M11c" value="y">YES
-                <input type="radio" name="M11c" value="n">NO
+                <input type="radio" name="M11c" value="n" checked>NO
             </td>
         </tr>
         <tr>
             <td>
-                <label>M12 - Sludge</label>
+                <label class="grouptitle">M12 - Sludge</label>
                 <input type="radio" name="M12" value="y">YES
-                <input type="radio" name="M12" value="n">NO
+                <input type="radio" name="M12" value="n" checked>NO
             </td>
         </tr>
         <tr>
             <td>
-                <label>M13 - Flower</label>
+                <label class="grouptitle">M13 - Flower</label>
                 <input type="radio" name="M13a" value="y">YES
-                <input type="radio" name="M13a" value="n">NO<br>
+                <input type="radio" name="M13a" value="n" checked>NO<br>
                 <input type="radio" name="M13b" value="y">YES
-                <input type="radio" name="M13b" value="n">NO
+                <input type="radio" name="M13b" value="n" checked>NO
             </td>
         </tr>
         <tr>
             <td>
-                <label>M14 - Water Well</label>
+                <label class="grouptitle">M14 - Water Well</label>
                 <input type="radio" name="M14a" value="y">YES
-                <input type="radio" name="M14a" value="n">NO<br>
+                <input type="radio" name="M14a" value="n" checked>NO<br>
                 <input type="radio" name="M14b" value="y">YES
-                <input type="radio" name="M14b" value="n">NO
+                <input type="radio" name="M14b" value="n" checked>NO
             </td>
         </tr>
         <tr>
             <td>
-                <label>M15 - Fire</label>
+                <label class="grouptitle">M15 - Fire</label>
                 <input type="radio" name="M15" value="y">YES
-                <input type="radio" name="M15" value="n">NO
+                <input type="radio" name="M15" value="n" checked>NO
             </td>
         </tr>
         <tr>
             <td>
-                <label>M16 - Water Collection</label>
+                <label class="grouptitle">M16 - Water Collection</label>
                 <input type="radio" name="M16a" value="y">YES
-                <input type="radio" name="M16a" value="n">NO<br>
+                <input type="radio" name="M16a" value="n" checked>NO<br>
                 <input type="radio" name="M16b" value="y">YES
-                <input type="radio" name="M16b" value="n">NO<br>
-                <input type="radio" name="M16c" value="0">0
+                <input type="radio" name="M16b" value="n" checked>NO<br>
+                <input type="radio" name="M16c" value="0" checked>0
                 <input type="radio" name="M16c" value="1">1
                 <input type="radio" name="M16c" value="2">2
                 <input type="radio" name="M16c" value="3">3
                 <input type="radio" name="M16c" value="4">4
                 <input type="radio" name="M16c" value="5">5<br>
                 <input type="radio" name="M16d" value="y">YES
-                <input type="radio" name="M16d" value="n">NO
+                <input type="radio" name="M16d" value="n" checked>NO
             </td>
         </tr>
         <tr>
             <td>
-                <label>M17 - Slingshot</label>
+                <label class="grouptitle">M17 - Slingshot</label>
                 <input type="radio" name="M17a" value="y">YES
-                <input type="radio" name="M17a" value="n">NO<br>
+                <input type="radio" name="M17a" value="n" checked>NO<br>
                 <input type="radio" name="M17b" value="y">YES
-                <input type="radio" name="M17b" value="n">NO
+                <input type="radio" name="M17b" value="n" checked>NO
             </td>
         </tr>
         <tr>
             <td>
-                <label>M18 - Faucet</label>
+                <label class="grouptitle">M18 - Faucet</label>
                 <input type="radio" name="M18" value="y">YES
-                <input type="radio" name="M18" value="n">NO
+                <input type="radio" name="M18" value="n" checked>NO
             </td>
         </tr>
         <tr>
             <td>
-                <label>Penalties</label>
-                <input type="radio" name="Penalties" value="0">0
+                <label class="grouptitle">Penalties</label>
+                <input type="radio" name="Penalties" value="0" checked>0
                 <input type="radio" name="Penalties" value="1">1
                 <input type="radio" name="Penalties" value="2">2
                 <input type="radio" name="Penalties" value="3">3
@@ -206,18 +209,19 @@
 
         <tr>
             <td>
-                <label for="scoreOutput">Final Score</label>
+                <label for="scoreOutput" class="grouptitle">Final Score</label>
                 <output id="scoreOutput" name="scoreOutput" for="flames drums rescue rescueBonus">0</output>
             </td>
         </tr>
         <tr>
             <td>
                 <input type="button" class="button" id="submitButton" onclick="submitScore(team.value,
-                                    calculateScore(M01.value,M02.value,M03.value,M04.value,M05.value,
-                                    M06.value,M07.value,M08a.value,M08b.value,M10a.value,M10b.value,M11a.value,
-                                    M11b.value,M11c.value,M12.value,M13a.value,M13b.value,M14a.value,M14b.value,
-                                    M15.value,M16a.value,M16b.value,M16c.value,M16d.value,M17a.value,M17b.value,
-                                    M18.value,Penalties.value))" value="Submit">
+                                    calculateScore(M01.value, M02.value, M03.value, M04.value,
+                                    M05.value, M06.value, M07.value, M08a.value, M08b.value, M09a.value, M09b.value,
+                                    M09c.value, M10a.value, M10b.value, M11a.value, M11b.value, M11c.value,
+                                    M12.value, M13a.value, M13b.value, M14a.value, M14b.value, M15.value,
+                                    M16a.value, M16b.value, M16c.value, M16d.value, M17a.value, M17b.value,
+                                    M18.value, Penalties.value))" value="Submit">
             </td>
         </tr>
         </tbody>

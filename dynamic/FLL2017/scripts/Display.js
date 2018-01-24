@@ -45,15 +45,22 @@ function getInfo() {
                 rankCell.appendChild(document.createTextNode(teamArr[i].rank));
                 numberCell.appendChild(document.createTextNode(teamArr[i].number));
                 nameCell.appendChild(document.createTextNode(teamArr[i].name.substr(0,26)));
-                m1Cell.appendChild(document.createTextNode("0"));
-                m2Cell.appendChild(document.createTextNode("0"));
-                m3Cell.appendChild(document.createTextNode("0"));
-                if(teamArr[i].scores.length > 0)
-                    m1Cell.appendChild(document.createTextNode(teamArr[i].scores[0]));
-                if(teamArr[i].scores.length > 1)
-                    m2Cell.appendChild(document.createTextNode(teamArr[i].scores[1]));
-                if(teamArr[i].scores.length > 2)
-                    m3Cell.appendChild(document.createTextNode(teamArr[i].scores[2]));
+
+                if(teamArr[i].scores[0].length > 0)
+                    m1Cell.appendChild(document.createTextNode(teamArr[i].scores[0][0]));
+                else
+                    m1Cell.appendChild(document.createTextNode("0"));
+
+                if(teamArr[i].scores[0].length > 1)
+                    m2Cell.appendChild(document.createTextNode(teamArr[i].scores[0][1]));
+                else
+                    m2Cell.appendChild(document.createTextNode("0"));
+
+                if(teamArr[i].scores[0].length > 2)
+                    m3Cell.appendChild(document.createTextNode(teamArr[i].scores[0][2]));
+                else
+                    m3Cell.appendChild(document.createTextNode("0"));
+
                 scoreCell.appendChild(document.createTextNode(teamArr[i].displayScore));
                 row.appendChild(rankCell);
                 row.appendChild(numberCell);

@@ -131,6 +131,7 @@ function calculateScore(M01, M02, M03, M04, M05, M06, M07, M08a, M08b, M09a, M09
 }
 
 function submitScore(team,score) {
+    alert(score)
     var jsonData = {};
     var endOfTeamNumber = team.indexOf(" ");
     jsonData.teamNumber = team.substring(0,endOfTeamNumber);
