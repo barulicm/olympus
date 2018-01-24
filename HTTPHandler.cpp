@@ -207,6 +207,33 @@ void HTTPHandler::handle_put(http_request message) {
                 message.reply(status_codes::InternalError, rep).wait();
             }
         }).wait();
+    } else if(message.relative_uri().path() == "/team/edit") {
+        message.extract_string().then([this,&message](utility::string_t body){
+            try {
+                json j = json::parse(body);
+                auto teamNumber = j["oldTeamNumber"];
+                auto findIter = std::find_if(_teams.begin(), _teams.end(), [&teamNumber](const auto &team) {
+                    return team.number == teamNumber;
+                });
+                if(findIter == _teams.end()) {
+                    string rep = U("No such team.");
+                    message.reply(status_codes::NotFound, rep).wait();
+                } else {
+                    findIter->number = j["newTeamNumber"];
+                    findIter->name = j["newTeamName"];
+                    auto &scores = findIter->scores[_schedule.currentPhase];
+                    auto &newScores = j["newScores"];
+                    for(auto i = 0; i < newScores.size(); i++) {
+                        scores[i] = newScores[i];
+                    }
+                }
+                string rep = U("Team edits saved.");
+                message.reply(status_codes::OK, rep).wait();
+            } catch(std::exception &e) {
+                string rep = U(string("Editting team info failed.") + e.what());
+                message.reply(status_codes::InternalError, rep).wait();
+            }
+        }).wait();
     } else if(message.relative_uri().path() == "/scores/submit") {
         message.extract_string().then([this,&message](utility::string_t body){
             try {

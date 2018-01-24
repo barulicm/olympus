@@ -3,41 +3,70 @@ function onLoad() {
     var team_number = current_url.substr(current_url.indexOf("?team=")+6);
 
     var xhr = new XMLHttpRequest();
-    xhr.open('GET','team/'+team_numer,true);
+    xhr.open('GET','team/'+team_number,true);
     xhr.send();
 
     xhr.onreadystatechange = ()=>{
         if(xhr.readyState == 4 && xhr.status == 200) {
             var team = JSON.parse(xhr.responseText);
 
+            document.getElementById("teamNumber").value = team.number;
+            document.getElementById("teamName").value = team.name;
 
-            // var teamArr = JSON.parse(xhr.responseText);
-            // var i;
-            // for(i = 0; i  < teamArr.length; i++) {
-            //     // Populate Table Row
-            //     tabBody = document.getElementsByTagName("tbody").item(0);
-            //     row=document.createElement("tr");
-            //     rankCell=document.createElement("td");
-            //     numberCell=document.createElement("td");
-            //     nameCell=document.createElement("td");
-            //     delCell=document.createElement("td");
-            //     rankCell.appendChild(document.createTextNode(teamArr[i].rank));
-            //     numberCell.appendChild(document.createTextNode(teamArr[i].number));
-            //     var teamNameLink = document.createElement("a");
-            //     teamNameLink.setAttribute("href", 'TeamDetails.html?team=' + teamArr[i].number);
-            //     teamNameLink.innerText = teamArr[i].name;
-            //     nameCell.appendChild(teamNameLink);
-            //     delButton = document.createElement("button");
-            //     delButton.classList.add("deleteButton");
-            //     delButton.id = teamArr[i].number;
-            //     delButton.onclick = removeTeam;
-            //     delCell.appendChild(delButton);
-            //     row.appendChild(rankCell);
-            //     row.appendChild(numberCell);
-            //     row.appendChild(nameCell);
-            //     row.appendChild(delCell);
-            //     tabBody.insertBefore(row,tabBody.childNodes[tabBody.childNodes.length-2]);
-            // }
+            var scoresArr = team.scores[0];
+
+            document.getElementById("numberCell").colSpan = scoresArr.length;
+            document.getElementById("nameCell").colSpan = scoresArr.length;
+            document.getElementById("submitCell").colSpan = scoresArr.length;
+
+            var scoresRow = document.getElementById("scoresRow");
+            var i;
+            for(i = 0; i < scoresArr.length; i++) {
+                var cell = document.createElement("td");
+
+                var label = document.createElement("label");
+                label.className = "grouptitle";
+                label.appendChild(document.createTextNode("Match " + (i+1) + " Score"));
+                cell.appendChild(label);
+
+                var input = document.createElement("input");
+                input.type = "number";
+                input.value = scoresArr[i];
+                cell.appendChild(input);
+
+                scoresRow.appendChild(cell);
+            }
+        }
+    }
+}
+
+function submitEdits() {
+    var jsonData = {}
+
+    var current_url = window.location.href;
+    jsonData.oldTeamNumber = current_url.substr(current_url.indexOf("?team=")+6);
+    jsonData.newTeamNumber = document.getElementById("teamNumber").value;
+    jsonData.newTeamName   = document.getElementById("teamName").value;
+
+    jsonData.newScores = [];
+    var scoreCells = document.getElementById("scoresRow").childNodes;
+    var i;
+    for(i = 0; i < scoreCells.length; i++) {
+        var score = scoreCells[i].getElementsByName("input")[0].value;
+        jsonData.newScores.push(score);
+    }
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('PUT', 'team/edit', true);
+    xhr.send(JSON.stringify(jsonData));
+    xhr.onreadystatechange = ()=>{
+        if(xhr.readyState === 4) {
+            if(xhr.status === 200) {
+                alert("Edits Saved");
+                location.reload();
+            } else {
+                alert("Submitting team edits failed.\nStatus: " + xhr.status + "\nMessage: " + xhr.responseText);
+            }
         }
     }
 }
