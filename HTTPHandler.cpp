@@ -55,10 +55,12 @@ void HTTPHandler::handle_get(http_request message) {
             message.reply(status_codes::OK, j.dump(), U("application/json")).wait();
         } else if (team_number == "active") {
             json j = json::array();
-            auto activeTeamNumbers = _schedule.getCurrentPhase().getInvolvedTeamNumbers();
-            std::vector<Team> activeTeams = getTeamsFromNumbers(activeTeamNumbers.begin(), activeTeamNumbers.end());
-            for(const auto &team : activeTeams) {
-                j.push_back(team.toJSON());
+            if(_schedule.isValid()) {
+                auto activeTeamNumbers = _schedule.getCurrentPhase().getInvolvedTeamNumbers();
+                std::vector<Team> activeTeams = getTeamsFromNumbers(activeTeamNumbers.begin(), activeTeamNumbers.end());
+                for (const auto &team : activeTeams) {
+                    j.push_back(team.toJSON());
+                }
             }
             message.reply(status_codes::OK, j.dump(), U("application/json")).wait();
         } else {
