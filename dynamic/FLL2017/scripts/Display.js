@@ -73,7 +73,7 @@ function getInfo() {
             }
 
             current_top_team += teams_per_page;
-            if(current_top_team > teamArr.length) {
+            if(current_top_team >= teamArr.length) {
                 current_top_team = 0;
             }
         }
