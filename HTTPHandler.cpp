@@ -116,7 +116,7 @@ void HTTPHandler::handle_get(http_request message) {
     } else if(path == "/pages/dynamic") {
         auto j = json::array();
 
-        boost::filesystem::path targetDir("./resources/dynamic");
+        boost::filesystem::path targetDir("./resources/dynamic/"+ competitionName);
 
         boost::filesystem::recursive_directory_iterator iter(targetDir), eod;
 
