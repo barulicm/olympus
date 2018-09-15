@@ -15,12 +15,22 @@
 
 class HTTPHandler {
 public:
-    HTTPHandler() = default;
-    HTTPHandler(utility::string_t url, const utility::string_t &competitionName);
+    HTTPHandler();
     virtual ~HTTPHandler() = default;
+
+    static std::unique_ptr<HTTPHandler> fromUrlAndCompetitionName(utility::string_t url,
+                                                                  const utility::string_t &competitionName);
+    static std::unique_ptr<HTTPHandler> fromUrlAndSavedSession(utility::string_t url,
+                                                               const utility::string_t &sessionFilePath);
 
     pplx::task<void> open() { return m_listener.open(); }
     pplx::task<void> close() { return m_listener.close(); }
+
+    void setUrl(const utility::string_t &url);
+    void setCompetitionName(const utility::string_t &name);
+
+    void saveSession(const std::string &path);
+    void loadSession(const std::string &path);
 
 private:
     std::vector<Team> _teams;

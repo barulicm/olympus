@@ -7,20 +7,7 @@
 using namespace std;
 using namespace web::http;
 
-HTTPHandler::HTTPHandler(utility::string_t url, const utility::string_t &competitionName)
-    : m_listener(url),
-      competitionName(competitionName)
-{
-    m_listener.support(methods::GET, std::bind(&HTTPHandler::handle_get, this, std::placeholders::_1));
-    m_listener.support(methods::PUT, std::bind(&HTTPHandler::handle_put, this, std::placeholders::_1));
-    m_listener.support(methods::POST, std::bind(&HTTPHandler::handle_post, this, std::placeholders::_1));
-    m_listener.support(methods::DEL, std::bind(&HTTPHandler::handle_delete, this, std::placeholders::_1));
-
-    loadFunctionsFromJS("CompareTeams.js");
-    loadFunctionsFromJS("GetTeamScore.js");
-    loadFunctionsFromJS("SelectNextPhase.js");
-    loadFunctionsFromJS("DefaultCustomFields.js");
-
+HTTPHandler::HTTPHandler() {
     _mime_types = {
             {"html","text/html"},
             {"css","text/css"},
@@ -31,13 +18,50 @@ HTTPHandler::HTTPHandler(utility::string_t url, const utility::string_t &competi
             {"png","image/png"},
             {"txt","text/plain"}
     };
+}
 
+unique_ptr<HTTPHandler> HTTPHandler::fromUrlAndCompetitionName(utility::string_t url,
+                                                               const utility::string_t &competitionName) {
+    auto handler = std::make_unique<HTTPHandler>();
+    handler->setUrl(url);
+    handler->setCompetitionName(competitionName);
+    return handler;
+}
+
+unique_ptr<HTTPHandler> HTTPHandler::fromUrlAndSavedSession(utility::string_t url,
+                                                            const utility::string_t &sessionFilePath) {
+    auto handler = std::make_unique<HTTPHandler>();
+    handler->setUrl(url);
+    handler->loadSession(sessionFilePath);
+    return handler;
+}
+
+void HTTPHandler::setUrl(const utility::string_t &url) {
+    m_listener = web::http::experimental::listener::http_listener{url};
+    m_listener.support(methods::GET, std::bind(&HTTPHandler::handle_get, this, std::placeholders::_1));
+    m_listener.support(methods::PUT, std::bind(&HTTPHandler::handle_put, this, std::placeholders::_1));
+    m_listener.support(methods::POST, std::bind(&HTTPHandler::handle_post, this, std::placeholders::_1));
+    m_listener.support(methods::DEL, std::bind(&HTTPHandler::handle_delete, this, std::placeholders::_1));
+}
+
+void HTTPHandler::setCompetitionName(const utility::string_t &name) {
+    competitionName = name;
+    loadFunctionsFromJS("CompareTeams.js");
+    loadFunctionsFromJS("GetTeamScore.js");
+    loadFunctionsFromJS("SelectNextPhase.js");
+    loadFunctionsFromJS("DefaultCustomFields.js");
     loadDefaultCustomFields();
 }
 
-void HTTPHandler::handle_get(http_request message) {
-//    ucout << message.to_string() << endl;
+void HTTPHandler::saveSession(const std::string &path) {
+    // TODO not implemented
+}
 
+void HTTPHandler::loadSession(const std::string &path) {
+    // TODO not implemented
+}
+
+void HTTPHandler::handle_get(http_request message) {
     utility::string_t path = message.relative_uri().path();
 
     if(path == "/") {

@@ -8,22 +8,6 @@ using namespace http;
 using namespace utility;
 using namespace http::experimental::listener;
 
-unique_ptr<HTTPHandler> g_httpHandler;
-
-void on_initialize(const string_t &address, const string &competition) {
-    uri_builder uri(address);
-
-    auto addr = uri.to_uri().to_string();
-    g_httpHandler = make_unique<HTTPHandler>(addr, competition.c_str());
-    g_httpHandler->open().wait();
-
-    ucout << string_t(U("Listening for requests at: ")) << addr << endl;
-}
-
-void on_shutdown() {
-    g_httpHandler->close().wait();
-}
-
 vector<string> getDirectories(string root) {
     using namespace boost::filesystem;
     path p{root};
@@ -50,16 +34,22 @@ int main(int argc, char *argv[]) {
     cin >> competitionIndexIn;
     competitionIndexIn = min(competitionIndexIn, competitions.size());
 
-//    on_initialize(U("http://192.168.1.20:8080"), competitions[competitionIndexIn]);
-    on_initialize(U("http://127.0.0.1:8080"), competitions[competitionIndexIn]);
+    auto url = U("http://127.0.0.1:8080");
+//    auto url = U("http://192.168.1.20:8080");
 
+    uri_builder uri{url};
+    auto address = uri.to_uri().to_string();
+    auto httpHandler = HTTPHandler::fromUrlAndCompetitionName(address, competitions[competitionIndexIn]);
+    httpHandler->open().wait();
+
+    cout << "Listening for requests at: " << address << endl;
     cout << "Press ENTER to exit." << endl;
 
     cin.ignore();
     string line;
     getline(cin, line);
 
-    on_shutdown();
+    httpHandler->close().wait();
 
     return 0;
 }
