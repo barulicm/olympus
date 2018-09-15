@@ -22,18 +22,31 @@ function onLoad() {
     }
 }
 
-function calculateScore(flames,drums,rescue,rescueBonus) {
+function calculateScore(formdata) {
     var score = 0;
-    score += flames * 5;
-    if(flames === 30) {
-        // "Under Control" Bonus
-        score += 30;
-    }
-    score += drums * 40;
-    if(rescue) {
-        score += 120;
-        score += rescueBonus;
-    }
+
+    score += formdata.cans * 10;
+    score += formdata.sbottles * 10;
+    score += formdata.mbottles * 10;
+    score += formdata.lbottles * 10;
+
+    score += formdata.can_blocks * 65;
+    score += formdata.sbottle_blocks * 65;
+    score += formdata.mbottle_blocks * 65;
+    score += formdata.lbottle_blocks * 65;
+
+    score += formdata.can_blocks_installed * 165;
+    score += formdata.sbottle_blocks_installed * 165;
+    score += formdata.mbottle_blocks_installed * 165;
+    score += formdata.lbottle_blocks_installed * 165;
+
+    score += formdata.microplastics * 5;
+    score += formdata.tubes * 90;
+    score += formdata.tubes_installed * 190;
+
+
+
+
     return score;
 }
 
