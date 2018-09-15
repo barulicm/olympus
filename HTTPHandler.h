@@ -64,23 +64,26 @@ private:
     void loadDefaultCustomFields();
 
     template<typename InputIterator>
-    std::vector<Team> getTeamsFromNumbers(InputIterator first, InputIterator last) {
-        std::vector<Team> teams;
-        std::transform(first, last, std::back_inserter(teams), [this](const auto &teamNumber){
-            auto find_res = std::find_if(_teams.begin(), _teams.end(), [&teamNumber](const auto &team){ return team.number == teamNumber; });
-            if(find_res != _teams.end()) {
-                return Team(*find_res);
-            } else {
-                return Team();
-            }
-        });
-        return teams;
-    }
+    std::vector<Team> getTeamsFromNumbers(InputIterator first, InputIterator last);
 
     std::map<std::string,std::string> _mime_types;
 
     utility::string_t competitionName;
 };
+
+template<typename InputIterator>
+std::vector<Team> HTTPHandler::getTeamsFromNumbers(InputIterator first, InputIterator last) {
+    std::vector<Team> teams;
+    std::transform(first, last, std::back_inserter(teams), [this](const auto &teamNumber){
+        auto find_res = std::find_if(_teams.begin(), _teams.end(), [&teamNumber](const auto &team){ return team.number == teamNumber; });
+        if(find_res != _teams.end()) {
+            return Team(*find_res);
+        } else {
+            return Team();
+        }
+    });
+    return teams;
+}
 
 
 #endif //OLYMPUS_HANDLER_H
