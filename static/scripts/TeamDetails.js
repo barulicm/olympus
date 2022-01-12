@@ -41,22 +41,22 @@ function onLoad() {
 }
 
 function submitEdits() {
-    var jsonData = {}
+    let jsonData = {}
 
-    var current_url = window.location.href;
+    let current_url = window.location.href;
     jsonData.oldTeamNumber = current_url.substr(current_url.indexOf("?team=")+6);
     jsonData.newTeamNumber = document.getElementById("teamNumber").value;
     jsonData.newTeamName   = document.getElementById("teamName").value;
 
     jsonData.newScores = [];
-    var scoreCells = document.getElementById("scoresRow").childNodes;
-    var i;
+    let scoreCells = document.getElementById("scoresRow").childNodes;
+    let i;
     for(i = 0; i < scoreCells.length; i++) {
-        var score = scoreCells[i].getElementsByName("input")[0].value;
+        let score = parseInt(scoreCells[i].getElementsByTagName("input")[0].value);
         jsonData.newScores.push(score);
     }
 
-    var xhr = new XMLHttpRequest();
+    let xhr = new XMLHttpRequest();
     xhr.open('PUT', 'team/edit', true);
     xhr.send(JSON.stringify(jsonData));
     xhr.onreadystatechange = ()=>{

@@ -1,2 +1,11 @@
- * Need to add state for matches?
-   * Matches have a correct current and turtle value associated with them, which needs to be checked against the values given on the score card
+- Timer
+- Add pit display? (Timer-only display)
+- Implement full state export/import for disaster recovery
+- Show event name on main display?
+- Show sponsors on main display?
+- Add "black out" edges to main display?
+- Refocus to FLL only?
+  - Remove phases and matches, just need to track teams and their scores
+  - Generate scorecards from "mission descriptions"
+  - Remove static vs dynamic pages, since scorecard would be only thing changing
+  - Make number of rounds runtime configurable?

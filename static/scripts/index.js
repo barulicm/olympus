@@ -206,3 +206,8 @@ function nextButtonClicked() {
     }
     xhr.send();
 }
+
+function exportScoresButtonClicked() {
+    window.open('scores/export.csv', '_blank');
+}
+

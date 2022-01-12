@@ -124,7 +124,39 @@ void HTTPHandler::handle_get(http_request message) {
     } else if(path == "/results") {
         auto resultsJson = _results.toJSON();
         message.reply(status_codes::OK, resultsJson.dump(), U("application/json")).wait();
-    } else if (path.substr(0,13) == "/controlQuery") {
+    } else if(message.relative_uri().path() == "/scores/export.csv") {
+        try {
+            std::stringstream csv_content;
+            const auto current_phase = _schedule.currentPhase;
+            auto score_count = 0ul;
+            for(const auto& team : _teams) {
+                score_count = std::max(score_count, team.scores.at(current_phase).size());
+            }
+            csv_content << "rank,team number,team name";
+            for(auto i = 0ul; i < score_count; ++i) {
+                csv_content << ",match " << (i+1);
+            }
+            csv_content << ",final score\n";
+            for (const auto &team: _teams) {
+                csv_content << team.rank << "," << team.number << "," << team.name;
+                for (const auto &score: team.scores.at(current_phase)) {
+                    csv_content << "," << score;
+                }
+                for(auto i = 0ul; i < (score_count - team.scores.at(current_phase).size()); ++i) {
+                    csv_content << ",0";
+                }
+                csv_content << "," << team.displayScore;
+                csv_content << "\n";
+            }
+            message.reply(status_codes::OK, csv_content.str(), U("text/csv")).wait();
+        } catch(const std::exception &e) {
+            string rep = U("Exporting scores failed.");
+            message.reply(status_codes::InternalError, rep).wait();
+            std::cerr << "Score export: Exception occurred:\n\t";
+            std::cerr << e.what() << std::endl;
+        }
+
+    } if (path.substr(0,13) == "/controlQuery") {
         auto query = message.headers()["query"];
         std::string response;
         if(query == "hasTeams") {
@@ -273,7 +305,6 @@ void HTTPHandler::handle_put(http_request message) {
                                              return t.number == teamNumber;
                                          });
                 if(team_iter != _teams.end()) {
-                    std::cout << "Found team: " << team_iter->name << std::endl;
                     team_iter->scores[_schedule.currentPhase].push_back(score);
 
                     updateRanks();

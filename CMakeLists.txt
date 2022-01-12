@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.16)
 project(Olympus)
 
 set(CMAKE_CXX_STANDARD 14)
@@ -17,9 +17,11 @@ find_package(OpenSSL REQUIRED)
 
 include_directories(${OPENSSL_INCLUDE_DIR})
 
+find_package(Threads REQUIRED)
+
 set(SOURCE_FILES main.cpp HTTPHandler.cpp common/Schedule.cpp common/Match.cpp common/Team.cpp common/Phase.cpp common/Results.cpp duktape/duktape.c JSExecutor.cpp JSExecutor.h)
 add_executable(Olympus ${SOURCE_FILES})
-target_link_libraries(Olympus ${Boost_LIBRARIES} ${CASABLANCA_LIBRARY} ${OPENSSL_LIBRARIES})
+target_link_libraries(Olympus ${Boost_LIBRARIES} ${CASABLANCA_LIBRARY} ${OPENSSL_LIBRARIES} Threads::Threads)
 
 file(COPY static DESTINATION resources)
 file(COPY dynamic DESTINATION resources)

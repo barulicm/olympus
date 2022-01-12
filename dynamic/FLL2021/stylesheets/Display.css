@@ -1,0 +1,63 @@
+#logo {
+    display: block;
+    margin:0 auto;
+    max-height: 200px;
+    min-height: 50px;
+}
+
+body {
+    background-color: white;
+    font-family: "Lucida Console", Courier, monospace;
+}
+
+table {
+    border-collapse: collapse;
+    border: none;
+    width:95%;
+    margin-left:auto;
+    margin-right:auto;
+    margin-top:10px;
+    font-size: 64px;
+}
+
+th {
+    background-color:#0f1f60;
+    color: white;
+}
+
+th, td {
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+    padding: 5px;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+tr {
+    border-bottom: solid;
+    border-color: black;
+}
+
+td {
+    border: none;
+    border-left: solid;
+    border-right: solid;
+    border-left-color: darkgray;
+    border-right-color: darkgray;
+}
+
+/*.numberCell {*/
+/*border-right: solid;*/
+/*border-right-color: black;*/
+/*}*/
+
+#footer {
+    position: fixed;
+    text-align: center;
+    left: 0;
+    bottom: 10px;
+    width: 100%;
+    font-size: 64px;
+}
