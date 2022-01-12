@@ -188,7 +188,7 @@ void HTTPHandler::handle_get(http_request message) {
         // Request for competition-specific resource
 
         concurrency::streams::fstream::open_istream(U("resources/dynamic/" + competitionName + path), std::ios::in)
-                .then([=](concurrency::streams::istream is) {
+                .then([this,&message,&path](concurrency::streams::istream is) {
                     message.reply(status_codes::OK, is, mime_type_for_path(path)).wait();
                 }).wait();
 
@@ -196,7 +196,7 @@ void HTTPHandler::handle_get(http_request message) {
         // Request for static resource
 
         concurrency::streams::fstream::open_istream(U("resources/static" + path), std::ios::in)
-                .then([=](concurrency::streams::istream is) {
+                .then([this,&message,&path](concurrency::streams::istream is) {
                     message.reply(status_codes::OK, is, mime_type_for_path(path)).wait();
                 }).wait();
 
@@ -432,12 +432,12 @@ std::string HTTPHandler::mime_type_for_path(std::string path) {
 
 void HTTPHandler::updateRanks() {
     for_each(_teams.begin(), _teams.end(),
-             [=](Team &team){
+             [this](Team &team){
                  json response = _js.callFunction("GetTeamScore",{team.toJSON(),_schedule.currentPhase});
                  team.displayScore = response["score"];
              });
     stable_sort(_teams.begin(), _teams.end(),
-                [=](const Team &a, const Team &b){
+                [this](const Team &a, const Team &b){
                     json response = _js.callFunction("CompareTeams",{a.toJSON(),b.toJSON()});
                     return response["result"];
                 });
