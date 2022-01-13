@@ -1,11 +1,23 @@
 #logo {
-    display: block;
-    margin:0 auto;
-    max-height: 200px;
+    display: inline-block;
+    margin: 10px;
+    margin-left: 5%;
+    max-height: 100px;
     min-height: 50px;
 }
 
-body {
+#timerDisplay {
+    display: inline-block;
+    float:right;
+    margin: 10px;
+    margin-right: 5%;
+    text-align: right;
+    font-size: 100px;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
     background-color: white;
     font-family: "Lucida Console", Courier, monospace;
 }
@@ -41,7 +53,7 @@ tr {
 }
 
 td {
-    border: none;
+    border: 1px;
     border-left: solid;
     border-right: solid;
     border-left-color: darkgray;
@@ -53,11 +65,20 @@ td {
 /*border-right-color: black;*/
 /*}*/
 
-#footer {
-    position: fixed;
-    text-align: center;
-    left: 0;
-    bottom: 10px;
-    width: 100%;
-    font-size: 64px;
+.box {
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+}
+
+.box .row.display {
+    flex: 0 1 auto;
+    overflow: hidden;
+    resize: vertical;
+    height: 100%;
+}
+
+.box .row.blackout {
+    flex: 1 1 auto;
+    background-color: black;
 }

@@ -1,9 +1,10 @@
 .importExportControls {
     display: inline-block;
     float: left;
-    width: 33%;
+    width: 300px;
     background-color:#DDDDDD;
     border-radius:5px;
+    margin: 5px;
 }
 
 .importExportGroup {

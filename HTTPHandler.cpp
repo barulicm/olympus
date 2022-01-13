@@ -16,7 +16,8 @@ HTTPHandler::HTTPHandler() {
             {"gif","image/gif"},
             {"jpg","image/jpeg"},
             {"png","image/png"},
-            {"txt","text/plain"}
+            {"txt","text/plain"},
+            {"csv", "text/csv"}
     };
 }
 
@@ -38,10 +39,10 @@ unique_ptr<HTTPHandler> HTTPHandler::fromUrlAndSavedSession(utility::string_t ur
 
 void HTTPHandler::setUrl(const utility::string_t &url) {
     m_listener = web::http::experimental::listener::http_listener{url};
-    m_listener.support(methods::GET, std::bind(&HTTPHandler::handle_get, this, std::placeholders::_1));
-    m_listener.support(methods::PUT, std::bind(&HTTPHandler::handle_put, this, std::placeholders::_1));
-    m_listener.support(methods::POST, std::bind(&HTTPHandler::handle_post, this, std::placeholders::_1));
-    m_listener.support(methods::DEL, std::bind(&HTTPHandler::handle_delete, this, std::placeholders::_1));
+    m_listener.support(methods::GET, std::bind_front(&HTTPHandler::handle_get, this));
+    m_listener.support(methods::PUT, std::bind_front(&HTTPHandler::handle_put, this));
+    m_listener.support(methods::POST, std::bind_front(&HTTPHandler::handle_post, this));
+    m_listener.support(methods::DEL, std::bind_front(&HTTPHandler::handle_delete, this));
 }
 
 void HTTPHandler::setCompetitionName(const utility::string_t &name) {
@@ -59,6 +60,31 @@ void HTTPHandler::saveSession(const std::string &path) {
 
 void HTTPHandler::loadSession(const std::string &path) {
     // TODO not implemented
+}
+
+void HTTPHandler::start_timer()
+{
+    timer_running_ = true;
+    timer_thread_ = std::thread([this](){
+        const auto stop_time = std::chrono::steady_clock::now() + std::chrono::seconds(timer_match_length_);
+        while(timer_running_) {
+            const auto seconds_remaining = std::chrono::duration_cast<std::chrono::seconds>(stop_time - std::chrono::steady_clock::now()).count();
+            timer_seconds_ = std::max(0l, seconds_remaining);
+            if(timer_seconds_ == 0) {
+                break;
+            }
+            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        }
+    });
+}
+
+void HTTPHandler::stop_timer()
+{
+    if(!timer_running_)
+        return;
+    timer_running_ = false;
+    timer_thread_.join();
+    timer_seconds_ = timer_match_length_;
 }
 
 void HTTPHandler::handle_get(http_request message) {
@@ -124,7 +150,7 @@ void HTTPHandler::handle_get(http_request message) {
     } else if(path == "/results") {
         auto resultsJson = _results.toJSON();
         message.reply(status_codes::OK, resultsJson.dump(), U("application/json")).wait();
-    } else if(message.relative_uri().path() == "/scores/export.csv") {
+    } else if(path == "/scores/export.csv") {
         try {
             std::stringstream csv_content;
             const auto current_phase = _schedule.currentPhase;
@@ -156,7 +182,12 @@ void HTTPHandler::handle_get(http_request message) {
             std::cerr << e.what() << std::endl;
         }
 
-    } if (path.substr(0,13) == "/controlQuery") {
+    } else if (path == "/timer") {
+        nlohmann::json json_response = {
+                {"time_remaining", timer_seconds_.load()}
+        };
+        message.reply(status_codes::OK, json_response.dump(), U("application/json")).wait();
+    } else if (path.substr(0,13) == "/controlQuery") {
         auto query = message.headers()["query"];
         std::string response;
         if(query == "hasTeams") {
@@ -401,6 +432,12 @@ void HTTPHandler::handle_put(http_request message) {
         } catch(std::exception &e) {
             message.reply(status_codes::InternalError, U(e.what())).wait();
         }
+    } else if(message.relative_uri().path() == "/timer/start") {
+        start_timer();
+        message.reply(status_codes::OK).wait();
+    } else if(message.relative_uri().path() == "/timer/stop") {
+        stop_timer();
+        message.reply(status_codes::OK).wait();
     }
 }
 

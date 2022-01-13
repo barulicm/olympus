@@ -1,6 +1,7 @@
 #ifndef OLYMPUS_HANDLER_H
 #define OLYMPUS_HANDLER_H
 
+#include <thread>
 #include <cpprest/json.h>
 #include <cpprest/http_listener.h>
 #include <cpprest/uri.h>
@@ -42,6 +43,13 @@ private:
     JSExecutor _js;
 
     nlohmann::json _defaultCustomFields;
+
+    static constexpr int timer_match_length_ = 150;
+    std::atomic<int> timer_seconds_ = timer_match_length_;
+    std::atomic<bool> timer_running_ = false;
+    std::thread timer_thread_;
+    void start_timer();
+    void stop_timer();
 
     void handle_get(web::http::http_request message);
     void handle_put(web::http::http_request message);
