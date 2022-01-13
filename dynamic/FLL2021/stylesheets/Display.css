@@ -1,9 +1,16 @@
-#logo {
+.topImage {
     display: inline-block;
     margin: 10px;
-    margin-left: 5%;
     max-height: 100px;
     min-height: 50px;
+}
+
+#logo {
+    margin-left: 5%;
+}
+
+#gameLogo {
+    margin-left: 5%;
 }
 
 #timerDisplay {

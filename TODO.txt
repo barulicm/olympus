@@ -1,9 +1,4 @@
-- Timer
-- Add pit display? (Timer-only display)
 - Implement full state export/import for disaster recovery
-- Show event name on main display?
-- Show sponsors on main display?
-- Add "black out" edges to main display?
 - Refocus to FLL only?
   - Remove phases and matches, just need to track teams and their scores
   - Generate scorecards from "mission descriptions"
