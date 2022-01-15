@@ -41,7 +41,15 @@
     <div class="importExportGroup">
         <label class="groupHeading">Timer</label>
         <label class="display" id="timerDisplay">-:--</label>
+        <br/>
         <button id="timerButton" onclick="timerButtonClicked()">Start Timer</button>
+        <br/>
+        <label class="display" for="volumeRange">Volume:</label>
+        <input type="range" id="volumeRange" min="0" max="100" value="100" oninput="adjustVolumes()">
+        <audio id="startAudio" src="sounds/start.mp3"></audio>
+        <audio id="stopAudio" src="sounds/stop.mp3"></audio>
+        <audio id="endGameAudio" src="sounds/end-game.mp3"></audio>
+        <audio id="endAudio" src="sounds/end.mp3"></audio>
     </div>
 </div>
 

@@ -29,6 +29,7 @@
 .importExportGroup input[type="url"],
 .importExportGroup input[type="password"],
 .importExportGroup input[type="file"],
+.importExportGroup input[type="range"],
 .importExportGroup textarea,
 .importExportGroup select,
 .importExportGroup button,

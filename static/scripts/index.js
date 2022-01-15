@@ -226,6 +226,7 @@ function timerButtonClicked() {
         }
         xhr.send();
         timer_button.innerText = 'Stop Timer';
+        document.getElementById('startAudio').play();
     } else {
         let xhr = new XMLHttpRequest()
         xhr.open('PUT', 'timer/stop', true);
@@ -237,10 +238,14 @@ function timerButtonClicked() {
             }
         }
         xhr.send();
+        if(timer_button.innerText === 'Stop Timer') {
+            document.getElementById('stopAudio').play();
+        }
         timer_button.innerText = 'Start Timer';
     }
 }
 
+let prev_time_remaining = 0;
 function updateTimer() {
     let xhr = new XMLHttpRequest();
     xhr.open('GET','timer',true);
@@ -252,10 +257,24 @@ function updateTimer() {
             let timer_seconds = time_remaining % 60;
             document.getElementById('timerDisplay').innerText = timer_minutes.toString() + ":" + timer_seconds.toString().padStart(2,'0');
             let timer_button = document.getElementById('timerButton');
+            if(time_remaining === 30 && prev_time_remaining > 30) {
+                document.getElementById('endGameAudio').play();
+            } else if(time_remaining === 0 && prev_time_remaining > 0) {
+                document.getElementById('endAudio').play();
+            }
             if(time_remaining === 0 && timer_button.innerText === 'Stop Timer') {
                 timer_button.innerText = 'Reset Timer';
             }
+            prev_time_remaining = time_remaining;
         }
     }
     xhr.send();
+}
+
+function adjustVolumes(){
+    let volume = document.getElementById('volumeRange').value / 100.0;
+    document.getElementById('startAudio').volume = volume;
+    document.getElementById('stopAudio').volume = volume;
+    document.getElementById('endGameAudio').volume = volume;
+    document.getElementById('endAudio').volume = volume;
 }
