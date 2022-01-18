@@ -1,7 +1,5 @@
+#include <filesystem>
 #include <set>
-#include <boost/filesystem/path.hpp>
-#include <boost/filesystem.hpp>
-#include <boost/foreach.hpp>
 #include "HTTPHandler.h"
 
 using namespace std;
@@ -203,14 +201,10 @@ void HTTPHandler::handle_get(http_request message) {
     } else if(path == "/pages/dynamic") {
         auto j = json::array();
 
-        boost::filesystem::path targetDir("./resources/dynamic/"+ competitionName);
-
-        boost::filesystem::recursive_directory_iterator iter(targetDir), eod;
-
-        BOOST_FOREACH(boost::filesystem::path const& i, make_pair(iter, eod)){
-            if (is_regular_file(i) && i.extension().string() == ".html"){
-                auto filename = i.filename().string();
-                j.push_back(filename.substr(0,filename.size()-5));
+        std::filesystem::path target_dir{"resources/dynamic/" + competitionName};
+        for(const auto& dir_entry : std::filesystem::recursive_directory_iterator(target_dir)) {
+            if(dir_entry.is_regular_file() && dir_entry.path().extension() == ".html") {
+                j.push_back(dir_entry.path().stem().string());
             }
         }
 

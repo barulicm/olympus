@@ -3,7 +3,6 @@ project(Olympus)
 
 set(CMAKE_CXX_STANDARD 20)
 
-find_package(Boost REQUIRED COMPONENTS system filesystem)
 find_package(cpprestsdk REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_package(Threads REQUIRED)
@@ -20,8 +19,6 @@ add_executable(Olympus
     JSExecutor.cpp
 )
 target_link_libraries(Olympus
-    Boost::boost
-    Boost::filesystem
     cpprestsdk::cpprest
     OpenSSL::SSL
     Threads::Threads

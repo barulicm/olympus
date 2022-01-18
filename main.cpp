@@ -1,5 +1,5 @@
 #include <iostream>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include "HTTPHandler.h"
 
 using namespace std;
@@ -8,13 +8,11 @@ using namespace http;
 using namespace utility;
 using namespace http::experimental::listener;
 
-vector<string> getDirectories(string root) {
-    using namespace boost::filesystem;
-    path p{root};
-    vector<string> directories;
-    for(directory_iterator itr{p}; itr != directory_iterator{}; itr++) {
-        if(is_directory(itr->path())) {
-            directories.push_back(itr->path().leaf().string());
+std::vector<std::string> getDirectories(const std::string& root) {
+    std::vector<std::string> directories;
+    for(const auto& dir_entry : std::filesystem::directory_iterator(std::filesystem::path(root))) {
+        if(dir_entry.is_directory()) {
+            directories.push_back(dir_entry.path().filename().string());
         }
     }
     return directories;
@@ -22,8 +20,8 @@ vector<string> getDirectories(string root) {
 
 int main(int argc, char *argv[]) {
 
-    auto url = U("http://127.0.0.1:8080");
-//    auto url = U("http://192.168.1.20:8080");
+//    auto url = U("http://127.0.0.1:8080");
+    auto url = U("http://0.0.0.0:8080"); // listens on all interfaces on Linux
     uri_builder uri{url};
     auto address = uri.to_uri().to_string();
 
