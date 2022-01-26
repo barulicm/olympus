@@ -3,9 +3,7 @@
 
 #include <string>
 #include <vector>
-#include "../json.hpp"
-
-using json = nlohmann::json;
+#include "json.hpp"
 
 class Team {
 public:
@@ -20,7 +18,7 @@ public:
 
     nlohmann::json customFields;
 
-    json toJSON() const;
+    nlohmann::json toJSON() const;
 
 };
 

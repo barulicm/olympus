@@ -3,7 +3,7 @@
 
 #include <vector>
 #include "Team.h"
-#include "../json.hpp"
+#include "json.hpp"
 
 struct Match {
 

@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <string>
-#include "../json.hpp"
+#include "json.hpp"
 
 struct Ranking {
     Ranking(int rank = 0, const std::string &teamNumber = "") {

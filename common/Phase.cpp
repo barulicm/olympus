@@ -1,10 +1,10 @@
 #include "Phase.h"
 
-json Phase::toJSON() const {
-    json j {
+nlohmann::json Phase::toJSON() const {
+    nlohmann::json j {
             {"name", name}
     };
-    j["matches"] = json::array();
+    j["matches"] = nlohmann::json::array();
     int matchNumber = 1;
     for(const auto &match : matches) {
         auto matchJSON = match.toJSON();

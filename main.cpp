@@ -1,12 +1,10 @@
 #include <iostream>
 #include <filesystem>
 #include "HTTPHandler.h"
-
-using namespace std;
-using namespace web;
-using namespace http;
-using namespace utility;
-using namespace http::experimental::listener;
+#include "RequestHandler.h"
+#include "request_handlers/AllRequestHandlers.h"
+#include "common/Session.h"
+#include "JSExecutor.h"
 
 std::vector<std::string> getDirectories(const std::string& root) {
     std::vector<std::string> directories;
@@ -18,47 +16,95 @@ std::vector<std::string> getDirectories(const std::string& root) {
     return directories;
 }
 
-int main(int argc, char *argv[]) {
-
-//    auto url = U("http://127.0.0.1:8080");
-    auto url = U("http://0.0.0.0:8080"); // listens on all interfaces on Linux
-    uri_builder uri{url};
-    auto address = uri.to_uri().to_string();
-
-    std::unique_ptr<HTTPHandler> httpHandler;
-
-    cout << "New session? [(y)/n]:\n";
+void InitializeSession(Session& session) {
+    std::cout << "New session? [(y)/n]:\n";
     auto newSessionSelection = '\0';
-    cin >> newSessionSelection;
+    std::cin >> newSessionSelection;
     if(newSessionSelection == 'y') {
-        cout << "Choose a competition:\n";
+        std::cout << "Choose a competition:\n";
         auto competitions = getDirectories("resources/dynamic");
         auto i = 0;
         for(const auto &competition : competitions) {
-            cout << i << " - " << competition << "\n";
+            std::cout << i << " - " << competition << "\n";
             i++;
         }
         size_t competitionIndexIn;
-        cin >> competitionIndexIn;
-        competitionIndexIn = min(competitionIndexIn, competitions.size());
-        httpHandler = HTTPHandler::fromUrlAndCompetitionName(address, competitions[competitionIndexIn]);
+        std::cin >> competitionIndexIn;
+        competitionIndexIn = std::min(competitionIndexIn, competitions.size());
+        session._competition_name = competitions[competitionIndexIn];
     } else {
-        cout << "Please provide a session file to load:\n";
+        std::cout << "Please provide a session file to load:\n";
         std::string sessionFilePath;
-        cin >> sessionFilePath;
-        httpHandler = HTTPHandler::fromUrlAndSavedSession(address, sessionFilePath);
+        std::cin >> sessionFilePath;
+//        httpHandler.loadSession(sessionFilePath);
+    }
+}
+
+nlohmann::json loadDefaultCustomFields(JSExecutor& javascript_executor) {
+    try {
+        return javascript_executor.callFunction("DefaultCustomFields",{});
+    } catch (std::exception &e) {
+        std::cerr << "Error loading default custom fields:" << std::endl;
+        std::cerr << e.what() << std::endl;
+        return {};
+    }
+}
+
+void loadFunctionsFromJS(JSExecutor& javascript_executor, const std::string& competitionName, const std::string &scriptName) {
+    std::ifstream fileIn{"resources/dynamic/" + competitionName + "/scripts/" + scriptName};
+    std::string fileContents{std::istreambuf_iterator<char>{fileIn}, std::istreambuf_iterator<char>{}};
+    javascript_executor.loadFunctionsFromString(fileContents);
+}
+
+void LoadAllCompetitionFunctions(JSExecutor& javascript_executor, const std::string& competitionName) {
+    loadFunctionsFromJS(javascript_executor, competitionName, "CompareTeams.js");
+    loadFunctionsFromJS(javascript_executor, competitionName, "GetTeamScore.js");
+    loadFunctionsFromJS(javascript_executor, competitionName, "SelectNextPhase.js");
+    loadFunctionsFromJS(javascript_executor, competitionName, "DefaultCustomFields.js");
+}
+
+int main(int argc, char *argv[]) {
+//    auto url = U("http://127.0.0.1:8080");
+    const auto url = U("http://0.0.0.0:8080"); // listens on all interfaces on Linux
+    web::uri_builder uri{url};
+    const auto address = uri.to_uri().to_string();
+
+    Session session;
+    InitializeSession(session);
+
+    JSExecutor javascript_executor;
+    LoadAllCompetitionFunctions(javascript_executor, session._competition_name);
+    nlohmann::json defaultCustomTeamFields = loadDefaultCustomFields(javascript_executor);
+
+    HTTPHandler httpHandler;
+    httpHandler.setUrl(address);
+
+    std::vector<std::unique_ptr<RequestHandler>> requestHandlers;
+    requestHandlers.push_back(std::make_unique<TeamHandler>(session, defaultCustomTeamFields));
+    requestHandlers.push_back(std::make_unique<TimerHandler>());
+    requestHandlers.push_back(std::make_unique<ScoresHandler>(session, javascript_executor));
+    requestHandlers.push_back(std::make_unique<ScheduleHandler>(session, javascript_executor));
+    requestHandlers.push_back(std::make_unique<ResultsHandler>(session));
+    requestHandlers.push_back(std::make_unique<ControlQueryHandler>(session));
+    requestHandlers.push_back(std::make_unique<DynamicResourceHandler>(session._competition_name));
+    requestHandlers.push_back(std::make_unique<StaticResourceHandler>());
+
+    for(auto& handler : requestHandlers) {
+        for(const auto& details : handler->GetHandlers()) {
+            httpHandler.registerRequestHandler(details);
+        }
     }
 
-    httpHandler->open().wait();
+    httpHandler.open().wait();
 
-    cout << "Listening for requests at: " << address << endl;
-    cout << "Press ENTER to exit." << endl;
+    std::cout << "Listening for requests at: " << address << "\n";
+    std::cout << "Press ENTER to exit.\n";
 
-    cin.ignore();
-    string line;
-    getline(cin, line);
+    std::cin.ignore();
+    std::string line;
+    std::getline(std::cin, line);
 
-    httpHandler->close().wait();
+    httpHandler.close().wait();
 
     return 0;
 }

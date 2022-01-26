@@ -4,7 +4,7 @@
 #include <vector>
 #include <set>
 #include "Match.h"
-#include "../json.hpp"
+#include "json.hpp"
 
 struct Phase {
     std::vector<Match> matches;

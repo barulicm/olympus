@@ -6,16 +6,16 @@ Team::Team() {
     customFields = nlohmann::json();
 }
 
-json Team::toJSON() const {
-    json j = {
+nlohmann::json Team::toJSON() const {
+    nlohmann::json j = {
             {"number",number},
             {"name",name},
             {"rank",rank},
             {"displayScore",displayScore}
     };
-    j["scores"] = json::array();
+    j["scores"] = nlohmann::json::array();
     for(const auto &phase : scores) {
-        auto phase_scores = json::array();
+        auto phase_scores = nlohmann::json::array();
         copy(phase.begin(), phase.end(), back_inserter(phase_scores));
         j["scores"].push_back(phase_scores);
     }
