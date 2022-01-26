@@ -24,13 +24,13 @@ void ControlQueryHandler::Callback(const web::http::http_request &request) {
     auto query = query_header_iter->second;
     std::string response;
     if(query == "hasTeams") {
-        response = ( !session_._teams.empty() ? "true" : "false");
+        response = (!session_.teams.empty() ? "true" : "false");
     } else if(query == "hasSchedule") {
-        response = ( !session_._schedule.phases.empty() ? "true" : "false");
+        response = (!session_.schedule.phases.empty() ? "true" : "false");
     } else if(query == "hasNextMatch") {
-        response = ( !session_._schedule.phases.empty() && (session_._schedule.currentMatch < (session_._schedule.getCurrentPhase().matches.size()-1)) ? "true" : "false");
+        response = (!session_.schedule.phases.empty() && (session_.schedule.current_match < (session_.schedule.GetCurrentPhase().matches_.size() - 1)) ? "true" : "false");
     } else if(query == "hasNextPhase") {
-        response = ( session_._schedule.currentPhase < (session_._schedule.phases.size()-1) ? "true" : "false");
+        response = (session_.schedule.current_phase < (session_.schedule.phases.size() - 1) ? "true" : "false");
     }
     request.reply(web::http::status_codes::OK, response, U("text/plain")).wait();
 }

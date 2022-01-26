@@ -17,6 +17,6 @@ std::vector<RequestHandlerDetails> ResultsHandler::GetHandlers() {
 }
 
 void ResultsHandler::Callback(const web::http::http_request &request) {
-    auto resultsJson = session_._results.toJSON();
+    auto resultsJson = session_.results.ToJson();
     request.reply(web::http::status_codes::OK, resultsJson.dump(), U("application/json")).wait();
 }

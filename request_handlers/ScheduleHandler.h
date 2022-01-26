@@ -2,7 +2,7 @@
 #define OLYMPUS_SCHEDULEHANDLER_H
 
 #include "request_handler.h"
-#include "common/Session.h"
+#include "common/session.h"
 #include "javascript_executor.h"
 
 class ScheduleHandler : public RequestHandler {

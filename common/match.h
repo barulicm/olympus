@@ -2,18 +2,17 @@
 #define OLYMPUS_MATCH_H
 
 #include <vector>
-#include "Team.h"
+#include "team.h"
 #include <nlohmann/json.hpp>
 
 struct Match {
 
-    std::vector<std::string> team_numbers;
+    std::vector<std::string> team_numbers_;
 
     // TODO colors?
 
-    nlohmann::json toJSON() const;
+    [[nodiscard]] nlohmann::json ToJson() const;
 
 };
-
 
 #endif //OLYMPUS_MATCH_H

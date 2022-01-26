@@ -3,7 +3,7 @@
 #include "http_listener.h"
 #include "request_handler.h"
 #include "request_handlers/AllRequestHandlers.h"
-#include "common/Session.h"
+#include "common/session.h"
 #include "javascript_executor.h"
 
 std::vector<std::string> getDirectories(const std::string& root) {
@@ -31,7 +31,7 @@ void InitializeSession(Session& session) {
         size_t competitionIndexIn;
         std::cin >> competitionIndexIn;
         competitionIndexIn = std::min(competitionIndexIn, competitions.size());
-        session._competition_name = competitions[competitionIndexIn];
+        session.competition_name = competitions[competitionIndexIn];
     } else {
         std::cout << "Please provide a session file to load:\n";
         std::string sessionFilePath;
@@ -73,7 +73,7 @@ int main(int argc, char *argv[]) {
     InitializeSession(session);
 
     JavascriptExecutor javascript_executor;
-    LoadAllCompetitionFunctions(javascript_executor, session._competition_name);
+    LoadAllCompetitionFunctions(javascript_executor, session.competition_name);
     nlohmann::json defaultCustomTeamFields = loadDefaultCustomFields(javascript_executor);
 
     HttpListener httpHandler;
@@ -86,7 +86,7 @@ int main(int argc, char *argv[]) {
     requestHandlers.push_back(std::make_unique<ScheduleHandler>(session, javascript_executor));
     requestHandlers.push_back(std::make_unique<ResultsHandler>(session));
     requestHandlers.push_back(std::make_unique<ControlQueryHandler>(session));
-    requestHandlers.push_back(std::make_unique<DynamicResourceHandler>(session._competition_name));
+    requestHandlers.push_back(std::make_unique<DynamicResourceHandler>(session.competition_name));
     requestHandlers.push_back(std::make_unique<StaticResourceHandler>());
 
     for(auto& handler : requestHandlers) {

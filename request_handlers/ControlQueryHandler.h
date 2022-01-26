@@ -2,7 +2,7 @@
 #define OLYMPUS_CONTROLQUERYHANDLER_H
 
 #include "request_handler.h"
-#include "common/Session.h"
+#include "common/session.h"
 
 class ControlQueryHandler : public RequestHandler {
 public:

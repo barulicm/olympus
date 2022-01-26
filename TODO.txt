@@ -4,6 +4,3 @@
   - Generate scorecards from "mission descriptions"
   - Remove static vs dynamic pages, since scorecard would be only thing changing
   - Make number of rounds runtime configurable?
-
-- Refactor a "Session" object that holds the session state (team / schedule / setup state / config values?)
-

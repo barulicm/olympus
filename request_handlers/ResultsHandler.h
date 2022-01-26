@@ -2,7 +2,7 @@
 #define OLYMPUS_RESULTSHANDLER_H
 
 #include "request_handler.h"
-#include "common/Session.h"
+#include "common/session.h"
 
 class ResultsHandler : public RequestHandler {
 public:

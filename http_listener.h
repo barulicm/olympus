@@ -11,7 +11,7 @@
 #include <cpprest/producerconsumerstream.h>
 #include "javascript_executor.h"
 #include "request_handler_details.h"
-#include "common/Session.h"
+#include "common/session.h"
 
 class HttpListener {
 public:

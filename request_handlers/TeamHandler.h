@@ -2,7 +2,7 @@
 #define OLYMPUS_TEAMHANDLER_H
 
 #include "request_handler.h"
-#include "common/Session.h"
+#include "common/session.h"
 
 class TeamHandler : public RequestHandler {
 public:

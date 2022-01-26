@@ -23,15 +23,15 @@ void ScoresHandler::Callback(web::http::http_request request) {
             try {
                 nlohmann::json j = nlohmann::json::parse(body);
 
-                std::string teamNumber = j["teamNumber"];
+                std::string teamNumber = j["team_number"];
                 int score = j["score"];
 
-                auto team_iter = find_if(session_._teams.begin(),session_._teams.end(),
+                auto team_iter = find_if(session_.teams.begin(), session_.teams.end(),
                                          [&teamNumber](const Team &t) {
-                                             return t.number == teamNumber;
+                                             return t.number_ == teamNumber;
                                          });
-                if(team_iter != session_._teams.end()) {
-                    team_iter->scores[session_._schedule.currentPhase].push_back(score);
+                if(team_iter != session_.teams.end()) {
+                    team_iter->scores_[session_.schedule.current_phase].push_back(score);
 
                     UpdateRanks();
 
@@ -67,36 +67,36 @@ void ScoresHandler::Callback(web::http::http_request request) {
 }
 
 void ScoresHandler::UpdateRanks() {
-    std::for_each(session_._teams.begin(), session_._teams.end(),
-             [this](Team &team){
-                 nlohmann::json response = js_.callFunction("GetTeamScore",{team.toJSON(),session_._schedule.currentPhase});
-                 team.displayScore = response["score"];
+    std::for_each(session_.teams.begin(), session_.teams.end(),
+                  [this](Team &team){
+                 nlohmann::json response = js_.callFunction("GetTeamScore",{team.ToJson(), session_.schedule.current_phase});
+                 team.display_score_ = response["score"];
              });
-    std::stable_sort(session_._teams.begin(), session_._teams.end(),
-                [this](const Team &a, const Team &b){
-                    nlohmann::json response = js_.callFunction("CompareTeams",{a.toJSON(),b.toJSON()});
+    std::stable_sort(session_.teams.begin(), session_.teams.end(),
+                     [this](const Team &a, const Team &b){
+                    nlohmann::json response = js_.callFunction("CompareTeams",{a.ToJson(), b.ToJson()});
                     return response["result"];
                 });
     int rank = 1;
-    session_._teams[0].rank=rank;
-    for(size_t i = 1; i < session_._teams.size(); i++) {
-        if(js_.callFunction("CompareTeams",{session_._teams[i-1].toJSON(),session_._teams[i].toJSON()})["result"]) {
+    session_.teams[0].rank_=rank;
+    for(size_t i = 1; i < session_.teams.size(); i++) {
+        if(js_.callFunction("CompareTeams",{session_.teams[i - 1].ToJson(), session_.teams[i].ToJson()})["result"]) {
             rank++;
         }
-        session_._teams[i].rank = rank;
+        session_.teams[i].rank_ = rank;
     }
 }
 
 void ScoresHandler::UpdateResults() {
-    auto &currentPhaseResults = session_._results.phaseResults[session_._schedule.currentPhase];
+    auto &currentPhaseResults = session_.results.phase_results[session_.schedule.current_phase];
 
     currentPhaseResults.rankings.clear();
 
-    auto teamNumbers = session_._schedule.getCurrentPhase().getInvolvedTeamNumbers();
+    auto teamNumbers = session_.schedule.GetCurrentPhase().GetInvolvedTeamNumbers();
 
     auto ranking_from_team_number = [this](const auto& team_number){
         const auto& team = GetTeamByNumber(team_number);
-        return Ranking{team.rank, team.number};
+        return Ranking{team.rank_, team.number_};
     };
 
     std::transform(teamNumbers.begin(),
@@ -106,10 +106,10 @@ void ScoresHandler::UpdateResults() {
 }
 
 Team &ScoresHandler::GetTeamByNumber(const std::string &number) {
-    const auto found_iter = std::find_if(session_._teams.begin(), session_._teams.end(), [&number](const Team& team){
-        return team.number == number;
+    const auto found_iter = std::find_if(session_.teams.begin(), session_.teams.end(), [&number](const Team& team){
+        return team.number_ == number;
     });
-    if(found_iter == session_._teams.end()) {
+    if(found_iter == session_.teams.end()) {
         throw std::invalid_argument("No team found with number: " + number);
     }
     return *found_iter;

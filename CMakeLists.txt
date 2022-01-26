@@ -15,11 +15,11 @@ add_executable(Olympus
     main.cpp
     mime_types.cpp
     http_listener.cpp
-    common/Schedule.cpp
-    common/Match.cpp
-    common/Team.cpp
-    common/Phase.cpp
-    common/Results.cpp
+    common/schedule.cpp
+    common/match.cpp
+    common/team.cpp
+    common/phase.cpp
+    common/results.cpp
     request_handlers/ControlQueryHandler.cpp
     request_handlers/DynamicResourceHandler.cpp
     request_handlers/ResultsHandler.cpp
