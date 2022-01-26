@@ -3,6 +3,9 @@ project(Olympus)
 
 set(CMAKE_CXX_STANDARD 20)
 
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(Duktape REQUIRED IMPORTED_TARGET duktape)
+
 find_package(cpprestsdk REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_package(Threads REQUIRED)
@@ -10,14 +13,13 @@ find_package(nlohmann_json REQUIRED)
 
 add_executable(Olympus
     main.cpp
-    MimeTypes.cpp
-    HTTPHandler.cpp
+    mime_types.cpp
+    http_listener.cpp
     common/Schedule.cpp
     common/Match.cpp
     common/Team.cpp
     common/Phase.cpp
     common/Results.cpp
-    duktape/duktape.c
     request_handlers/ControlQueryHandler.cpp
     request_handlers/DynamicResourceHandler.cpp
     request_handlers/ResultsHandler.cpp
@@ -26,7 +28,7 @@ add_executable(Olympus
     request_handlers/StaticResourceHandler.cpp
     request_handlers/TeamHandler.cpp
     request_handlers/TimerHandler.cpp
-    JSExecutor.cpp
+    javascript_executor.cpp
 )
 target_include_directories(Olympus PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(Olympus
@@ -34,6 +36,7 @@ target_link_libraries(Olympus
     OpenSSL::SSL
     Threads::Threads
     nlohmann_json::nlohmann_json
+    PkgConfig::Duktape
 )
 
 file(COPY static DESTINATION resources)

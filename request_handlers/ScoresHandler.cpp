@@ -1,6 +1,6 @@
 #include "ScoresHandler.h"
 
-ScoresHandler::ScoresHandler(Session &session, JSExecutor& js)
+ScoresHandler::ScoresHandler(Session &session, JavascriptExecutor& js)
 : session_(session),
   js_(js)
 {

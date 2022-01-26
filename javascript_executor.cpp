@@ -1,18 +1,15 @@
-#include <fstream>
 #include <iostream>
-#include "JSExecutor.h"
-
-using namespace std;
+#include "javascript_executor.h"
 
 static void js_fatal_error_handler(void *, const char *msg) {
     throw std::runtime_error(msg);
 }
 
-JSExecutor::JSExecutor() {
+JavascriptExecutor::JavascriptExecutor() {
     _context = duk_create_heap(nullptr, nullptr, nullptr, nullptr, js_fatal_error_handler);
 }
 
-JSExecutor::~JSExecutor() {
+JavascriptExecutor::~JavascriptExecutor() {
     duk_destroy_heap(_context);
 }
 
@@ -20,14 +17,14 @@ JSExecutor::~JSExecutor() {
  * https://stackoverflow.com/questions/36446481/in-duktape-how-to-convert-a-js-source-file-content-to-bytecode
  */
 
-void JSExecutor::loadFunctionsFromString(string source) {
+void JavascriptExecutor::loadFunctionsFromString(std::string source) {
     duk_compile_string(_context,0,source.data());
     duk_dump_function(_context);
     duk_load_function(_context);
     duk_call(_context,0);
 }
 
-nlohmann::json JSExecutor::callFunction(std::string functionName, std::vector<nlohmann::json> arguments) {
+nlohmann::json JavascriptExecutor::callFunction(std::string functionName, std::vector<nlohmann::json> arguments) {
     duk_push_global_object(_context);
     duk_get_prop_string(_context,-1,functionName.data());
     duk_require_function(_context,-1);

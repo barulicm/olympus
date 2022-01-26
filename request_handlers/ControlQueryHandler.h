@@ -1,7 +1,7 @@
 #ifndef OLYMPUS_CONTROLQUERYHANDLER_H
 #define OLYMPUS_CONTROLQUERYHANDLER_H
 
-#include "RequestHandler.h"
+#include "request_handler.h"
 #include "common/Session.h"
 
 class ControlQueryHandler : public RequestHandler {

@@ -9,11 +9,11 @@
 #include <cpprest/filestream.h>
 #include <cpprest/containerstream.h>
 #include <cpprest/producerconsumerstream.h>
-#include "JSExecutor.h"
-#include "RequestHandlerDetails.h"
+#include "javascript_executor.h"
+#include "request_handler_details.h"
 #include "common/Session.h"
 
-class HTTPHandler {
+class HttpListener {
 public:
     pplx::task<void> open() { return m_listener.open(); }
     pplx::task<void> close() { return m_listener.close(); }

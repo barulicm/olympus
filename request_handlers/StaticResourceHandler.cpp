@@ -1,6 +1,6 @@
 #include "StaticResourceHandler.h"
 #include <cpprest/filestream.h>
-#include "MimeTypes.h"
+#include "mime_types.h"
 
 std::vector<RequestHandlerDetails> StaticResourceHandler::GetHandlers() {
     return {

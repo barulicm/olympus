@@ -1,4 +1,4 @@
-#include "MimeTypes.h"
+#include "mime_types.h"
 
 #include <unordered_map>
 

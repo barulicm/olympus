@@ -2,7 +2,7 @@
 #define OLYMPUS_STATICRESOURCEHANDLER_H
 
 #include <filesystem>
-#include "RequestHandler.h"
+#include "request_handler.h"
 
 class StaticResourceHandler : public RequestHandler {
 public:

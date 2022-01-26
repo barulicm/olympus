@@ -2,7 +2,7 @@
 #define OLYMPUS_DYNAMICRESOURCEHANDLER_H
 
 #include <filesystem>
-#include "RequestHandler.h"
+#include "request_handler.h"
 
 class DynamicResourceHandler : public RequestHandler {
 public:

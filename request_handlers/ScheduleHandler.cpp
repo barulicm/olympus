@@ -1,6 +1,6 @@
 #include "ScheduleHandler.h"
 
-ScheduleHandler::ScheduleHandler(Session &session, JSExecutor &javascript_executor)
+ScheduleHandler::ScheduleHandler(Session &session, JavascriptExecutor &javascript_executor)
     : session_(session),
       js_(javascript_executor)
 {

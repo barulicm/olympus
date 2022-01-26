@@ -1,10 +1,10 @@
 #include <iostream>
 #include <filesystem>
-#include "HTTPHandler.h"
-#include "RequestHandler.h"
+#include "http_listener.h"
+#include "request_handler.h"
 #include "request_handlers/AllRequestHandlers.h"
 #include "common/Session.h"
-#include "JSExecutor.h"
+#include "javascript_executor.h"
 
 std::vector<std::string> getDirectories(const std::string& root) {
     std::vector<std::string> directories;
@@ -40,7 +40,7 @@ void InitializeSession(Session& session) {
     }
 }
 
-nlohmann::json loadDefaultCustomFields(JSExecutor& javascript_executor) {
+nlohmann::json loadDefaultCustomFields(JavascriptExecutor& javascript_executor) {
     try {
         return javascript_executor.callFunction("DefaultCustomFields",{});
     } catch (std::exception &e) {
@@ -50,13 +50,13 @@ nlohmann::json loadDefaultCustomFields(JSExecutor& javascript_executor) {
     }
 }
 
-void loadFunctionsFromJS(JSExecutor& javascript_executor, const std::string& competitionName, const std::string &scriptName) {
+void loadFunctionsFromJS(JavascriptExecutor& javascript_executor, const std::string& competitionName, const std::string &scriptName) {
     std::ifstream fileIn{"resources/dynamic/" + competitionName + "/scripts/" + scriptName};
     std::string fileContents{std::istreambuf_iterator<char>{fileIn}, std::istreambuf_iterator<char>{}};
     javascript_executor.loadFunctionsFromString(fileContents);
 }
 
-void LoadAllCompetitionFunctions(JSExecutor& javascript_executor, const std::string& competitionName) {
+void LoadAllCompetitionFunctions(JavascriptExecutor& javascript_executor, const std::string& competitionName) {
     loadFunctionsFromJS(javascript_executor, competitionName, "CompareTeams.js");
     loadFunctionsFromJS(javascript_executor, competitionName, "GetTeamScore.js");
     loadFunctionsFromJS(javascript_executor, competitionName, "SelectNextPhase.js");
@@ -72,11 +72,11 @@ int main(int argc, char *argv[]) {
     Session session;
     InitializeSession(session);
 
-    JSExecutor javascript_executor;
+    JavascriptExecutor javascript_executor;
     LoadAllCompetitionFunctions(javascript_executor, session._competition_name);
     nlohmann::json defaultCustomTeamFields = loadDefaultCustomFields(javascript_executor);
 
-    HTTPHandler httpHandler;
+    HttpListener httpHandler;
     httpHandler.setUrl(address);
 
     std::vector<std::unique_ptr<RequestHandler>> requestHandlers;

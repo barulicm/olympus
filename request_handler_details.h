@@ -1,5 +1,5 @@
-#ifndef OLYMPUS_REQUESTHANDLERDETAILS_H
-#define OLYMPUS_REQUESTHANDLERDETAILS_H
+#ifndef OLYMPUS_REQUEST_HANDLER_DETAILS_H
+#define OLYMPUS_REQUEST_HANDLER_DETAILS_H
 
 #include <functional>
 #include <cpprest/http_msg.h>
@@ -10,4 +10,4 @@ struct RequestHandlerDetails {
     std::function<void(const web::http::http_request&)> callback;
 };
 
-#endif //OLYMPUS_REQUESTHANDLERDETAILS_H
+#endif //OLYMPUS_REQUEST_HANDLER_DETAILS_H

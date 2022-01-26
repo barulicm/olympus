@@ -1,19 +1,19 @@
 #ifndef OLYMPUS_SCORESHANDLER_H
 #define OLYMPUS_SCORESHANDLER_H
 
-#include "RequestHandler.h"
+#include "request_handler.h"
 #include "common/Session.h"
-#include "JSExecutor.h"
+#include "javascript_executor.h"
 
 class ScoresHandler : public RequestHandler {
 public:
-    explicit ScoresHandler(Session& session, JSExecutor& js);
+    explicit ScoresHandler(Session& session, JavascriptExecutor& js);
 
     std::vector<RequestHandlerDetails> GetHandlers() override;
 
 private:
     Session& session_;
-    JSExecutor& js_;
+    JavascriptExecutor& js_;
     void Callback(web::http::http_request request);
     void UpdateRanks();
     void UpdateResults();

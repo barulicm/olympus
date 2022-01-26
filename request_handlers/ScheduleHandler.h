@@ -1,19 +1,19 @@
 #ifndef OLYMPUS_SCHEDULEHANDLER_H
 #define OLYMPUS_SCHEDULEHANDLER_H
 
-#include "RequestHandler.h"
+#include "request_handler.h"
 #include "common/Session.h"
-#include "JSExecutor.h"
+#include "javascript_executor.h"
 
 class ScheduleHandler : public RequestHandler {
 public:
-    ScheduleHandler(Session& session, JSExecutor& javascript_executor);
+    ScheduleHandler(Session& session, JavascriptExecutor& javascript_executor);
 
     std::vector<RequestHandlerDetails> GetHandlers() override;
 
 private:
     Session& session_;
-    JSExecutor& js_;
+    JavascriptExecutor& js_;
     void CallbackGet(const web::http::http_request& request);
     void CallbackPut(web::http::http_request request);
     void FillNextPhase();

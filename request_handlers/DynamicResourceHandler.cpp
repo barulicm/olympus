@@ -1,6 +1,6 @@
 #include <cpprest/filestream.h>
 #include "DynamicResourceHandler.h"
-#include "MimeTypes.h"
+#include "mime_types.h"
 #include <nlohmann/json.hpp>
 
 DynamicResourceHandler::DynamicResourceHandler(const std::string &competition_name)

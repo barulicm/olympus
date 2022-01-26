@@ -1,15 +1,15 @@
-#ifndef OLYMPUS_JSEXECUTOR_H
-#define OLYMPUS_JSEXECUTOR_H
+#ifndef OLYMPUS_JAVASCRIPT_EXECUTOR_H
+#define OLYMPUS_JAVASCRIPT_EXECUTOR_H
 
 #include <string>
-#include "duktape/duktape.h"
+#include <duktape.h>
 #include <nlohmann/json.hpp>
 
-class JSExecutor {
+class JavascriptExecutor {
 public:
-    JSExecutor();
+    JavascriptExecutor();
 
-    ~JSExecutor();
+    ~JavascriptExecutor();
 
     void loadFunctionsFromString(std::string source);
 
@@ -20,5 +20,4 @@ private:
     duk_context *_context;
 };
 
-
-#endif //OLYMPUS_JSEXECUTOR_H
+#endif //OLYMPUS_JAVASCRIPT_EXECUTOR_H

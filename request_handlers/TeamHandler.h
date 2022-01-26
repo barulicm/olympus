@@ -1,7 +1,7 @@
 #ifndef OLYMPUS_TEAMHANDLER_H
 #define OLYMPUS_TEAMHANDLER_H
 
-#include "RequestHandler.h"
+#include "request_handler.h"
 #include "common/Session.h"
 
 class TeamHandler : public RequestHandler {
