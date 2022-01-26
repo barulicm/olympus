@@ -52,7 +52,7 @@ void ScheduleHandler::CallbackPut(web::http::http_request request) {
             try {
                 session_._schedule.phases.clear();
 
-                json j = json::parse(body);
+                nlohmann::json j = nlohmann::json::parse(body);
 
                 auto phases = j["phases"];
 
@@ -129,7 +129,7 @@ void ScheduleHandler::FillNextPhase() {
         }
     }
 
-    json nextPhaseMap = json::array();
+    nlohmann::json nextPhaseMap = nlohmann::json::array();
 
     for (const auto &teamKey : nextPhaseTeamKeys) {
         nextPhaseMap.push_back({teamKey, ""});
@@ -137,7 +137,7 @@ void ScheduleHandler::FillNextPhase() {
 
     auto results = session_._results.toJSON();
 
-    auto teamsJson = json::array();
+    auto teamsJson = nlohmann::json::array();
     transform(session_._teams.begin(), session_._teams.end(), back_inserter(teamsJson),
               [](const auto &team) { return team.toJSON(); });
 

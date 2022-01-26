@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD 20)
 find_package(cpprestsdk REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_package(Threads REQUIRED)
+find_package(nlohmann_json REQUIRED)
 
 add_executable(Olympus
     main.cpp
@@ -32,6 +33,7 @@ target_link_libraries(Olympus
     cpprestsdk::cpprest
     OpenSSL::SSL
     Threads::Threads
+    nlohmann_json::nlohmann_json
 )
 
 file(COPY static DESTINATION resources)

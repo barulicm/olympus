@@ -27,7 +27,7 @@ void JSExecutor::loadFunctionsFromString(string source) {
     duk_call(_context,0);
 }
 
-json JSExecutor::callFunction(std::string functionName, std::vector<json> arguments) {
+nlohmann::json JSExecutor::callFunction(std::string functionName, std::vector<nlohmann::json> arguments) {
     duk_push_global_object(_context);
     duk_get_prop_string(_context,-1,functionName.data());
     duk_require_function(_context,-1);
@@ -38,7 +38,7 @@ json JSExecutor::callFunction(std::string functionName, std::vector<json> argume
     }
 
     duk_call(_context,static_cast<duk_idx_t>(arguments.size()));
-    json j = json::parse(duk_json_encode(_context,-1));
+    nlohmann::json j = nlohmann::json::parse(duk_json_encode(_context,-1));
 
     // pop return value and global object off duktape stack
     duk_pop_2(_context);

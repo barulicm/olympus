@@ -3,9 +3,7 @@
 
 #include <string>
 #include "duktape/duktape.h"
-#include "json.hpp"
-
-using json = nlohmann::json;
+#include <nlohmann/json.hpp>
 
 class JSExecutor {
 public:
@@ -15,7 +13,7 @@ public:
 
     void loadFunctionsFromString(std::string source);
 
-    json callFunction(std::string functionName, std::vector<json> arguments);
+    nlohmann::json callFunction(std::string functionName, std::vector<nlohmann::json> arguments);
 
 private:
 

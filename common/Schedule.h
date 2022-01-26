@@ -3,7 +3,7 @@
 
 #include <vector>
 #include "Phase.h"
-#include "json.hpp"
+#include <nlohmann/json.hpp>
 
 struct Schedule {
     std::vector<Phase> phases;

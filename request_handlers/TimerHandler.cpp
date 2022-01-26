@@ -1,5 +1,5 @@
 #include "TimerHandler.h"
-#include <json.hpp>
+#include <nlohmann/json.hpp>
 
 std::vector<RequestHandlerDetails> TimerHandler::GetHandlers() {
     return {{
