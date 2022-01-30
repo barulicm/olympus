@@ -104,6 +104,40 @@ function getCurrentMatchInfo() {
     }
 }
 
+function getShowTimer() {
+    let xhr = new XMLHttpRequest();
+    xhr.open('GET', 'config', true);
+    xhr.setRequestHeader('name', 'show_timer');
+    xhr.send();
+
+    xhr.onreadystatechange = ()=>{
+        if(xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                document.getElementById('showTimerCheckbox').checked = xhr.responseText === 'true';
+            } else {
+                alert('Request failed: ' + xhr.responseText);
+            }
+        }
+    }
+}
+
+function getRowsPerDisplay() {
+    let xhr = new XMLHttpRequest();
+    xhr.open('GET', 'config', true);
+    xhr.setRequestHeader('name', 'rows_on_display');
+    xhr.send();
+
+    xhr.onreadystatechange = ()=>{
+        if(xhr.readyState === 4) {
+            if(xhr.status === 200) {
+                document.getElementById('rowsPerDisplay').value = parseInt(xhr.responseText);
+            } else {
+                alert('Request failed: ' + xhr.responseText);
+            }
+        }
+    }
+}
+
 function onLoad() {
     queryHasTeams();
     queryHasSchedule();
@@ -111,6 +145,8 @@ function onLoad() {
     queryHasNextMatch();
     getDynamicPageList();
     getCurrentMatchInfo();
+    getShowTimer();
+    getRowsPerDisplay();
     setInterval(updateTimer, 100);
 }
 
@@ -158,7 +194,7 @@ function sendAddTeam(teamName, teamNumber, reload, async) {
                     location.reload();
                 }
             } else {
-                alert("Adding team " + teamNumber + " failed. Status code " + xhr.status);
+                alert("Adding team " + teamNumber + " failed. Status code " + xhr.status + '. ' + xhr.responseText);
             }
         }
     }
@@ -271,10 +307,41 @@ function updateTimer() {
     xhr.send();
 }
 
-function adjustVolumes(){
+function adjustVolumes() {
     let volume = document.getElementById('volumeRange').value / 100.0;
     document.getElementById('startAudio').volume = volume;
     document.getElementById('stopAudio').volume = volume;
     document.getElementById('endGameAudio').volume = volume;
     document.getElementById('endAudio').volume = volume;
+}
+
+function setShowTimer() {
+    let show_timer = document.getElementById('showTimerCheckbox').checked;
+    let xhr = new XMLHttpRequest();
+    xhr.open('PUT', 'config', true);
+    xhr.setRequestHeader('name', 'show_timer');
+    xhr.setRequestHeader('value', show_timer);
+    xhr.send();
+
+    xhr.onreadystatechange = ()=>{
+        if(xhr.readyState === 4 && xhr.status !== 200) {
+            alert('Request failed: ' + xhr.responseText);
+            document.getElementById('showTimerCheckbox').checked = !document.getElementById('showTimerCheckbox').checked;
+        }
+    }
+}
+
+function setRowsPerDisplay() {
+    let value = document.getElementById('rowsPerDisplay').value;
+    let xhr = new XMLHttpRequest();
+    xhr.open('PUT', 'config', true);
+    xhr.setRequestHeader('name', 'rows_on_display');
+    xhr.setRequestHeader('value', value);
+    xhr.send();
+
+    xhr.onreadystatechange = ()=>{
+        if(xhr.readyState === 4 && xhr.status !== 200) {
+            alert('Request failed: ' + xhr.responseText);
+        }
+    }
 }

@@ -20,6 +20,7 @@ add_executable(Olympus
     common/team.cpp
     common/phase.cpp
     common/results.cpp
+    request_handlers/config_handler.cpp
     request_handlers/control_query_handler.cpp
     request_handlers/dynamic_resource_handler.cpp
     request_handlers/results_handler.cpp

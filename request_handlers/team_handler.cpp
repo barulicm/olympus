@@ -64,12 +64,12 @@ void TeamHandler::CallbackPut(web::http::http_request request) {
                 newTeam.custom_fields_ = _defaultCustomFields;
                 newTeam.rank_ = 0;
                 newTeam.number_ = j["number"];
-                newTeam.name_ = j["name_"];
+                newTeam.name_ = j["name"];
                 session_.teams.push_back(newTeam);
                 std::string rep = U("Add team successful.");
                 request.reply(web::http::status_codes::OK, rep).wait();
-            } catch(...) {
-                std::string rep = U("Add team failed.");
+            } catch(const std::exception& e) {
+                std::string rep = U(std::string("Add team failed: ") + e.what());
                 request.reply(web::http::status_codes::InternalError, rep).wait();
             }
         }).wait();

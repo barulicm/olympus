@@ -116,7 +116,45 @@ function updateTimer() {
     xhr.send();
 }
 
+function getShowTimer() {
+    let xhr = new XMLHttpRequest();
+    xhr.open('GET', 'config', true);
+    xhr.setRequestHeader('name', 'show_timer');
+    xhr.send();
+    xhr.onreadystatechange = ()=>{
+        if(xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                if(xhr.responseText === 'false') {
+                    document.getElementById('timerDisplay').style.visibility = 'hidden';
+                } else {
+                    document.getElementById('timerDisplay').style.visibility = 'visible';
+                }
+            } else {
+                alert('Could not get timer config: ' + xhr.responseText);
+            }
+        }
+    }
+}
+
+function getTeamsPerPage() {
+    let xhr = new XMLHttpRequest();
+    xhr.open('GET', 'config', true);
+    xhr.setRequestHeader('name', 'rows_on_display');
+    xhr.send();
+    xhr.onreadystatechange = ()=>{
+        if(xhr.readyState === 4) {
+            if(xhr.status === 200) {
+                teams_per_page = parseInt(xhr.responseText);
+            } else {
+                alert('Could not get rows config: ' + xhr.responseText);
+            }
+        }
+    }
+}
+
 function onLoad() {
+    getShowTimer();
+    getTeamsPerPage();
     getInfo();
     setInterval(getInfo, 5000);
     updateTimer();

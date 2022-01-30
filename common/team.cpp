@@ -9,9 +9,9 @@ Team::Team() {
 nlohmann::json Team::ToJson() const {
     nlohmann::json j = {
             {"number",       number_},
-            {"name_",        name_},
-            {"rank_",        rank_},
-            {"display_score_", display_score_}
+            {"name",        name_},
+            {"rank",        rank_},
+            {"displayScore", display_score_}
     };
     j["scores"] = nlohmann::json::array();
     for(const auto &phase : scores_) {
@@ -19,6 +19,6 @@ nlohmann::json Team::ToJson() const {
         copy(phase.begin(), phase.end(), back_inserter(phase_scores));
         j["scores"].push_back(phase_scores);
     }
-    j["custom_fields_"] = custom_fields_;
+    j["customFields"] = custom_fields_;
     return j;
 }

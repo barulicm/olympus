@@ -5,12 +5,13 @@
 #include "team.h"
 #include "schedule.h"
 #include "results.h"
+#include "config.h"
 
 struct Session {
-    std::string competition_name;
     std::vector<Team> teams;
     Schedule schedule;
     TournamentResults results;
+    Config config;
 };
 
 #endif //OLYMPUS_SESSION_H

@@ -20,6 +20,7 @@ void ControlQueryHandler::Callback(const web::http::http_request &request) {
     const auto query_header_iter = request.headers().find("query");
     if(query_header_iter == request.headers().end()) {
         request.reply(web::http::status_codes::BadRequest, U("Missing required header: query"), U("text/plain")).wait();
+        return;
     }
     auto query = query_header_iter->second;
     std::string response;

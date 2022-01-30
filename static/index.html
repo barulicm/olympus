@@ -51,6 +51,14 @@
         <audio id="endGameAudio" src="sounds/end-game.mp3"></audio>
         <audio id="endAudio" src="sounds/end.mp3"></audio>
     </div>
+    <div class="importExportGroup">
+        <label class="groupHeading">Display</label>
+        <label for="showTimerCheckbox">Show timer:</label>
+        <input type="checkbox" id="showTimerCheckbox" oninput="setShowTimer()">
+        <br/>
+        <label for="rowsPerDisplay">Rows:</label>
+        <input type="number" id="rowsPerDisplay" min="1" oninput="setRowsPerDisplay()" style="width: 50px">
+    </div>
 </div>
 
 <div id="dynamicPageList">

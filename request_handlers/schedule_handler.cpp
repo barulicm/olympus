@@ -48,7 +48,7 @@ void ScheduleHandler::CallbackGet(const web::http::http_request &request) {
 
 void ScheduleHandler::CallbackPut(web::http::http_request request) {
     if(request.relative_uri().path() == "/schedule/load") {
-        request.extract_string().then([this,&request](utility::string_t body){
+        request.extract_string().then([this,&request](const utility::string_t& body){
             try {
                 session_.schedule.phases.clear();
 
@@ -58,7 +58,7 @@ void ScheduleHandler::CallbackPut(web::http::http_request request) {
 
                 for(const auto &phase : phases) {
                     session_.schedule.phases.emplace_back();
-                    session_.schedule.phases.back().name_ = phase["name_"];
+                    session_.schedule.phases.back().name_ = phase["name"];
                     auto matches = phase["matches"];
                     for(const auto &match : matches) {
                         session_.schedule.phases.back().matches_.emplace_back();
