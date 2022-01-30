@@ -1,5 +1,5 @@
-#ifndef OLYMPUS_SCORESHANDLER_H
-#define OLYMPUS_SCORESHANDLER_H
+#ifndef OLYMPUS_SCORES_HANDLER_H
+#define OLYMPUS_SCORES_HANDLER_H
 
 #include "request_handler.h"
 #include "common/session.h"
@@ -21,4 +21,4 @@ private:
 };
 
 
-#endif //OLYMPUS_SCORESHANDLER_H
+#endif //OLYMPUS_SCORES_HANDLER_H

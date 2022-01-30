@@ -1,4 +1,4 @@
-#include "ScheduleHandler.h"
+#include "schedule_handler.h"
 
 ScheduleHandler::ScheduleHandler(Session &session, JavascriptExecutor &javascript_executor)
     : session_(session),

@@ -1,5 +1,5 @@
-#ifndef OLYMPUS_SCHEDULEHANDLER_H
-#define OLYMPUS_SCHEDULEHANDLER_H
+#ifndef OLYMPUS_SCHEDULE_HANDLER_H
+#define OLYMPUS_SCHEDULE_HANDLER_H
 
 #include "request_handler.h"
 #include "common/session.h"
@@ -21,4 +21,4 @@ private:
 };
 
 
-#endif //OLYMPUS_SCHEDULEHANDLER_H
+#endif //OLYMPUS_SCHEDULE_HANDLER_H

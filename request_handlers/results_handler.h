@@ -1,12 +1,12 @@
-#ifndef OLYMPUS_CONTROLQUERYHANDLER_H
-#define OLYMPUS_CONTROLQUERYHANDLER_H
+#ifndef OLYMPUS_RESULTS_HANDLER_H
+#define OLYMPUS_RESULTS_HANDLER_H
 
 #include "request_handler.h"
 #include "common/session.h"
 
-class ControlQueryHandler : public RequestHandler {
+class ResultsHandler : public RequestHandler {
 public:
-    explicit ControlQueryHandler(Session& session);
+    explicit ResultsHandler(Session& session);
 
     std::vector<RequestHandlerDetails> GetHandlers() override;
 
@@ -14,8 +14,7 @@ private:
     Session& session_;
     void Callback(const web::http::http_request& request);
 
-
 };
 
 
-#endif //OLYMPUS_CONTROLQUERYHANDLER_H
+#endif //OLYMPUS_RESULTS_HANDLER_H

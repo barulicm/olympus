@@ -20,14 +20,14 @@ add_executable(Olympus
     common/team.cpp
     common/phase.cpp
     common/results.cpp
-    request_handlers/ControlQueryHandler.cpp
-    request_handlers/DynamicResourceHandler.cpp
-    request_handlers/ResultsHandler.cpp
-    request_handlers/ScheduleHandler.cpp
-    request_handlers/ScoresHandler.cpp
-    request_handlers/StaticResourceHandler.cpp
-    request_handlers/TeamHandler.cpp
-    request_handlers/TimerHandler.cpp
+    request_handlers/control_query_handler.cpp
+    request_handlers/dynamic_resource_handler.cpp
+    request_handlers/results_handler.cpp
+    request_handlers/schedule_handler.cpp
+    request_handlers/scores_handler.cpp
+    request_handlers/static_resources_handler.cpp
+    request_handlers/team_handler.cpp
+    request_handlers/timer_handler.cpp
     javascript_executor.cpp
 )
 target_include_directories(Olympus PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})

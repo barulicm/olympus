@@ -1,4 +1,4 @@
-#include "ControlQueryHandler.h"
+#include "control_query_handler.h"
 
 ControlQueryHandler::ControlQueryHandler(Session &session)
     : session_(session)

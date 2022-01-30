@@ -1,4 +1,4 @@
-#include "StaticResourceHandler.h"
+#include "static_resources_handler.h"
 #include <cpprest/filestream.h>
 #include "mime_types.h"
 

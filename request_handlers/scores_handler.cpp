@@ -1,4 +1,4 @@
-#include "ScoresHandler.h"
+#include "scores_handler.h"
 
 ScoresHandler::ScoresHandler(Session &session, JavascriptExecutor& js)
 : session_(session),

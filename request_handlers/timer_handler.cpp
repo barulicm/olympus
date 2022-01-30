@@ -1,4 +1,4 @@
-#include "TimerHandler.h"
+#include "timer_handler.h"
 #include <nlohmann/json.hpp>
 
 std::vector<RequestHandlerDetails> TimerHandler::GetHandlers() {

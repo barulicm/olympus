@@ -1,5 +1,5 @@
-#ifndef OLYMPUS_TEAMHANDLER_H
-#define OLYMPUS_TEAMHANDLER_H
+#ifndef OLYMPUS_TEAM_HANDLER_H
+#define OLYMPUS_TEAM_HANDLER_H
 
 #include "request_handler.h"
 #include "common/session.h"
@@ -21,4 +21,4 @@ private:
 };
 
 
-#endif //OLYMPUS_TEAMHANDLER_H
+#endif //OLYMPUS_TEAM_HANDLER_H

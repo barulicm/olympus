@@ -1,5 +1,5 @@
-#ifndef OLYMPUS_TIMERHANDLER_H
-#define OLYMPUS_TIMERHANDLER_H
+#ifndef OLYMPUS_TIMER_HANDLER_H
+#define OLYMPUS_TIMER_HANDLER_H
 
 #include <filesystem>
 #include <thread>
@@ -26,4 +26,4 @@ private:
 
 };
 
-#endif //OLYMPUS_TIMERHANDLER_H
+#endif //OLYMPUS_TIMER_HANDLER_H

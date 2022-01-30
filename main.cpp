@@ -2,7 +2,7 @@
 #include <filesystem>
 #include "http_listener.h"
 #include "request_handler.h"
-#include "request_handlers/AllRequestHandlers.h"
+#include "request_handlers/all_request_handlers.h"
 #include "common/session.h"
 #include "javascript_executor.h"
 

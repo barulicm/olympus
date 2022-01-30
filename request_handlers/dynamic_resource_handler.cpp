@@ -1,5 +1,5 @@
 #include <cpprest/filestream.h>
-#include "DynamicResourceHandler.h"
+#include "dynamic_resource_handler.h"
 #include "mime_types.h"
 #include <nlohmann/json.hpp>
 
