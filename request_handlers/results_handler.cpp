@@ -10,7 +10,7 @@ std::vector<RequestHandlerDetails> ResultsHandler::GetHandlers() {
     return {
             {
                     web::http::methods::GET,
-                    [](const auto& path){ return path.starts_with("/results/");},
+                    [](const auto& path){ return path == "/results";},
                     std::bind_front(&ResultsHandler::Callback, this)
             }
     };

@@ -4,7 +4,7 @@ nlohmann::json PhaseResults::ToJson() const {
 
     nlohmann::json j;
 
-    j["name_"] = phase_name;
+    j["name"] = phase_name;
 
     j["rankings"] = nlohmann::json::array();
 
@@ -13,6 +13,18 @@ nlohmann::json PhaseResults::ToJson() const {
     }
 
     return j;
+}
+
+PhaseResults PhaseResults::FromJson(const nlohmann::json &json) {
+    PhaseResults results;
+    results.phase_name = json["name"];
+    for(const auto& ranking_json : json["rankings"]) {
+        Ranking ranking;
+        ranking.rank = ranking_json[0];
+        ranking.team_number = ranking_json[1];
+        results.rankings.push_back(ranking);
+    }
+    return results;
 }
 
 nlohmann::json TournamentResults::ToJson() const {
@@ -25,4 +37,11 @@ nlohmann::json TournamentResults::ToJson() const {
     }
 
     return j;
+}
+
+TournamentResults TournamentResults::FromJson(const nlohmann::json &json) {
+    TournamentResults results;
+    const auto& json_phases = json["phases"];
+    std::transform(json_phases.begin(), json_phases.end(), std::back_inserter(results.phase_results), &PhaseResults::FromJson);
+    return results;
 }

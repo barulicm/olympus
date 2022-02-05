@@ -7,6 +7,7 @@
 #include "results_handler.h"
 #include "schedule_handler.h"
 #include "scores_handler.h"
+#include "session_save_handler.h"
 #include "static_resources_handler.h"
 #include "team_handler.h"
 #include "timer_handler.h"

@@ -12,6 +12,7 @@ struct Match {
     // TODO colors?
 
     [[nodiscard]] nlohmann::json ToJson() const;
+    static Match FromJson(const nlohmann::json& json);
 
 };
 

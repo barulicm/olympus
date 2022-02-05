@@ -48,7 +48,8 @@ function getInfo() {
 
                 rankCell.appendChild(document.createTextNode(teamArr[i].rank));
 
-                teamCell.appendChild(document.createTextNode(teamArr[i].number + "-" + teamArr[i].name.substr(0,10)));
+                teamCell.style.whiteSpace='pre';
+                teamCell.appendChild(document.createTextNode(teamArr[i].number.padStart(5, ' ') + "  " + teamArr[i].name.substr(0,10)));
 
                 if(teamArr[i].scores[0].length > 0)
                     r1Cell.appendChild(document.createTextNode(teamArr[i].scores[0][0]));

@@ -27,7 +27,7 @@
             <tr>
                 <td colspan="2">
                     <label for="team">Team</label>
-                    <input type="text" id="team" name_="team" list="teams">
+                    <input type="text" id="team" name="team" list="teams">
                     <datalist id="teams">
                     </datalist>
                 </td>
@@ -35,27 +35,27 @@
         <tr>
             <td>
                 <label for="flames">Flames</label>
-                <input type="number" id="flames" name_="flames" value="0" max="30" min="0">
+                <input type="number" id="flames" name="flames" value="0" max="30" min="0">
             </td>
             <td>
                 <label for="drums">Chemical Drums</label>
-                <input type="number" id="drums" name_="drums" value="0" max="3" min="0">
+                <input type="number" id="drums" name="drums" value="0" max="3" min="0">
             </td>
         </tr>
         <tr>
             <td>
                 <label for="rescue">Manikin Rescued</label>
-                <input type="checkbox" id="rescue" name_="rescue" onchange="scoreOutput.value=calculateScore(parseInt(flames.value),parseInt(drums.value),rescue.checked,parseInt(rescueBonus.value))">
+                <input type="checkbox" id="rescue" name="rescue" onchange="scoreOutput.value=calculateScore(parseInt(flames.value),parseInt(drums.value),rescue.checked,parseInt(rescueBonus.value))">
             </td>
             <td>
                 <label for="rescueBonus">Manikin Bonus</label>
-                <input type="number" id="rescueBonus" name_="rescueBonus" value="0" max="180" min="0">
+                <input type="number" id="rescueBonus" name="rescueBonus" value="0" max="180" min="0">
             </td>
         </tr>
         <tr>
             <td colspan="2">
                 <label for="scoreOutput">Final Score</label>
-                <output id="scoreOutput" name_="scoreOutput" for="flames drums rescue rescueBonus">0</output>
+                <output id="scoreOutput" name="scoreOutput" for="flames drums rescue rescueBonus">0</output>
             </td>
         </tr>
         <tr>

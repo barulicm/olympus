@@ -18,12 +18,12 @@
 <div class="importExportControls">
     <div class="importExportGroup" id="teamControls">
         <label class="groupHeading">Load Teams</label>
-        <input type="file" id="importTeamsFile" name_="file"/>
+        <input type="file" id="importTeamsFile" name="file"/>
         <button id="importButton" onclick="importTeams()">Import Teams</button>
     </div>
     <div class="importExportGroup" id="scheduleControls">
         <label class="groupHeading">Load Schedule</label>
-        <input type="file" id="importScheduleFile" name_="file"/>
+        <input type="file" id="importScheduleFile" name="file"/>
         <button id="importButton" onclick="importSchedule()">Import Schedule</button>
     </div>
     <div class="importExportGroup" id="tournamentControls">
@@ -34,6 +34,7 @@
     <div class="importExportGroup">
         <label class="groupHeading">Export</label>
         <button id="exportScores" onclick="exportScoresButtonClicked()">Export Scores</button>
+        <button id="exportSession" onclick="exportSessionButtonClicked()">Export Session</button>
     </div>
 </div>
 

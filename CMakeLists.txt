@@ -16,6 +16,8 @@ add_executable(Olympus
     mime_types.cpp
     http_listener.cpp
     common/schedule.cpp
+    common/session.cpp
+    common/config.cpp
     common/match.cpp
     common/team.cpp
     common/phase.cpp
@@ -26,6 +28,7 @@ add_executable(Olympus
     request_handlers/results_handler.cpp
     request_handlers/schedule_handler.cpp
     request_handlers/scores_handler.cpp
+    request_handlers/session_save_handler.cpp
     request_handlers/static_resources_handler.cpp
     request_handlers/team_handler.cpp
     request_handlers/timer_handler.cpp

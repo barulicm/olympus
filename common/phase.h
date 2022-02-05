@@ -11,6 +11,7 @@ struct Phase {
     std::string name_;
 
     [[nodiscard]] nlohmann::json ToJson() const;
+    static Phase FromJson(const nlohmann::json& json);
 
     [[nodiscard]] std::set<std::string> GetInvolvedTeamNumbers() const;
 };

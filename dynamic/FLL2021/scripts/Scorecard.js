@@ -170,12 +170,12 @@ function calculateScore(M00, M01, M02a, M02b, M03a, M03b, M04a, M04b, M05, M06a,
 }
 
 function submitScore(team,score) {
-    var jsonData = {};
-    var endOfTeamNumber = team.indexOf(" ");
+    let jsonData = {};
+    let endOfTeamNumber = team.indexOf(" ");
     jsonData.teamNumber = team.substring(0,endOfTeamNumber);
     jsonData.score = score;
 
-    var xhr = new XMLHttpRequest();
+    let xhr = new XMLHttpRequest();
     xhr.open('PUT', 'scores/submit', true);
     xhr.send(JSON.stringify(jsonData));
     xhr.onreadystatechange = ()=>{

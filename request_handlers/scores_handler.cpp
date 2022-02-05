@@ -10,20 +10,25 @@ ScoresHandler::ScoresHandler(Session &session, JavascriptExecutor& js)
 std::vector<RequestHandlerDetails> ScoresHandler::GetHandlers() {
     return {
             {
-                    web::http::methods::PUT,
-                    [](const auto& path){ return path.starts_with("/scores/");},
-                    std::bind_front(&ScoresHandler::Callback, this)
+                web::http::methods::PUT,
+                [](const auto& path){ return path.starts_with("/scores/");},
+                std::bind_front(&ScoresHandler::CallbackPut, this)
+            },
+            {
+                web::http::methods::GET,
+                [](const auto& path){ return path.starts_with("/scores/");},
+                std::bind_front(&ScoresHandler::CallbackGet, this)
             }
     };
 }
 
-void ScoresHandler::Callback(web::http::http_request request) {
+void ScoresHandler::CallbackPut(web::http::http_request request) {
     if(request.relative_uri().path() == "/scores/submit") {
         request.extract_string().then([this,&request](const utility::string_t& body){
             try {
                 nlohmann::json j = nlohmann::json::parse(body);
 
-                std::string teamNumber = j["team_number"];
+                std::string teamNumber = j["teamNumber"];
                 int score = j["score"];
 
                 auto team_iter = find_if(session_.teams.begin(), session_.teams.end(),
@@ -63,6 +68,39 @@ void ScoresHandler::Callback(web::http::http_request request) {
         }
     } else {
         request.reply(web::http::status_codes::NotFound, U("Resource not found")).wait();
+    }
+}
+
+void ScoresHandler::CallbackGet(web::http::http_request request) {
+    try {
+        std::stringstream csv_content;
+        const auto current_phase = session_.schedule.current_phase;
+        auto score_count = 0ul;
+        for(const auto& team : session_.teams) {
+            score_count = std::max(score_count, team.scores_.at(current_phase).size());
+        }
+        csv_content << "rank,team number,team name";
+        for(auto i = 0ul; i < score_count; ++i) {
+            csv_content << ",match " << (i+1);
+        }
+        csv_content << ",final score\n";
+        for (const auto &team: session_.teams) {
+            csv_content << team.rank_ << "," << team.number_ << "," << team.name_;
+            for (const auto &score: team.scores_.at(current_phase)) {
+                csv_content << "," << score;
+            }
+            for(auto i = 0ul; i < (score_count - team.scores_.at(current_phase).size()); ++i) {
+                csv_content << ",0";
+            }
+            csv_content << "," << team.display_score_;
+            csv_content << "\n";
+        }
+        request.reply(web::http::status_codes::OK, csv_content.str(), U("text/csv")).wait();
+    } catch(const std::exception &e) {
+        std::string rep = U("Exporting scores failed.");
+        request.reply(web::http::status_codes::InternalError, rep).wait();
+        std::cerr << "Score export: Exception occurred:\n\t";
+        std::cerr << e.what() << std::endl;
     }
 }
 

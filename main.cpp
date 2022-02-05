@@ -36,7 +36,14 @@ void InitializeSession(Session& session) {
         std::cout << "Please provide a session file to load:\n";
         std::string sessionFilePath;
         std::cin >> sessionFilePath;
-//        httpHandler.loadSession(sessionFilePath);
+        std::ifstream session_file{sessionFilePath};
+        if(!session_file.good()) {
+            std::cerr << "Could not open session file.\n";
+            exit(1);
+        }
+        nlohmann::json session_json;
+        session_file >> session_json;
+        session = Session::FromJson(session_json);
     }
 }
 
@@ -63,6 +70,16 @@ void LoadAllCompetitionFunctions(JavascriptExecutor& javascript_executor, const 
     loadFunctionsFromJS(javascript_executor, competitionName, "DefaultCustomFields.js");
 }
 
+void SaveSessionBackupFile(const Session& session) {
+    time_t t = std::time(nullptr);   // get time now
+    struct tm * now = std::localtime( & t );
+    char filename [80];
+    std::strftime (filename,80,"session-backup-%Y-%m-%d-%H-%M-%S.json",now);
+    std::ofstream file{filename};
+    file << session.ToJson();
+    std::cout << "Saved backup file to " << filename << "\n";
+}
+
 int main(int argc, char *argv[]) {
 //    auto url = U("http://127.0.0.1:8080");
     const auto url = U("http://0.0.0.0:8080"); // listens on all interfaces on Linux
@@ -80,6 +97,7 @@ int main(int argc, char *argv[]) {
     httpHandler.setUrl(address);
 
     std::vector<std::unique_ptr<RequestHandler>> requestHandlers;
+    requestHandlers.push_back(std::make_unique<SessionSaveHandler>(session));
     requestHandlers.push_back(std::make_unique<TeamHandler>(session, defaultCustomTeamFields));
     requestHandlers.push_back(std::make_unique<TimerHandler>());
     requestHandlers.push_back(std::make_unique<ScoresHandler>(session, javascript_executor));
@@ -104,6 +122,8 @@ int main(int argc, char *argv[]) {
     std::cin.ignore();
     std::string line;
     std::getline(std::cin, line);
+
+    SaveSessionBackupFile(session);
 
     httpHandler.close().wait();
 

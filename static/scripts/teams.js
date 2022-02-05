@@ -1,27 +1,27 @@
 function onLoad() {
-    var xhr = new XMLHttpRequest();
+    let xhr = new XMLHttpRequest();
     xhr.open('GET','team/all',true);
     xhr.send();
 
     xhr.onreadystatechange = ()=>{
-        if(xhr.readyState == 4 && xhr.status == 200) {
-            var teamArr = JSON.parse(xhr.responseText);
-            var i;
+        if(xhr.readyState === 4 && xhr.status === 200) {
+            let teamArr = JSON.parse(xhr.responseText);
+            let i;
             for(i = 0; i  < teamArr.length; i++) {
                 // Populate Table Row
-                tabBody = document.getElementsByTagName("tbody").item(0);
-                row=document.createElement("tr");
-                rankCell=document.createElement("td");
-                numberCell=document.createElement("td");
-                nameCell=document.createElement("td");
-                delCell=document.createElement("td");
+                let tabBody = document.getElementsByTagName("tbody").item(0);
+                let row=document.createElement("tr");
+                let rankCell=document.createElement("td");
+                let numberCell=document.createElement("td");
+                let nameCell=document.createElement("td");
+                let delCell=document.createElement("td");
                 rankCell.appendChild(document.createTextNode(teamArr[i].rank));
                 numberCell.appendChild(document.createTextNode(teamArr[i].number));
-                var teamNameLink = document.createElement("a");
+                let teamNameLink = document.createElement("a");
                 teamNameLink.setAttribute("href", 'TeamDetails.html?team=' + teamArr[i].number);
                 teamNameLink.innerText = teamArr[i].name;
                 nameCell.appendChild(teamNameLink);
-                delButton = document.createElement("button");
+                let delButton = document.createElement("button");
                 delButton.classList.add("deleteButton");
                 delButton.id = teamArr[i].number;
                 delButton.onclick = removeTeam;
@@ -37,12 +37,12 @@ function onLoad() {
 }
 
 function removeTeam(evt) {
-    var teamNumber = evt.target.id;
-    var jsonData = {};
+    let teamNumber = evt.target.id;
+    let jsonData = {};
     jsonData.number = teamNumber;
-    var jsonString = JSON.stringify(jsonData);
+    let jsonString = JSON.stringify(jsonData);
 
-    var xhr = new XMLHttpRequest();
+    let xhr = new XMLHttpRequest();
     xhr.open('PUT','team/remove',true);
     xhr.send(jsonString);
     xhr.onreadystatechange = ()=>{
@@ -61,12 +61,12 @@ function addTeam() {
 }
 
 function sendAddTeam(teamName, teamNumber, reload, async) {
-    var jsonTeam = {};
+    let jsonTeam = {};
     jsonTeam.name = teamName;
     jsonTeam.number = teamNumber;
-    var jsonString = JSON.stringify(jsonTeam);
+    let jsonString = JSON.stringify(jsonTeam);
 
-    var xhr = new XMLHttpRequest();
+    let xhr = new XMLHttpRequest();
     xhr.open('PUT','team/add',async);
     xhr.onreadystatechange = ()=>{
         if(xhr.readyState === 4) {
@@ -83,30 +83,31 @@ function sendAddTeam(teamName, teamNumber, reload, async) {
 }
 
 function sortTable(column_number) {
-    var table = document.getElementById("teamsTable");
-    var switching = true;
-    var dir = "asc";
-    var switchCount = 0;
-    var asNumeric = (column_number === 0 || column_number === 1);
+    let table = document.getElementById("teamsTable");
+    let switching = true;
+    let dir = "asc";
+    let switchCount = 0;
+    let asNumeric = (column_number === 0 || column_number === 1);
     while(switching) {
         switching = false;
-        var rows = table.getElementsByTagName("tr");
+        let rows = table.getElementsByTagName("tr");
+        let shouldSwitch = false;
         for(i=1;i<(rows.length-2);i++) {
-            var shouldSwitch = false;
-            var x = rows[i].getElementsByTagName("td")[column_number];
-            var y = rows[i+1].getElementsByTagName("td")[column_number];
-            var x_val = x.innerHTML.toLowerCase();
-            var y_val = y.innerHTML.toLowerCase();
+            shouldSwitch = false;
+            let x = rows[i].getElementsByTagName("td")[column_number];
+            let y = rows[i+1].getElementsByTagName("td")[column_number];
+            let x_val = x.innerText.toLowerCase();
+            let y_val = y.innerText.toLowerCase();
             if(asNumeric) {
                 x_val = parseInt(x_val);
                 y_val = parseInt(y_val);
             }
-            if(dir == "asc") {
+            if(dir === "asc") {
                 if(x_val > y_val) {
                     shouldSwitch = true;
                     break;
                 }
-            } else if(dir == "desc") {
+            } else if(dir === "desc") {
                 if(x_val < y_val) {
                     shouldSwitch = true;
                     break;
@@ -118,7 +119,7 @@ function sortTable(column_number) {
             switching = true;
             switchCount++;
         } else {
-            if(switchCount == 0 && dir == "asc") {
+            if(switchCount === 0 && dir === "asc") {
                 dir = "desc";
                 switching = true;
             }

@@ -8,3 +8,11 @@ nlohmann::json Match::ToJson() const {
     }
     return j;
 }
+
+Match Match::FromJson(const nlohmann::json &json) {
+    Match match;
+    for(const auto& json_number : json["teams"]) {
+        match.team_numbers_.push_back(json_number);
+    }
+    return match;
+}

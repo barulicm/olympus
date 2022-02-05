@@ -33,6 +33,7 @@ struct Schedule {
     }
 
     [[nodiscard]] nlohmann::json ToJson() const;
+    static Schedule FromJson(const nlohmann::json& json);
 };
 
 

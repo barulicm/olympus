@@ -248,6 +248,10 @@ function exportScoresButtonClicked() {
     window.open('scores/export.csv', '_blank');
 }
 
+function exportSessionButtonClicked() {
+    window.open('session_backup.json', '_blank');
+}
+
 function timerButtonClicked() {
     let timer_button = document.getElementById('timerButton');
     if(timer_button.innerText === 'Start Timer') {

@@ -2,6 +2,7 @@
 #define OLYMPUS_SESSION_H
 
 #include <vector>
+#include <nlohmann/json.hpp>
 #include "team.h"
 #include "schedule.h"
 #include "results.h"
@@ -12,6 +13,9 @@ struct Session {
     Schedule schedule;
     TournamentResults results;
     Config config;
+
+    nlohmann::json ToJson() const;
+    static Session FromJson(const nlohmann::json& json);
 };
 
 #endif //OLYMPUS_SESSION_H

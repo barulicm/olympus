@@ -14,7 +14,8 @@ public:
 private:
     Session& session_;
     JavascriptExecutor& js_;
-    void Callback(web::http::http_request request);
+    void CallbackPut(web::http::http_request request);
+    void CallbackGet(web::http::http_request request);
     void UpdateRanks();
     void UpdateResults();
     Team &GetTeamByNumber(const std::string &number);

@@ -15,12 +15,14 @@ struct PhaseResults {
     std::vector<Ranking> rankings;
 
     [[nodiscard]] nlohmann::json ToJson() const;
+    static PhaseResults FromJson(const nlohmann::json& json);
 };
 
 struct TournamentResults {
     std::vector<PhaseResults> phase_results;
 
     [[nodiscard]] nlohmann::json ToJson() const;
+    static TournamentResults FromJson(const nlohmann::json& json);
 };
 
 

@@ -19,7 +19,7 @@ public:
     nlohmann::json custom_fields_;
 
     [[nodiscard]] nlohmann::json ToJson() const;
-
+    static Team FromJson(const nlohmann::json& json);
 };
 
 
