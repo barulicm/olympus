@@ -1,0 +1,42 @@
+M00
+ - Bool, "Equipment fits in launch area an under 12in", 20
+M01
+ - Bool, "Innovation Project Material meets requirements", 10
+M02
+ - Number, 0-3, "Number of fuel units in the fuel truck", 5 ea.
+ - Bool, "The fuel truck is at least partly over the fueling station target", 10
+M03
+ - Number, 0-3+, "Number of energy units completely in energy storage bin", 10 ea.
+ - Bool, "The energy unit is completely removed from the energy storage tray", 5
+M04
+ - Number, 0-3, "Number of energy units completely removed from their starting circles", 5 ea. (+5 if 3)
+M05
+ - Bool, "Your field's orange connector is completely raised", 20
+ - Bool, "Both team's orange connectors are completely raised", 10
+M06
+ - Bool, "The hybrid car is no longer touching the ramp", 10
+ - Bool, "The hybrid unit is in the hybrid car", 10
+M07
+ - Number, 0-3, "Number of energy units no longer touching the wind turbine", 10 ea.
+M08
+ - Bool, "The television is completely raised", 10
+ - Bool, "There is an energy unit completely in the green television slot", 10
+M09
+ - Bool, "The dinosaur toy is completely in the left home area", 10
+ - Enum, "The dinosaur toy lid is completely closed with the following inside", ["Nothing or Not Closed", "Energy Unit", "Rechargable Battery"], [0, 10, 20]
+M10
+ - Number, 0-3, "Number of energy units no longer touching the power plant", 5 ea. (+10 if 3)
+M11
+ - Bool, "The energy unit is no longer touching the hydroelectric dam", 20
+M12
+ - Number, 0-3, "Number of looped water units completely in the water reservoir, touching the mat", 5 ea.
+ - Number, 0-2, "Number looped water units placed on a single red hook", 10 ea.
+M13
+ - Number, 0-3+, "Number of energy units completely in the hydrogen plant target area", 5 ea.
+M14
+ - Number, 0-3+, "Number of energy units at least partly in the slot in the back of the toy factory (or in the red hopper)", 5 ea.
+ - Bool, "The mini dinosaur tow has been released", 10
+M15
+ - Number, 0-3+, "Number of energy units completely in the rechargable battery target area", 5 ea.
+M16
+ - Number, 0-6, "Number of precision tokens remaining", [10, 15, 25, 35, 50, 50]
