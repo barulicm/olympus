@@ -2,6 +2,11 @@
 #include <cpprest/filestream.h>
 #include "mime_types.hpp"
 
+StaticResourceHandler::StaticResourceHandler(const std::filesystem::path &share_path)
+: static_resources_dir(share_path / "static")
+{
+}
+
 std::vector<RequestHandlerDetails> StaticResourceHandler::GetHandlers() {
     return {
             {web::http::methods::GET,

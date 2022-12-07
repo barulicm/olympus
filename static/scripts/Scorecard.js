@@ -136,6 +136,7 @@ function submitScore(team,score) {
     xhr.onreadystatechange = ()=>{
         if(xhr.readyState === 4) {
             if(xhr.status === 200) {
+                document.body.scrollTop = document.documentElement.scrollTop = 0;
                 location.reload();
             } else {
                 alert("Submitting score failed.\nStatus: " + xhr.status + "\nMessage: " + xhr.responseText);

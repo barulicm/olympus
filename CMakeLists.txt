@@ -12,7 +12,7 @@ find_package(OpenSSL REQUIRED)
 find_package(Threads REQUIRED)
 find_package(nlohmann_json REQUIRED)
 
-add_library(olympus_library
+add_library(olympus_library STATIC
         src/json_mission.cpp
         src/json_team.cpp
         src/json_session.cpp
@@ -26,7 +26,7 @@ add_library(olympus_library
         src/request_handlers/static_resources_handler.cpp
         src/request_handlers/team_handler.cpp
         src/request_handlers/timer_handler.cpp
-)
+        src/get_exec_path.cpp)
 target_include_directories(olympus_library PUBLIC src)
 target_link_libraries(olympus_library PUBLIC
     cpprestsdk::cpprest
@@ -38,45 +38,16 @@ target_link_libraries(olympus_library PUBLIC
 add_executable(olympus_executable
     src/main.cpp
 )
+set_target_properties(olympus_executable PROPERTIES OUTPUT_NAME olympus)
 target_link_libraries(olympus_executable PRIVATE olympus_library)
 
-add_executable(Olympus
-    main.cpp
-    mime_types.cpp
-    http_listener.cpp
-    common/schedule.cpp
-    common/session.cpp
-    common/config.cpp
-    common/match.cpp
-    common/team.cpp
-    common/phase.cpp
-    common/results.cpp
-    request_handlers/config_handler.cpp
-    request_handlers/control_query_handler.cpp
-    request_handlers/dynamic_resource_handler.cpp
-    request_handlers/results_handler.cpp
-    request_handlers/schedule_handler.cpp
-    request_handlers/scores_handler.cpp
-    request_handlers/session_save_handler.cpp
-    request_handlers/static_resources_handler.cpp
-    request_handlers/team_handler.cpp
-    request_handlers/timer_handler.cpp
-    javascript_executor.cpp
-)
-target_include_directories(Olympus PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(Olympus
-    cpprestsdk::cpprest
-    OpenSSL::SSL
-    Threads::Threads
-    nlohmann_json::nlohmann_json
-    PkgConfig::Duktape
-)
+include(GNUInstallDirs)
 
-file(COPY static DESTINATION resources)
-file(COPY dynamic DESTINATION resources)
+install(DIRECTORY static
+        DESTINATION ${CMAKE_INSTALL_DATADIR}/olympus)
 
-file(INSTALL static DESTINATION resources)
-file(INSTALL dynamic DESTINATION resources)
+install(TARGETS olympus_executable
+        DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 if(TEST_OLYMPUS OR CMAKE_SOURCE_DIR STREQUAL Olympus_SOURCE_DIR)
     add_subdirectory(test)

@@ -9,10 +9,8 @@ struct Team
     std::string number;
     std::string name;
     std::vector<int> scores;
-
-    // calculated fields
-    int display_score;
-    int rank;
+    int display_score=0;
+    int rank=0;
 };
 
 #endif //TEAM_HPP_

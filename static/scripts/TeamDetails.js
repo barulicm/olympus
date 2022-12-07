@@ -13,7 +13,7 @@ function onLoad() {
             document.getElementById("teamNumber").value = team.number;
             document.getElementById("teamName").value = team.name;
 
-            let scoresArr = team.scores[0];
+            let scoresArr = team.scores;
 
             document.getElementById("numberCell").colSpan = scoresArr.length;
             document.getElementById("nameCell").colSpan = scoresArr.length;

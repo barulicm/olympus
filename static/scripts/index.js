@@ -15,95 +15,6 @@ function queryHasTeams() {
     }
 }
 
-function queryHasSchedule() {
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET','controlQuery',true);
-    xhr.setRequestHeader('query','hasSchedule');
-    xhr.send();
-
-    xhr.onreadystatechange = ()=>{
-        if(xhr.readyState === 4 && xhr.status === 200) {
-            if (xhr.responseText === 'true') {
-                document.getElementById('scheduleControls').className += ' disabledcontrol';
-            }
-        }
-    }
-}
-
-function queryHasNextMatch() {
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET','controlQuery',true);
-    xhr.setRequestHeader('query','hasNextMatch');
-    xhr.send();
-
-    xhr.onreadystatechange = ()=>{
-        if(xhr.readyState === 4 && xhr.status === 200) {
-            if (xhr.responseText === 'true') {
-                document.getElementById('nextButton').innerText = 'Next Match';
-            }
-        }
-    }
-}
-
-function queryHasNextPhase() {
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET','controlQuery',true);
-    xhr.setRequestHeader('query','hasNextPhase');
-    xhr.send();
-
-    xhr.onreadystatechange = ()=>{
-        if(xhr.readyState === 4 && xhr.status === 200) {
-            if (xhr.responseText === 'true') {
-                document.getElementById('nextButton').innerText = 'Next Phase';
-            } else {
-                document.getElementById('nextButton').className += ' disabledcontrol';
-            }
-        }
-    }
-}
-
-function getDynamicPageList() {
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET','pages/dynamic',true);
-    xhr.send();
-
-    xhr.onreadystatechange = ()=>{
-        if(xhr.readyState === 4 && xhr.status === 200) {
-            var pageArr = JSON.parse(xhr.responseText);
-            var pageInd;
-            var pageListDiv = document.getElementById("dynamicPageList");
-            for(pageInd = 0; pageInd < pageArr.length; pageInd++) {
-                var linkElement = document.createElement("a");
-                linkElement.setAttribute("href",pageArr[pageInd] + ".html");
-                linkElement.innerText = pageArr[pageInd];
-                pageListDiv.appendChild(linkElement);
-            }
-        }
-    }
-}
-
-function getCurrentMatchInfo() {
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET','schedule/match/current',true);
-    xhr.send();
-
-    xhr.onreadystatechange = ()=>{
-        if(xhr.readyState === 4 && xhr.status === 200) {
-            var matchInfo = JSON.parse(xhr.responseText);
-            var currentMatchDisplay = document.getElementById("currentMatchDisplay");
-            var phaseName = "Phase";
-            if("phase" in matchInfo) {
-                phaseName = matchInfo.phase;
-            }
-            var matchNumber = "_";
-            if("number" in matchInfo) {
-                matchNumber = (parseInt(matchInfo.number)+1).toString();
-            }
-            currentMatchDisplay.innerText = phaseName + " - Match " + matchNumber;
-        }
-    }
-}
-
 function getShowTimer() {
     let xhr = new XMLHttpRequest();
     xhr.open('GET', 'config', true);
@@ -140,11 +51,6 @@ function getRowsPerDisplay() {
 
 function onLoad() {
     queryHasTeams();
-    queryHasSchedule();
-    queryHasNextPhase();
-    queryHasNextMatch();
-    getDynamicPageList();
-    getCurrentMatchInfo();
     getShowTimer();
     getRowsPerDisplay();
     setInterval(updateTimer, 100);
@@ -168,8 +74,8 @@ function importTeams() {
                     continue;
                 }
                 var tokens = lines[i].split(",");
-                var team_number = tokens[0];
-                var team_name = tokens[1];
+                var team_number = tokens[0].replace(/[^0-9]/gi, '');;
+                var team_name = tokens[1].replace(/[^a-z0-9 -]/gi, '');
                 sendAddTeam(team_name, team_number,false,false);
             }
             location.reload();
@@ -201,47 +107,18 @@ function sendAddTeam(teamName, teamNumber, reload, async) {
     xhr.send(jsonString);
 }
 
-function importSchedule() {
-    var files = document.getElementById('importScheduleFile').files;
-    if(files.length === 0) {
-        alert("Please select a file first.");
-        return;
-    }
-    var file = files[0];
-    var reader = new FileReader();
-    reader.onload = (function(theFile) {
-        return function(e) {
-            var xhr = new XMLHttpRequest();
-            xhr.open('PUT','schedule/load',true);
-            xhr.onreadystatechange = ()=>{
-                if(xhr.readyState === 4) {
-                    if(xhr.status === 200) {
-                        location.reload();
-                    } else {
-                        alert("Loading schedule failed.\nStatus code: " + xhr.status + "\nResponse: " + xhr.responseText);
-                    }
-                }
-            }
-            xhr.send(e.target.result);
-        };
-    })(file);
-
-    reader.readAsText(file);
-}
-
-function nextButtonClicked() {
+function rerankTeamsButtonClicked() {
     var xhr = new XMLHttpRequest();
-    xhr.open('PUT','schedule/next',true);
+    xhr.open('PUT', 'scores/rerank', async);
     xhr.onreadystatechange = ()=>{
         if(xhr.readyState === 4) {
             if(xhr.status === 200) {
                 location.reload();
-            } else {
-                alert(xhr.responseText);
             }
+        } else {
+            alert("Reranking teams failed. Status code " + xhr.status + '. ' + xhr.responseText);
         }
     }
-    xhr.send();
 }
 
 function exportScoresButtonClicked() {

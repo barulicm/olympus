@@ -109,14 +109,14 @@ void ScoresHandler::UpdateRanks() {
         }
         team.display_score = *std::max_element(team.scores.begin(), team.scores.end());
     });
-    auto less_by_display_score = [](const Team &a, const Team &b) {
-        return a.display_score < b.display_score;
+    auto greater_by_display_score = [](const Team &a, const Team &b) {
+        return a.display_score > b.display_score;
     };
-    std::stable_sort(session_.teams.begin(), session_.teams.end(), less_by_display_score);
+    std::stable_sort(session_.teams.begin(), session_.teams.end(), greater_by_display_score);
     int rank = 1;
     session_.teams[0].rank=rank;
     for(size_t i = 1; i < session_.teams.size(); i++) {
-        if(less_by_display_score(session_.teams[i-1], session_.teams[i])) {
+        if(greater_by_display_score(session_.teams[i-1], session_.teams[i])) {
             rank++;
         }
         session_.teams[i].rank = rank;

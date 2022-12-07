@@ -1,4 +1,5 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="stylesheets/index.css" media="screen" />
@@ -9,10 +10,10 @@
 <div class="navigation">
     <a class="navigation" href="index.html">Home</a>
     <a class="navigation" href="teams.html">Teams</a>
-    <a class="navigation" href="schedule.html">Schedule</a>
     <a class="navigation" href="Scorecard.html">Scorecard</a>
     <a class="navigation" href="Display.html">Display</a>
     <a class="navigation" href="results.html">Results</a>
+    <a class="navigation" href="TimerDisplay.html">Timer</a>
 </div>
 
 <div class="importExportControls">
@@ -21,15 +22,9 @@
         <input type="file" id="importTeamsFile" name="file"/>
         <button id="importButton" onclick="importTeams()">Import Teams</button>
     </div>
-    <div class="importExportGroup" id="scheduleControls">
-        <label class="groupHeading">Load Schedule</label>
-        <input type="file" id="importScheduleFile" name="file"/>
-        <button id="importButton" onclick="importSchedule()">Import Schedule</button>
-    </div>
-    <div class="importExportGroup" id="tournamentControls">
-        <label class="groupHeading">Run Tournament</label>
-        <label class="display" id="currentMatchDisplay">Phase - Match _</label>
-        <button id="nextButton" onclick="nextButtonClicked()">Next</button>
+    <div class="importExportGroup">
+        <label class="groupHeading">Scores</label>
+        <button id="rerankTeams" onclick="rerankTeamsButtonClicked()">Rerank Teams</button>
     </div>
     <div class="importExportGroup">
         <label class="groupHeading">Export</label>
@@ -60,10 +55,6 @@
         <label for="rowsPerDisplay">Rows:</label>
         <input type="number" id="rowsPerDisplay" min="1" oninput="setRowsPerDisplay()" style="width: 50px">
     </div>
-</div>
-
-<div id="dynamicPageList">
-
 </div>
 
 </body>

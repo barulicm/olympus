@@ -1,0 +1,145 @@
+var current_top_team = 0;
+var teams_per_page = 8;
+
+function getInfo() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET','team/all',true);
+    xhr.send();
+
+    xhr.onreadystatechange = ()=>{
+        if(xhr.readyState === 4 && xhr.status === 200) {
+            var teamArr = JSON.parse(xhr.responseText);
+
+            teamArr.sort(function(a, b){
+                var keyA = a.rank;
+                var keyB = b.rank;
+                if(keyA < keyB) return -1;
+                if(keyA > keyB) return 1;
+                return 0;
+            });
+
+            let round_count = Math.max(... teamArr.map(team => team.scores.length))
+
+            let tabBody = document.getElementsByTagName("tbody").item(0);
+
+            let headerRow = document.createElement("tr");
+
+            let rankHeader = document.createElement("th");
+            rankHeader.innerText = "Rank";
+            rankHeader.attributes["scope"] = "col";
+            headerRow.appendChild(rankHeader);
+
+            let teamNameHeader = document.createElement("th");
+            teamNameHeader.innerText = "Team";
+            teamNameHeader.attributes["scope"] = "col";
+            headerRow.appendChild(teamNameHeader);
+
+            for(let i = 0; i < round_count; i++) {
+                let roundHeader = document.createElement("th");
+                roundHeader.innerText = "R" + (i+1);
+                roundHeader.attributes["scope"] = "col";
+                headerRow.appendChild(roundHeader);
+            }
+
+            let finalScoreHeader = document.createElement("th");
+            finalScoreHeader.innerText = "Final";
+            finalScoreHeader.attributes["scope"] = "col";
+            headerRow.appendChild(finalScoreHeader);
+
+            for(let i = current_top_team; i  < Math.min(current_top_team+teams_per_page,teamArr.length); i++) {
+                // Populate Table Row
+                row=document.createElement("tr");
+
+                rankCell=document.createElement("td");
+                rankCell.appendChild(document.createTextNode(teamArr[i].rank));
+                row.appendChild(rankCell);
+
+                teamCell=document.createElement("td");
+                teamCell.style.whiteSpace='pre';
+                teamCell.appendChild(document.createTextNode(teamArr[i].number.padStart(5, ' ') + "  " + teamArr[i].name.substr(0,10)));
+                row.appendChild(teamCell);
+
+                for(let r = 0; r < round_count; r++) {
+                    roundCell = document.createElement("td");
+                    if(teamArr[i].scores.length > r) {
+                        roundCell.appendChild(document.createTextNode(teamArr[i].scores[r]));
+                    } else {
+                        roundCell.appendChild(document.createTextNode(" "));
+                    }
+                    row.appendChild(roundCell);
+                }
+
+                scoreCell=document.createElement("td");
+                scoreCell.appendChild(document.createTextNode(teamArr[i].displayScore));
+                row.appendChild(scoreCell);
+
+                tabBody.appendChild(row);
+            }
+
+            current_top_team += teams_per_page;
+            if(current_top_team >= teamArr.length) {
+                current_top_team = 0;
+            }
+        }
+    };
+}
+
+function updateTimer() {
+    let xhr = new XMLHttpRequest();
+    xhr.open('GET','timer',true);
+    xhr.onreadystatechange = ()=> {
+        if(xhr.readyState === 4 && xhr.status === 200) {
+            let timer_json = JSON.parse(xhr.responseText);
+            let time_remaining = timer_json.time_remaining;
+            let timer_minutes = Math.floor(time_remaining / 60);
+            let timer_seconds = time_remaining % 60;
+            document.getElementById('timerDisplay').innerText = timer_minutes.toString() + ":" + timer_seconds.toString().padStart(2,'0');
+        }
+    }
+    xhr.send();
+}
+
+function getShowTimer() {
+    let xhr = new XMLHttpRequest();
+    xhr.open('GET', 'config', true);
+    xhr.setRequestHeader('name', 'show_timer');
+    xhr.send();
+    xhr.onreadystatechange = ()=>{
+        if(xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                if(xhr.responseText === 'false') {
+                    document.getElementById('timerDisplay').style.visibility = 'hidden';
+                } else {
+                    document.getElementById('timerDisplay').style.visibility = 'visible';
+                }
+            } else {
+                alert('Could not get timer config: ' + xhr.responseText);
+            }
+        }
+    }
+}
+
+function getTeamsPerPage() {
+    let xhr = new XMLHttpRequest();
+    xhr.open('GET', 'config', true);
+    xhr.setRequestHeader('name', 'rows_on_display');
+    xhr.send();
+    xhr.onreadystatechange = ()=>{
+        if(xhr.readyState === 4) {
+            if(xhr.status === 200) {
+                teams_per_page = parseInt(xhr.responseText);
+            } else {
+                alert('Could not get rows config: ' + xhr.responseText);
+            }
+        }
+    }
+}
+
+function onLoad() {
+    getShowTimer();
+    getTeamsPerPage();
+    getInfo();
+    setInterval(getInfo, 5000);
+    updateTimer();
+    setInterval(updateTimer, 100);
+}
