@@ -9,6 +9,7 @@ struct Team
     std::string number;
     std::string name;
     std::vector<int> scores;
+    std::vector<int> gp_scores;
     int display_score=0;
     int rank=0;
 };

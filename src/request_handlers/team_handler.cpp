@@ -98,6 +98,7 @@ void TeamHandler::CallbackPut(web::http::http_request request) {
                     findIter->number = j["newTeamNumber"];
                     findIter->name = j["newTeamName"];
                     j["newScores"].get_to(findIter->scores);
+                    j["newGPScores"].get_to(findIter->gp_scores);
                 }
                 std::string rep = U("Team edits saved.");
                 request.reply(web::http::status_codes::OK, rep).wait();

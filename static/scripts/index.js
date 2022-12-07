@@ -125,6 +125,10 @@ function exportScoresButtonClicked() {
     window.open('scores/export.csv', '_blank');
 }
 
+function exportGPScoresButtonClicked() {
+    window.open('scores/export_gp.csv', '_blank');
+}
+
 function exportSessionButtonClicked() {
     window.open('session_backup.json', '_blank');
 }

@@ -124,11 +124,12 @@ function calculateScore(M00, M01, M02a, M02b, M03a, M03b, M04, M05a, M05b, M06a,
     return score;
 }
 
-function submitScore(team,score) {
+function submitScore(team,score,gpScore) {
     let jsonData = {};
     let endOfTeamNumber = team.indexOf(" ");
     jsonData.teamNumber = team.substring(0,endOfTeamNumber);
     jsonData.score = score;
+    jsonData.gpScore = parseInt(gpScore);
 
     let xhr = new XMLHttpRequest();
     xhr.open('PUT', 'scores/submit', true);

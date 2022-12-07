@@ -14,14 +14,14 @@ function onLoad() {
             document.getElementById("teamName").value = team.name;
 
             let scoresArr = team.scores;
+            let gpScoresArr = team.gpScores;
 
             document.getElementById("numberCell").colSpan = scoresArr.length;
             document.getElementById("nameCell").colSpan = scoresArr.length;
             document.getElementById("submitCell").colSpan = scoresArr.length;
 
             let scoresRow = document.getElementById("scoresRow");
-            let i;
-            for(i = 0; i < scoresArr.length; i++) {
+            for(let i = 0; i < scoresArr.length; i++) {
                 let cell = document.createElement("td");
 
                 let label = document.createElement("label");
@@ -35,6 +35,23 @@ function onLoad() {
                 cell.appendChild(input);
 
                 scoresRow.appendChild(cell);
+            }
+
+            let gpScoresRow = document.getElementById("gpScoresRow");
+            for(let i = 0; i < gpScoresArr.length; i++) {
+                let cell = document.createElement("td");
+
+                let label = document.createElement("label");
+                label.className = "grouptitle";
+                label.appendChild(document.createTextNode("Match " + (i+1) + " GP Score"));
+                cell.appendChild(label);
+
+                let input = document.createElement("input");
+                input.type = "number";
+                input.value = gpScoresArr[i];
+                cell.appendChild(input);
+
+                gpScoresRow.appendChild(cell);
             }
         }
     }
@@ -50,10 +67,16 @@ function submitEdits() {
 
     jsonData.newScores = [];
     let scoreCells = document.getElementById("scoresRow").childNodes;
-    let i;
-    for(i = 0; i < scoreCells.length; i++) {
+    for(let i = 0; i < scoreCells.length; i++) {
         let score = parseInt(scoreCells[i].getElementsByTagName("input")[0].value);
         jsonData.newScores.push(score);
+    }
+
+    jsonData.newGPScores = [];
+    let gpScoreCells = document.getElementById("gpScoresRow").childNodes;
+    for (let i = 0; i < gpScoreCells.length; i++) {
+        let score = parseInt(gpScoreCells[i].getElementsByTagName("input")[0].value);
+        jsonData.newGPScores.push(score);
     }
 
     let xhr = new XMLHttpRequest();

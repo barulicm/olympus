@@ -13,7 +13,8 @@ public:
 private:
     Session& session_;
     void CallbackPut(web::http::http_request request);
-    void CallbackGet(web::http::http_request request);
+    void CallbackGetExport(web::http::http_request request);
+    void CallbackGetGPExport(web::http::http_request request);
     void UpdateRanks();
     void UpdateResults();
     Team &GetTeamByNumber(const std::string &number);
