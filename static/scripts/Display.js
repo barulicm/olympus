@@ -21,6 +21,9 @@ function getInfo() {
             let round_count = Math.max(... teamArr.map(team => team.scores.length))
 
             let tabBody = document.getElementsByTagName("tbody").item(0);
+            while(tabBody.firstChild) {
+                tabBody.removeChild(tabBody.lastChild);
+            }
 
             let headerRow = document.createElement("tr");
 
@@ -45,6 +48,8 @@ function getInfo() {
             finalScoreHeader.innerText = "Final";
             finalScoreHeader.attributes["scope"] = "col";
             headerRow.appendChild(finalScoreHeader);
+
+            tabBody.appendChild(headerRow);
 
             for(let i = current_top_team; i  < Math.min(current_top_team+teams_per_page,teamArr.length); i++) {
                 // Populate Table Row
