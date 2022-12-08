@@ -13,7 +13,8 @@ public:
 private:
     Session& session_;
 
-    void Callback(const web::http::http_request& request);
+    void ExportCallback(const web::http::http_request& request);
+    void ImportCallback(web::http::http_request request);
 
 
 };

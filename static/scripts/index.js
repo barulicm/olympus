@@ -133,6 +133,34 @@ function exportSessionButtonClicked() {
     window.open('session_backup.json', '_blank');
 }
 
+function importSessionButtonClicked() {
+    var fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = '.json';
+    fileInput.onchange = e => {
+        if(e.target.files.length === 0) {
+            location.reload();
+        }
+        var reader = new FileReader();
+        reader.onload = function(){
+            let xhr = new XMLHttpRequest();
+            xhr.open('PUT', 'session/import', true);
+            xhr.onreadystatechange = ()=>{
+                if(xhr.readyState === 4) {
+                    if(xhr.status === 200) {
+                        location.reload();
+                    } else {
+                        alert("Importing session. Status code " + xhr.status + '. ' + xhr.responseText);
+                    }
+                }
+            };
+            xhr.send(reader.result);
+        };
+        reader.readAsText(e.target.files[0]);
+    };
+    fileInput.click();
+}
+
 function timerButtonClicked() {
     let timer_button = document.getElementById('timerButton');
     if(timer_button.innerText === 'Start Timer') {

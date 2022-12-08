@@ -27,7 +27,8 @@ add_library(olympus_library STATIC
         src/request_handlers/team_handler.cpp
         src/request_handlers/timer_handler.cpp
         src/get_exec_path.cpp
-        src/get_ip_addresses.cpp)
+        src/get_ip_addresses.cpp
+        src/save_session_backup.cpp)
 target_include_directories(olympus_library PUBLIC src)
 target_link_libraries(olympus_library PUBLIC
     cpprestsdk::cpprest

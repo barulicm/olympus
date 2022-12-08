@@ -19,7 +19,7 @@
 <div class="importExportControls">
     <div class="importExportGroup" id="teamControls">
         <label class="groupHeading">Load Teams</label>
-        <input type="file" id="importTeamsFile" name="file"/>
+        <input type="file" id="importTeamsFile" name="file" accept=".csv"/>
         <button id="importButton" onclick="importTeams()">Import Teams</button>
     </div>
     <div class="importExportGroup">
@@ -31,6 +31,10 @@
         <button id="exportScores" onclick="exportScoresButtonClicked()">Export Scores</button>
         <button id="exportGPScores" onclick="exportGPScoresButtonClicked()">Export GP Scores</button>
         <button id="exportSession" onclick="exportSessionButtonClicked()">Export Session</button>
+    </div>
+    <div class="importExportGroup">
+        <label class="groupHeading">Recovery</label>
+        <button id="importSession" onclick="importSessionButtonClicked()">Import Session</button>
     </div>
 </div>
 
