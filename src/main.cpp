@@ -2,6 +2,7 @@
 #include "request_handlers/all_request_handlers.hpp"
 #include "session.hpp"
 #include "get_exec_path.hpp"
+#include "get_ip_addresses.hpp"
 
 int main(int argc, char** argv) {
     const auto share_path = GetCurrentExecutableDirectory() / "../share/olympus";
@@ -33,7 +34,14 @@ int main(int argc, char** argv) {
 
     http_listener.open().wait();
 
-    std::cout << "Listening for requests at: " << address << "\n";
+    const auto ip_addresses = GetIpAddresses();
+
+    std::cout << "Listening for requests at:\n";
+
+    for(const auto& ip_address : ip_addresses) {
+        std::cout << "\thttp://" << ip_address << ":8080\n";
+    }
+
     std::cout << "Press ENTER to exit.\n";
 
     std::cin.ignore();
