@@ -56,13 +56,11 @@ function onLoad() {
     setInterval(updateTimer, 100);
 }
 
-function importTeams() {
-    var files = document.getElementById('importTeamsFile').files;
-    if(files.length === 0) {
-        alert("Please select a file first.");
-        return;
+function onTeamsFileSelected(e) {
+    if(e.target.files.length === 0) {
+        location.reload();
     }
-    var file = files[0];
+    var file = e.target.files[0];
     var reader = new FileReader();
     reader.onload = (function(theFile) {
         return function(e) {
@@ -83,6 +81,14 @@ function importTeams() {
     })(file);
 
     reader.readAsText(file);
+}
+
+function importTeams() {
+    let fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = '.csv';
+    fileInput.onchange = onTeamsFileSelected;
+    fileInput.click();
 }
 
 function sendAddTeam(teamName, teamNumber, reload, async) {
