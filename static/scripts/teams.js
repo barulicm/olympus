@@ -14,22 +14,27 @@ function onLoad() {
                 let rankCell=document.createElement("td");
                 let numberCell=document.createElement("td");
                 let nameCell=document.createElement("td");
-                let delCell=document.createElement("td");
+                let buttonsCell=document.createElement("td");
                 rankCell.appendChild(document.createTextNode(teamArr[i].rank));
                 numberCell.appendChild(document.createTextNode(teamArr[i].number));
                 let teamNameLink = document.createElement("a");
-                teamNameLink.setAttribute("href", 'TeamDetails.html?team=' + teamArr[i].number);
+                let teamDetailsUrl = 'TeamDetails.html?team=' + teamArr[i].number;
+                teamNameLink.setAttribute("href", teamDetailsUrl);
                 teamNameLink.innerText = teamArr[i].name;
                 nameCell.appendChild(teamNameLink);
                 let delButton = document.createElement("button");
                 delButton.classList.add("deleteButton");
                 delButton.id = teamArr[i].number;
                 delButton.onclick = removeTeam;
-                delCell.appendChild(delButton);
+                buttonsCell.appendChild(delButton);
+                let editButton = document.createElement("button");
+                editButton.classList.add("editButton");
+                editButton.onclick = () => { window.open(teamDetailsUrl, "_self") };
+                buttonsCell.appendChild(editButton);
                 row.appendChild(rankCell);
                 row.appendChild(numberCell);
                 row.appendChild(nameCell);
-                row.appendChild(delCell);
+                row.appendChild(buttonsCell);
                 tabBody.insertBefore(row,tabBody.childNodes[tabBody.childNodes.length-2]);
             }
         }

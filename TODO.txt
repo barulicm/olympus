@@ -1,5 +1,3 @@
 - Implement full state export/import for disaster recovery
 - Refocus to FLL only?
   - Generate scorecards from "mission descriptions"
-- When a team name is empty, there is no way to edit it.
-  - Maybe split the edit button on the teams page into its own thing, or have both

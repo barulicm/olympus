@@ -41,6 +41,16 @@ button.deleteButton {
     outline:none;
 }
 
+button.editButton {
+    background-color: transparent;
+    background-image: url(../images/pencil.png);
+    background-size:32px 32px;
+    border: none;
+    height: 32px;
+    width: 32px;
+    outline:none;
+}
+
 #importForm {
     background-color: #dddddd;
     width:75%;
