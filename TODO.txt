@@ -1,6 +1,5 @@
 - Implement full state export/import for disaster recovery
 - Refocus to FLL only?
-  - Remove phases and matches, just need to track teams and their scores
   - Generate scorecards from "mission descriptions"
-  - Remove static vs dynamic pages, since scorecard would be only thing changing
-  - Make number of rounds runtime configurable?
+- When a team name is empty, there is no way to edit it.
+  - Maybe split the edit button on the teams page into its own thing, or have both
