@@ -6,18 +6,13 @@ function onLoad() {
     xhr.onreadystatechange = ()=>{
         if(xhr.readyState === 4 && xhr.status === 200) {
             var datalist = document.getElementById("teams");
-
-            var teamArr = JSON.parse(xhr.responseText);
-            var i;
-            for(i = 0; i  < teamArr.length; i++) {
-                var teamOption = document.createElement("option");
-                var teamNumber = teamArr[i].number;
-                var teamName = teamArr[i].name;
-
-                teamOption.setAttribute("value", teamNumber + " - " + teamName);
-
-                datalist.appendChild(teamOption);
-            }
+            var teams = JSON.parse(xhr.responseText);
+            teams.sort((a,b) => parseInt(a.number) - parseInt(b.number))
+            teams.forEach((team) => {
+                let option = document.createElement("option");
+                option.setAttribute("value", team.number + ' - ' + team.name);
+                datalist.appendChild(option);
+            });
         }
     }
 }
