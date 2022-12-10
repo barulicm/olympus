@@ -32,11 +32,12 @@ html, body {
 table {
     border-collapse: collapse;
     border: none;
+    table-layout: fixed;
     width:95%;
     margin-left:auto;
     margin-right:auto;
     margin-top:10px;
-    font-size: 64px;
+    font-size: 48px;
 }
 
 th {
@@ -48,6 +49,7 @@ th, td {
     border-bottom: 1px solid #ddd;
     text-align: left;
     padding: 5px;
+    overflow: hidden;
 }
 
 tr:nth-child(even) {
@@ -67,10 +69,17 @@ td {
     border-right-color: darkgray;
 }
 
-/*.numberCell {*/
-/*border-right: solid;*/
-/*border-right-color: black;*/
-/*}*/
+#rankHeader {
+    width: 125px;
+}
+
+#finalScoreHeader {
+    width: 150px;
+}
+
+.RoundHeader {
+    width: 100px;
+}
 
 .box {
     display: flex;

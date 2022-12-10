@@ -30,23 +30,27 @@ function getInfo() {
             let rankHeader = document.createElement("th");
             rankHeader.innerText = "Rank";
             rankHeader.attributes["scope"] = "col";
+            rankHeader.id = "rankHeader";
             headerRow.appendChild(rankHeader);
 
             let teamNameHeader = document.createElement("th");
             teamNameHeader.innerText = "Team";
             teamNameHeader.attributes["scope"] = "col";
+            teamNameHeader.id = "teamNameHeader";
             headerRow.appendChild(teamNameHeader);
 
             for(let i = 0; i < round_count; i++) {
                 let roundHeader = document.createElement("th");
                 roundHeader.innerText = "R" + (i+1);
                 roundHeader.attributes["scope"] = "col";
+                roundHeader.classList.add("RoundHeader");
                 headerRow.appendChild(roundHeader);
             }
 
             let finalScoreHeader = document.createElement("th");
             finalScoreHeader.innerText = "Final";
             finalScoreHeader.attributes["scope"] = "col";
+            finalScoreHeader.id = "finalScoreHeader";
             headerRow.appendChild(finalScoreHeader);
 
             tabBody.appendChild(headerRow);
@@ -61,7 +65,8 @@ function getInfo() {
 
                 teamCell=document.createElement("td");
                 teamCell.style.whiteSpace='pre';
-                teamCell.appendChild(document.createTextNode(teamArr[i].number.padStart(5, ' ') + "  " + teamArr[i].name.substr(0,10)));
+                // teamCell.appendChild(document.createTextNode(teamArr[i].number.padStart(5, ' ') + "  " + teamArr[i].name.substr(0,10)));
+                teamCell.appendChild(document.createTextNode(teamArr[i].number.padStart(5, ' ') + "  " + teamArr[i].name));
                 row.appendChild(teamCell);
 
                 for(let r = 0; r < round_count; r++) {
