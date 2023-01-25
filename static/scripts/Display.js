@@ -30,6 +30,7 @@ function getInfo() {
             let rankHeader = document.createElement("th");
             rankHeader.innerText = "Rank";
             rankHeader.attributes["scope"] = "col";
+            rankHeader.classList.add("threeStud");
             rankHeader.id = "rankHeader";
             headerRow.appendChild(rankHeader);
 
@@ -50,6 +51,7 @@ function getInfo() {
             let finalScoreHeader = document.createElement("th");
             finalScoreHeader.innerText = "Final";
             finalScoreHeader.attributes["scope"] = "col";
+            finalScoreHeader.classList.add("threeStud");
             finalScoreHeader.id = "finalScoreHeader";
             headerRow.appendChild(finalScoreHeader);
 
