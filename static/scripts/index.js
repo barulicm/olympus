@@ -115,7 +115,7 @@ function sendAddTeam(teamName, teamNumber, reload, async) {
 
 function rerankTeamsButtonClicked() {
     var xhr = new XMLHttpRequest();
-    xhr.open('PUT', 'scores/rerank', async);
+    xhr.open('PUT', 'scores/rerank', true);
     xhr.onreadystatechange = ()=>{
         if(xhr.readyState === 4) {
             if(xhr.status === 200) {
