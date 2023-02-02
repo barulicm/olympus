@@ -1,1 +1,33 @@
 - Generate scorecards from "mission descriptions"
+- results page should show scores
+- display should support multiple screen resolutions
+  - define graphics at 1080 (or higher)
+  - stretch width to fit screen
+  - divide window size into studs for defining CSS sizes
+  - how to handle height? Want to make it a whole multiple of the stud size
+  - idealy: choose max row size automatically, accounting for black bar
+  - Should black bar move in descrete stud jumps?
+- scorecard should show which round is being entered when the team is selected (as a sanity check)
+- clean up control page design
+- make a landing page with big blocky menu?
+- stylize timer display? (keep it legible)
+- add password protection? 
+  - one password to unlock full system
+  - display doesn't need a password
+  - cache user's unlock status in a cookie?
+  - how should the user set the password if not from the command line?
+- new display features
+  - full blackout mode
+  - FLL logo only mode
+  - animations?
+  - per-display controls?
+    - show a list of displays and selecting one allows controlling just that display
+    - have a button for controlling all of them
+    - multi-select to control subset of displays?
+- solve ctrl+c handling issues (works in docker, doesn't in clion?)
+- restore windows native support
+- finish unit tests
+- setup CI actions
+- setup CD actions
+  - generate 3 artifacts: Windows installer, debian package, docker image
+- scores should export in team number order
