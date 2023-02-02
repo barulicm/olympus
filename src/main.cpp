@@ -1,3 +1,6 @@
+#include <boost/asio/signal_set.hpp>
+#include <boost/asio/io_service.hpp>
+#include <boost/bind/bind.hpp>
 #include "http_listener.hpp"
 #include "request_handlers/all_request_handlers.hpp"
 #include "session.hpp"
@@ -43,12 +46,16 @@ int main(int argc, char** argv) {
         for (const auto &ip_address: ip_addresses) {
             std::cout << "\thttp://" << ip_address << ":8080\n";
         }
+        std::cout << std::endl;
 
-        std::cout << "Press ENTER to exit.\n";
+        boost::asio::io_service signal_handling_io_service;
+        boost::asio::signal_set signals(signal_handling_io_service);
+        signals.add(SIGINT);
+        signals.add(SIGTERM);
+        signals.async_wait(boost::bind(&boost::asio::io_service::stop, &signal_handling_io_service));
+        signal_handling_io_service.run();
 
-        std::cin.ignore();
-        std::string line;
-        std::getline(std::cin, line);
+        std::cout << "Server closed." << std::endl;
 
         http_listener.close().wait();
     }catch(const std::exception& e) {
