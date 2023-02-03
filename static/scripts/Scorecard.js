@@ -140,3 +140,18 @@ function submitScore(team,score,gpScore) {
         }
     }
 }
+
+function onTeamChange(teamText) {
+    let endOfTeamNumber = teamText.indexOf(" ");
+    let teamNumber = teamText.substring(0,endOfTeamNumber);
+    let xhr = new XMLHttpRequest();
+    xhr.open('GET', 'team/'+teamNumber, true);
+    xhr.send();
+    xhr.onreadystatechange = ()=>{
+        if(xhr.readyState === 4 && xhr.status === 200) {
+            let team = JSON.parse(xhr.responseText);
+            var output = document.getElementById("matchOutput");
+            output.value = team.scores.length+1;
+        }
+    }
+}

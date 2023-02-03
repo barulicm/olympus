@@ -7,7 +7,6 @@
   - how to handle height? Want to make it a whole multiple of the stud size
   - idealy: choose max row size automatically, accounting for black bar
   - Should black bar move in descrete stud jumps?
-- scorecard should show which round is being entered when the team is selected (as a sanity check)
 - clean up control page design
 - make a landing page with big blocky menu?
 - stylize timer display? (keep it legible)
@@ -30,4 +29,3 @@
 - setup CI actions
 - setup CD actions
   - generate 3 artifacts: Windows installer, debian package, docker image
-- scores should export in team number order
