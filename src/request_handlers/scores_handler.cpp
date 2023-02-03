@@ -1,4 +1,5 @@
 #include "scores_handler.hpp"
+#include <ranges>
 #include <nlohmann/json.hpp>
 
 ScoresHandler::ScoresHandler(Session &session)
@@ -77,25 +78,21 @@ void ScoresHandler::CallbackPut(web::http::http_request request) {
 
 void ScoresHandler::CallbackGetExport(web::http::http_request request) {
     try {
+        auto teams = session_.teams; // copying so we can sort locally
+        // TODO(barulicm): should Team::number just be an int now?
+        std::ranges::sort(teams, std::ranges::less(), [](const Team& t){ return std::stoi(t.number); });
+        const auto score_count = std::ranges::max(teams | std::views::transform([](const auto& t){ return t.scores.size(); }));
         std::stringstream csv_content;
-        auto score_count = 0ul;
-        for(const auto& team : session_.teams) {
-            score_count = std::max(score_count, team.scores.size());
-        }
         csv_content << "rank,team number,team name";
         for(auto i = 0ul; i < score_count; ++i) {
             csv_content << ",match " << (i+1);
         }
         csv_content << ",final score\n";
-        for (const auto &team: session_.teams) {
-            csv_content << team.rank << "," << team.number << "," << team.name;
-            for (const auto &score: team.scores) {
-                csv_content << "," << score;
-            }
-            for(auto i = 0ul; i < (score_count - team.scores.size()); ++i) {
-                csv_content << ",0";
-            }
-            csv_content << "," << team.display_score;
+        for (const auto &team: teams) {
+            csv_content << team.rank << "," << team.number << "," << team.name << ",";
+            std::ranges::copy(team.scores, std::ostream_iterator<int>(csv_content, ","));
+            std::ranges::fill_n(std::ostream_iterator<int>(csv_content, ","), score_count - team.scores.size(), 0);
+            csv_content << team.display_score;
             csv_content << "\n";
         }
         request.reply(web::http::status_codes::OK, csv_content.str(), U("text/csv")).wait();
@@ -110,26 +107,21 @@ void ScoresHandler::CallbackGetExport(web::http::http_request request) {
 
 void ScoresHandler::CallbackGetGPExport(web::http::http_request request) {
     try {
+        auto teams = session_.teams; // copying so we can sort locally
+        std::ranges::sort(teams, std::ranges::less(), [](const Team& t){ return std::stoi(t.number); });
+        const auto score_count = std::ranges::max(teams | std::views::transform([](const auto& t){ return t.gp_scores.size(); }));
         std::stringstream csv_content;
-        auto score_count = 0ul;
-        for(const auto& team : session_.teams) {
-            score_count = std::max(score_count, team.gp_scores.size());
-        }
         csv_content << "team number,team name";
         for(auto i = 0ul; i < score_count; ++i) {
             csv_content << ",match " << (i+1);
         }
         csv_content << ",total GP points\n";
-        for (const auto &team: session_.teams) {
-            csv_content << team.number << "," << team.name;
-            for (const auto &score: team.gp_scores) {
-                csv_content << "," << score;
-            }
-            for(auto i = 0ul; i < (score_count - team.gp_scores.size()); ++i) {
-                csv_content << ",0";
-            }
+        for (const auto &team: teams) {
+            csv_content << team.number << "," << team.name << ",";
+            std::ranges::copy(team.gp_scores, std::ostream_iterator<int>(csv_content, ","));
+            std::ranges::fill_n(std::ostream_iterator<int>(csv_content, ","), score_count - team.gp_scores.size(), 0);
             const auto total_gp_points = std::accumulate(team.gp_scores.begin(), team.gp_scores.end(), 0);
-            csv_content << "," << total_gp_points;
+            csv_content << total_gp_points;
             csv_content << "\n";
         }
         request.reply(web::http::status_codes::OK, csv_content.str(), U("text/csv")).wait();
