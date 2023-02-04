@@ -1,36 +1,32 @@
+:root {
+    --stud-size: calc(100vw / 32); /* background is 32 studs wide*/
+}
+
 .topBar {
     display: flex;
-    margin-left: 60px;
-    margin-right: 60px;
+    margin-left: var(--stud-size);
+    margin-right: var(--stud-size);
 }
 
 .topImage {
     margin: 0;
-    height: 100px;
+    height: calc((2 * var(--stud-size)) - 20px);
     padding: 6px;
     border: 4px solid;
     border-image: url(../images/white_tile_slice.png) 4 fill;
     border-image-repeat: stretch;
 }
 
-#logo {
-    /*margin-left: 0px;*/
-}
-
-#gameLogo {
-    /*margin-left: 0;*/
-}
-
 #logosSpacer {
-    width: 420px;
+    width: calc(7 * var(--stud-size));
 }
 
 #timerDisplay {
     margin: 0;
     margin-left: auto;
-    height: 100px;
+    height: calc(( 2 * var(--stud-size) ) - 20px);
     width: 280px;
-    font-size: 100px;
+    font-size: calc(( 2 * var(--stud-size) ) - 20px);
     padding: 6px 6px 6px 6px;
     border: 4px solid;
     border-image: url(../images/white_tile_slice.png) 4 fill;
@@ -42,23 +38,23 @@ html, body {
     height: 100%;
     margin: 0;
     background-image: url("../images/lego_plate_background.png");
+    background-repeat: no-repeat;
+    background-size: cover;
     font-family: "Lucida Console", Courier, monospace;
 }
 
 table {
-    /*border-collapse: collapse;*/
     border: none;
     table-layout: fixed;
-    width:1800px;
+    width: calc(30 * var(--stud-size));
     margin-left:auto;
     margin-right:auto;
     margin-top:0;
     border-spacing: 0;
-    font-size: 50px;
+    font-size: calc(var(--stud-size) - 10px);
 }
 
 th {
-    /*background-color:white;*/
     color: black;
     border: 4px solid;
     border-image: url(../images/red_tile_slice.png) 4 fill;
@@ -72,9 +68,7 @@ th, td {
 }
 
 tr {
-    /*border-bottom: none;*/
-    /*border-color: black;*/
-    height: 60px;
+    height: var(--stud-size);
 }
 
 td {
@@ -90,15 +84,15 @@ tr:nth-child(odd) > td{
 }
 
 #rankHeader {
-    width: 170px;
+    width: calc((3 * var(--stud-size)) - 10px);
 }
 
 #finalScoreHeader {
-    width: 170px;
+    width: calc((3 * var(--stud-size)) - 10px);
 }
 
 .RoundHeader {
-    width: 110px;
+    width: calc((2 * var(--stud-size)) - 10px);
 }
 
 .box {
