@@ -20,7 +20,6 @@ add_library(olympus_library STATIC
         src/mime_types.cpp
         src/request_handlers/config_handler.cpp
         src/request_handlers/control_query_handler.cpp
-        src/request_handlers/results_handler.cpp
         src/request_handlers/scores_handler.cpp
         src/request_handlers/session_save_handler.cpp
         src/request_handlers/static_resources_handler.cpp

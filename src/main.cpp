@@ -26,7 +26,6 @@ int main(int argc, char** argv) {
         request_handlers.push_back(std::make_unique<TeamHandler>(session));
         request_handlers.push_back(std::make_unique<TimerHandler>());
         request_handlers.push_back(std::make_unique<ScoresHandler>(session));
-        request_handlers.push_back(std::make_unique<ResultsHandler>(session));
         request_handlers.push_back(std::make_unique<ConfigHandler>(session.config));
         request_handlers.push_back(std::make_unique<ControlQueryHandler>(session));
         request_handlers.push_back(std::make_unique<StaticResourceHandler>(share_path));

@@ -1,5 +1,4 @@
 - Generate scorecards from "mission descriptions"
-- results page should show scores
 - display should support multiple screen resolutions
   - define graphics at 1080 (or higher)
   - stretch width to fit screen

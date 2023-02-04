@@ -3,7 +3,6 @@
 
 #include "config_handler.hpp"
 #include "control_query_handler.hpp"
-#include "results_handler.hpp"
 #include "scores_handler.hpp"
 #include "session_save_handler.hpp"
 #include "static_resources_handler.hpp"
