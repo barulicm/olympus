@@ -121,6 +121,9 @@ function updateTimer() {
 function setBlackoutTop(val_in_studs) {
     let blackoutElement = document.getElementById("blackout");
     blackoutElement.style.setProperty("top", "calc(" + val_in_studs + " * var(--stud-size))");
+    // Set FllLogo's bottom so cropping works on logo screen too
+    let fllLogoElement = document.getElementById("fllLogoContainer");
+    fllLogoElement.style.setProperty('bottom', 'calc(100% - (' + val_in_studs + ' * var(--stud-size)))');
 }
 
 function setFllLogoVisibility(visible) {
@@ -151,6 +154,7 @@ function getDisplayState() {
                         setFllLogoVisibility(false);
                         break;
                     case DisplayStates.FllLogo:
+                        setBlackoutTop(teams_per_page + 4);
                         setFllLogoVisibility(true);
                         break;
                 }

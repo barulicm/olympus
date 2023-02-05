@@ -6,9 +6,7 @@ function queryHasTeams() {
 
     xhr.onreadystatechange = ()=>{
         if(xhr.readyState === 4 && xhr.status === 200) {
-            if (xhr.responseText === 'false') {
-                document.getElementById('scheduleControls').className += ' disabledcontrol';
-            } else {
+            if (xhr.responseText === 'true') {
                 document.getElementById('teamControls').className += ' disabledcontrol';
             }
         }
@@ -49,10 +47,27 @@ function getRowsPerDisplay() {
     }
 }
 
+function getDisplayState() {
+    let xhr = new XMLHttpRequest();
+    xhr.open('GET', 'config', true);
+    xhr.setRequestHeader('name', 'display_state');
+    xhr.send();
+    xhr.onreadystatechange = ()=>{
+        if(xhr.readyState === 4) {
+            if(xhr.status === 200) {
+                document.getElementById('displayState').value = xhr.responseText;
+            } else {
+                alert('Request failed: ' + xhr.responseText);
+            }
+        }
+    };
+}
+
 function onLoad() {
     queryHasTeams();
     getShowTimer();
     getRowsPerDisplay();
+    getDisplayState();
     setInterval(updateTimer, 100);
 }
 
@@ -255,6 +270,21 @@ function setRowsPerDisplay() {
     let xhr = new XMLHttpRequest();
     xhr.open('PUT', 'config', true);
     xhr.setRequestHeader('name', 'rows_on_display');
+    xhr.setRequestHeader('value', value);
+    xhr.send();
+
+    xhr.onreadystatechange = ()=>{
+        if(xhr.readyState === 4 && xhr.status !== 200) {
+            alert('Request failed: ' + xhr.responseText);
+        }
+    }
+}
+
+function setDisplayState() {
+    let value = document.getElementById('displayState').value;
+    let xhr = new XMLHttpRequest();
+    xhr.open('PUT', 'config', true);
+    xhr.setRequestHeader('name', 'display_state');
     xhr.setRequestHeader('value', value);
     xhr.send();
 
