@@ -8,28 +8,29 @@
     <title>FLL 2022 - Super Powered</title>
 </head>
 <body onload="onLoad()">
-<div class="box">
-    <div class="row display">
-        <div class="topBar">
-            <img id="logo" class="topImage" src="images/FIRSTLego_iconHorz_RGB.jpg"/>
-            <div id="logosSpacer"></div>
-            <img id="gameLogo" class="topImage" src="images/SUPERPOWERED_Logo_Stacked_RGB_FullColor_resized.jpg"/>
-            <p id="timerDisplay">0:00</p>
-        </div>
+<div id="scoresTableContainer">
+    <div class="topBar">
+        <img id="logo" class="topImage" src="images/FIRSTLego_iconHorz_RGB.jpg"/>
+        <div id="logosSpacer"></div>
+        <img id="gameLogo" class="topImage" src="images/SUPERPOWERED_Logo_Stacked_RGB_FullColor_resized.jpg"/>
+        <p id="timerDisplay">0:00</p>
+    </div>
 
-        <table id="teamsTable">
-            <tbody>
-            <tr>
-                <th scope="col" id="rankHeader">Rank</th>
-                <th scope="col">Team</th>
-                <th scope="col" id="finalScoreHeader">Final</th>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-    <div class="row blackout">
-        <!-- nothing here -->
-    </div>
+    <table id="teamsTable">
+        <tbody>
+        <tr>
+            <th scope="col" id="rankHeader">Rank</th>
+            <th scope="col">Team</th>
+            <th scope="col" id="finalScoreHeader">Final</th>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div id="blackout">
+    <!-- nothing here -->
+</div>
+<div id="fllLogoContainer">
+    <img src="images/FIRSTLego_IconVert_RGB.png"/>
 </div>
 </body>
 </html>

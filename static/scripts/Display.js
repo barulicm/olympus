@@ -1,5 +1,12 @@
-var current_top_team = 0;
-var teams_per_page = 8;
+const DisplayStates = {
+    ShowScores: "ShowScores",
+    Blackout: "Blackout",
+    FllLogo: "FllLogo"
+}
+
+let current_top_team = 0;
+let teams_per_page = 8;
+let display_state = DisplayStates.ShowScores;
 
 function getInfo() {
     var xhr = new XMLHttpRequest();
@@ -111,6 +118,49 @@ function updateTimer() {
     xhr.send();
 }
 
+function setBlackoutTop(val_in_studs) {
+    let blackoutElement = document.getElementById("blackout");
+    blackoutElement.style.setProperty("top", "calc(" + val_in_studs + " * var(--stud-size))");
+}
+
+function setFllLogoVisibility(visible) {
+    let fllLogoElement = document.getElementById("fllLogoContainer");
+    if(visible === true) {
+        fllLogoElement.style.setProperty("top", "0");
+    } else {
+        fllLogoElement.style.setProperty("top", "100%");
+    }
+}
+
+function getDisplayState() {
+    let xhr = new XMLHttpRequest();
+    xhr.open('GET', 'config', true);
+    xhr.setRequestHeader('name', 'display_state');
+    xhr.send();
+    xhr.onreadystatechange = ()=>{
+        if(xhr.readyState === 4) {
+            if(xhr.status === 200) {
+                display_state = xhr.responseText;
+                switch (display_state) {
+                    case DisplayStates.ShowScores:
+                        setBlackoutTop(teams_per_page + 4);
+                        setFllLogoVisibility(false);
+                        break;
+                    case DisplayStates.Blackout:
+                        setBlackoutTop(0);
+                        setFllLogoVisibility(false);
+                        break;
+                    case DisplayStates.FllLogo:
+                        setFllLogoVisibility(true);
+                        break;
+                }
+            } else {
+                console.error('Could not get display state config: ' + xhr.responseText);
+            }
+        }
+    }
+}
+
 function getShowTimer() {
     let xhr = new XMLHttpRequest();
     xhr.open('GET', 'config', true);
@@ -125,7 +175,7 @@ function getShowTimer() {
                     document.getElementById('timerDisplay').style.visibility = 'visible';
                 }
             } else {
-                alert('Could not get timer config: ' + xhr.responseText);
+                console.error('Could not get timer config: ' + xhr.responseText);
             }
         }
     }
@@ -140,16 +190,25 @@ function getTeamsPerPage() {
         if(xhr.readyState === 4) {
             if(xhr.status === 200) {
                 teams_per_page = parseInt(xhr.responseText);
+                if(display_state === DisplayStates.ShowScores) {
+                    setBlackoutTop(teams_per_page + 4);
+                }
             } else {
-                alert('Could not get rows config: ' + xhr.responseText);
+                console.error('Could not get rows config: ' + xhr.responseText);
             }
         }
     }
 }
 
-function onLoad() {
+function updateDisplayConfig() {
+    getDisplayState();
     getShowTimer();
     getTeamsPerPage();
+}
+
+function onLoad() {
+    updateDisplayConfig();
+    setInterval(updateDisplayConfig, 1000);
     getInfo();
     setInterval(getInfo, 5000);
     updateTimer();

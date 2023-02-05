@@ -35,6 +35,21 @@ void ConfigHandler::CallbackGet(const web::http::http_request &request) {
         response = (config_.show_timer ? "true" : "false");
     } else if(name == "rows_on_display") {
         response = std::to_string(config_.rows_on_display);
+    } else if(name == "display_state") {
+        switch(config_.display_state) {
+            case Config::DisplayState::ShowScores:
+                response = "ShowScores";
+                break;
+            case Config::DisplayState::Blackout:
+                response = "Blackout";
+                break;
+            case Config::DisplayState::FllLogo:
+                response = "FllLogo";
+                break;
+            default:
+                response = "unknown";
+                break;
+        }
     } else {
         request.reply(web::http::status_codes::BadRequest, U("No such config value with name: '" + name + "'"), U("text/plain")).wait();
         return;
@@ -63,6 +78,19 @@ void ConfigHandler::CallbackPut(const web::http::http_request &request) {
     } else if(name == "rows_on_display") {
         config_.rows_on_display = std::stoi(value);
         request.reply(web::http::status_codes::OK);
+    } else if(name == "display_state") {
+        if(value == "ShowScores") {
+            config_.display_state = Config::DisplayState::ShowScores;
+            request.reply(web::http::status_codes::OK);
+        } else if(value == "Blackout") {
+            config_.display_state = Config::DisplayState::Blackout;
+            request.reply(web::http::status_codes::OK);
+        } else if(value == "FllLogo") {
+            config_.display_state = Config::DisplayState::FllLogo;
+            request.reply(web::http::status_codes::OK);
+        } else {
+            request.reply(web::http::status_codes::BadRequest, U("Unrecognized value for DisplayState"));
+        }
     } else {
         request.reply(web::http::status_codes::BadRequest, U("No such config value with name: '" + name + "'"), U("text/plain")).wait();
     }

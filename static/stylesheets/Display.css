@@ -95,20 +95,33 @@ tr:nth-child(odd) > td{
     width: calc((2 * var(--stud-size)) - 10px);
 }
 
-.box {
-    display: flex;
-    flex-flow: column;
-    height: 100%;
-}
-
-.box .row.display {
-    flex: 0 1 auto;
+#scoresTableContainer {
     overflow: hidden;
-    resize: vertical;
+    /*resize: vertical;*/
     height: 100%;
 }
 
-.box .row.blackout {
-    flex: 1 1 auto;
+#blackout {
     background-color: black;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: 100%;
+}
+
+#fllLogoContainer {
+    background-color: white;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#fllLogoContainer >img {
+    height: 80%;
 }
