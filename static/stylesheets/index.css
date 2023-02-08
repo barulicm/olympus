@@ -1,4 +1,4 @@
-.importExportControls {
+.controlsContainer {
     display: inline-block;
     float: left;
     width: 300px;
@@ -7,7 +7,7 @@
     margin: 5px;
 }
 
-.importExportGroup {
+.controlsGroup {
     margin: 10px 10px 20px 10px;
 }
 
@@ -19,21 +19,21 @@
     border-radius:5px;
 }
 
-.importExportGroup input[type="text"],
-.importExportGroup input[type="date"],
-.importExportGroup input[type="datetime"],
-.importExportGroup input[type="email"],
-.importExportGroup input[type="number"],
-.importExportGroup input[type="search"],
-.importExportGroup input[type="time"],
-.importExportGroup input[type="url"],
-.importExportGroup input[type="password"],
-.importExportGroup input[type="file"],
-.importExportGroup input[type="range"],
-.importExportGroup textarea,
-.importExportGroup select,
-.importExportGroup button,
-.importExportGroup output
+.controlsGroup input[type="text"],
+.controlsGroup input[type="date"],
+.controlsGroup input[type="datetime"],
+.controlsGroup input[type="email"],
+.controlsGroup input[type="number"],
+.controlsGroup input[type="search"],
+.controlsGroup input[type="time"],
+.controlsGroup input[type="url"],
+.controlsGroup input[type="password"],
+.controlsGroup input[type="file"],
+.controlsGroup input[type="range"],
+.controlsGroup textarea,
+.controlsGroup select,
+.controlsGroup button,
+.controlsGroup output
 {
     display: block;
     margin-left: 20px;
@@ -53,12 +53,12 @@
     color:#000;
 }
 
-.importExportGroup label.display {
+.controlsGroup label.display {
     display: block;
     margin-left: 20px;
 }
 
-.importExportGroup label.groupHeading {
+.controlsGroup label.groupHeading {
     display: block;
     margin-bottom: 8px;
 }

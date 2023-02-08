@@ -16,29 +16,29 @@
     <a class="navigation" href="TimerDisplay.html">Timer</a>
 </div>
 
-<div class="importExportControls">
-    <div class="importExportGroup" id="teamControls">
+<div class="controlsContainer">
+    <div class="controlsGroup" id="teamControls">
         <label class="groupHeading">Load Teams</label>
         <button id="importButton" onclick="importTeams()">Import Teams</button>
     </div>
-    <div class="importExportGroup">
+    <div class="controlsGroup">
         <label class="groupHeading">Scores</label>
         <button id="rerankTeams" onclick="rerankTeamsButtonClicked()">Rerank Teams</button>
     </div>
-    <div class="importExportGroup">
+    <div class="controlsGroup">
         <label class="groupHeading">Export</label>
         <button id="exportScores" onclick="exportScoresButtonClicked()">Export Scores</button>
         <button id="exportGPScores" onclick="exportGPScoresButtonClicked()">Export GP Scores</button>
         <button id="exportSession" onclick="exportSessionButtonClicked()">Export Session</button>
     </div>
-    <div class="importExportGroup">
+    <div class="controlsGroup">
         <label class="groupHeading">Recovery</label>
         <button id="importSession" onclick="importSessionButtonClicked()">Import Session</button>
     </div>
 </div>
 
-<div class="importExportControls">
-    <div class="importExportGroup">
+<div class="controlsContainer">
+    <div class="controlsGroup">
         <label class="groupHeading">Timer</label>
         <label class="display" id="timerDisplay">-:--</label>
         <br/>
@@ -51,7 +51,10 @@
         <audio id="endGameAudio" src="sounds/end-game.mp3"></audio>
         <audio id="endAudio" src="sounds/end.mp3"></audio>
     </div>
-    <div class="importExportGroup">
+</div>
+
+<div class="controlsContainer">
+    <div class="controlsGroup">
         <label class="groupHeading">Display</label>
         <label for="showTimerCheckbox">Show timer:</label>
         <input type="checkbox" id="showTimerCheckbox" oninput="setShowTimer()">
