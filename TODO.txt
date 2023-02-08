@@ -16,6 +16,8 @@
 - solve ctrl+c handling issues (works in docker, doesn't in clion?)
 - restore windows native support
 - finish unit tests
-- setup CI actions
 - setup CD actions
-  - generate 3 artifacts: Windows installer, debian package, docker image
+  - generate 3 artifacts:
+    - Windows installer
+    - debian package
+    - docker image (done)
