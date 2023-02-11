@@ -6,8 +6,10 @@ WORKDIR /src
 ADD . /src
 
 RUN apt-get update; \
-    apt-get upgrade; \
-    cat apt-requirements.txt | xargs sudo apt-get -y install
+    DEBIAN_FRONTEND=noninteractive apt-get -y upgrade; \
+    # remove all carriage returns (useful when building image on Windows host)
+    sed -i $'s/\r$//' apt-requirements.txt; \
+    DEBIAN_FRONTEND=noninteractive xargs -t -a apt-requirements.txt apt-get -y install
 
 RUN mkdir build; \
     cd build; \
