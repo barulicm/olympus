@@ -2,12 +2,12 @@ FROM ubuntu:22.04
 
 EXPOSE 8080
 
-RUN apt-get update; \
-    apt-get upgrade; \
-    apt-get install -y build-essential cmake pkg-config duktape-dev libcpprest-dev nlohmann-json3-dev libgtest-dev libgmock-dev
-
 WORKDIR /src
 ADD . /src
+
+RUN apt-get update; \
+    apt-get upgrade; \
+    cat /src/apt-requirements.txt | xargs sudo apt-get -y install
 
 RUN mkdir build; \
     cd build; \
