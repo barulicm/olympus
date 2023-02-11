@@ -7,7 +7,7 @@ ADD . /src
 
 RUN apt-get update; \
     apt-get upgrade; \
-    cat /src/apt-requirements.txt | xargs sudo apt-get -y install
+    cat apt-requirements.txt | xargs sudo apt-get -y install
 
 RUN mkdir build; \
     cd build; \
