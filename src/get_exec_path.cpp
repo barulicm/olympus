@@ -1,6 +1,9 @@
 #include "get_exec_path.hpp"
 
+#ifdef _WIN32
 #include <windows.h>
+#endif
+
 #include <exception>
 
 std::filesystem::path GetCurrentExecutableDirectory()
