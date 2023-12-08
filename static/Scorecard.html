@@ -5,7 +5,7 @@
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="stylesheets/Scorecard.css" media="screen" />
     <script src="scripts/Scorecard.js"></script>
-    <title>FLL Super Powered Scorecard</title>
+    <title>FLL Masterpiece Scorecard</title>
 </head>
 <body onload="onLoad()">
 <div class="navigation">
@@ -16,14 +16,13 @@
     <a class="navigation" href="results.html">Results</a>
     <a class="navigation" href="TimerDisplay.html">Timer</a>
 </div>
-<img id="logo" src="images/SUPERPOWERED_Logo_Stacked_RGB_FullColor_resized.jpg"/>
+<img id="logo" src="images/FIRST_MASTERPIECE_Logo_Horizontal_RGB.jpg"/>
 
 <form class="form-style-7" onchange="scoreOutput.value=calculateScore(M00.value, M01.value, M02a.value, M02b.value,
-                                                                      M03a.value, M03b.value, M04.value,
-                                                                      M05a.value, M05b.value, M06a.value, M06b.value,
-                                                                      M07.value, M08a.value, M08b.value,
+                                                                      M03.value, M04a.value, M04b.value, M05.value,
+                                                                      M06a.value, M06b.value,M07.value, M08.value,
                                                                       M09a.value, M09b.value, M10.value, M11.value,
-                                                                      M12a.value, M12b.value, M13.value,
+                                                                      M12a.value, M12b.value, M13a.value, M13b.value,
                                                                       M14a.value, M14b.value, M15.value, M16.value)">
 
     <h1>Scorecard</h1>
@@ -58,7 +57,7 @@
         </tr>
         <tr>
             <td colspan=3>
-                <label class="grouptitle">M01 - Innovation Project Model</label>
+                <label class="grouptitle">M01 - 3D Cinema</label>
                 <div class="switch-field">
                     <input type="radio" name="M01" id="M01n" value="n" checked>
                     <label for="M01n">No</label>
@@ -69,16 +68,16 @@
         </tr>
         <tr>
             <td colspan=3>
-                <label class="grouptitle">M02 - Oil Platform</label>
+                <label class="grouptitle">M02 - Theater Scene Change</label>
                 <div class="switch-field">
-                    <input type="radio" name="M02a" id="M02a0" value="0" checked>
-                    <label for="M02a0">0</label>
-                    <input type="radio" name="M02a" id="M02a1" value="1">
-                    <label for="M02a1">1</label>
-                    <input type="radio" name="M02a" id="M02a2" value="2">
-                    <label for="M02a2">2</label>
-                    <input type="radio" name="M02a" id="M02a3" value="3">
-                    <label for="M02a3">3</label>
+                    <input type="radio" name="M02a" id="M02aNo" value="no" checked>
+                    <label for="M02aNo">No</label>
+                    <input type="radio" name="M02a" id="M02aBlue" value="blue">
+                    <label for="M02aBlue">Blue</label>
+                    <input type="radio" name="M02a" id="M02aPink" value="pink">
+                    <label for="M02aPink">Pink</label>
+                    <input type="radio" name="M02a" id="M02aOrange" value="orange">
+                    <label for="M02aOrange">Orange</label>
                 </div>
                 <div class="switch-field">
                     <input type="radio" name="M02b" id="M02bn" value="n" checked>
@@ -90,60 +89,46 @@
         </tr>
         <tr>
             <td colspan=3>
-                <label class="grouptitle">M03 - Energy Storage</label>
+                <label class="grouptitle">M03 - Immersive Experience</label>
                 <div class="switch-field">
-                    <input type="radio" name="M03a" id="M03a0" value="0" checked>
-                    <label for="M03a0">0</label>
-                    <input type="radio" name="M03a" id="M03a1" value="1">
-                    <label for="M03a1">1</label>
-                    <input type="radio" name="M03a" id="M03a2" value="2">
-                    <label for="M03a2">2</label>
-                    <input type="radio" name="M03a" id="M03a3" value="3">
-                    <label for="M03a3">3+</label>
-                </div>
-                <div class="switch-field">
-                    <input type="radio" name="M03b" id="M03bn" value="n" checked>
-                    <label for="M03bn">No</label>
-                    <input type="radio" name="M03b" id="M03by" value="y">
-                    <label for="M03by">Yes</label>
+                    <input type="radio" name="M03" id="M03n" value="n" checked>
+                    <label for="M03n">No</label>
+                    <input type="radio" name="M03" id="M03y" value="y">
+                    <label for="M03y">Yes</label>
                 </div>
             </td>
         </tr>
         <tr>
             <td colspan=3>
-                <label class="grouptitle">M04 - Solar Farm</label>
+                <label class="grouptitle">M04 - Masterpiece</label>
                 <div class="switch-field">
-                    <input type="radio" name="M04" id="M040" value="0" checked>
-                    <label for="M040">0</label>
-                    <input type="radio" name="M04" id="M041" value="1">
-                    <label for="M041">1</label>
-                    <input type="radio" name="M04" id="M042" value="2">
-                    <label for="M042">2</label>
-                    <input type="radio" name="M04" id="M043" value="3">
-                    <label for="M043">3</label>
+                    <input type="radio" name="M04a" id="M04an" value="n" checked>
+                    <label for="M04an">No</label>
+                    <input type="radio" name="M04a" id="M04ay" value="y">
+                    <label for="M04ay">Yes</label>
+                </div>
+                <div class="switch-field">
+                    <input type="radio" name="M04b" id="M04bn" value="n" checked>
+                    <label for="M04bn">No</label>
+                    <input type="radio" name="M04b" id="M04by" value="y">
+                    <label for="M04by">Yes</label>
                 </div>
             </td>
         </tr>
         <tr>
             <td colspan=3>
-                <label class="grouptitle">M05 - Smart Grid</label>
+                <label class="grouptitle">M05 - Augmented Reality Statue</label>
                 <div class="switch-field">
-                    <input type="radio" name="M05a" id="M05an" value="n" checked>
-                    <label for="M05an">No</label>
-                    <input type="radio" name="M05a" id="M05ay" value="y">
-                    <label for="M05ay">Yes</label>
-                </div>
-                <div class="switch-field">
-                    <input type="radio" name="M05b" id="M05bn" value="n" checked>
-                    <label for="M05bn">No</label>
-                    <input type="radio" name="M05b" id="M05by" value="y">
-                    <label for="M05by">Yes</label>
+                    <input type="radio" name="M05" id="M05n" value="n" checked>
+                    <label for="M05n">No</label>
+                    <input type="radio" name="M05" id="M05y" value="y">
+                    <label for="M05y">Yes</label>
                 </div>
             </td>
         </tr>
         <tr>
             <td colspan=3>
-                <label class="grouptitle">M06 - Hybrid Car</label>
+                <label class="grouptitle">M06 - Music Concert Lights and Sounds</label>
                 <div class="switch-field">
                     <input type="radio" name="M06a" id="M06an" value="n" checked>
                     <label for="M06an">No</label>
@@ -160,39 +145,33 @@
         </tr>
         <tr>
             <td colspan=3>
-                <label class="grouptitle">M07 - Wind Turbine</label>
+                <label class="grouptitle">M07 - Hologram Performer</label>
                 <div class="switch-field">
-                    <input type="radio" name="M07" id="M070" value="0" checked>
-                    <label for="M070">0</label>
-                    <input type="radio" name="M07" id="M071" value="1">
-                    <label for="M071">1</label>
-                    <input type="radio" name="M07" id="M072" value="2">
-                    <label for="M072">2</label>
-                    <input type="radio" name="M07" id="M073" value="3">
-                    <label for="M073">3</label>
+                    <input type="radio" name="M07" id="M07n" value="n" checked>
+                    <label for="M07n">No</label>
+                    <input type="radio" name="M07" id="M07y" value="y">
+                    <label for="M07y">Yes</label>
                 </div>
             </td>
         </tr>
         <tr>
             <td colspan=3>
-                <label class="grouptitle">M08 - Watch Television</label>
+                <label class="grouptitle">M08 - Rolling Camera</label>
                 <div class="switch-field">
-                    <input type="radio" name="M08a" id="M08an" value="n" checked>
-                    <label for="M08an">No</label>
-                    <input type="radio" name="M08a" id="M08ay" value="y">
-                    <label for="M08ay">Yes</label>
-                </div>
-                <div class="switch-field">
-                    <input type="radio" name="M08b" id="M08bn" value="n" checked>
-                    <label for="M08bn">No</label>
-                    <input type="radio" name="M08b" id="M08by" value="y">
-                    <label for="M08by">Yes</label>
+                    <input type="radio" name="M08" id="M08a0" value="0" checked>
+                    <label for="M08a0">None</label><br/>
+                    <input type="radio" name="M08" id="M08a1" value="1">
+                    <label for="M08a1">Dark blue</label><br/>
+                    <input type="radio" name="M08" id="M08a2" value="2">
+                    <label for="M08a2">Dark & medium blue</label><br/>
+                    <input type="radio" name="M08" id="M08a3" value="3">
+                    <label for="M08a3">Dark, medium, & light blue</label>
                 </div>
             </td>
         </tr>
         <tr>
             <td colspan=3>
-                <label class="grouptitle">M09 - Dinosaur Toy</label>
+                <label class="grouptitle">M09 - Movie Set</label>
                 <div class="switch-field">
                     <input type="radio" name="M09a" id="M09an" value="n" checked>
                     <label for="M09an">No</label>
@@ -200,18 +179,16 @@
                     <label for="M09ay">Yes</label>
                 </div>
                 <div class="switch-field">
-                    <input type="radio" name="M09b" id="M09bn" value="no" checked>
-                    <label for="M09bn">Nothing or Not Closed</label>
-                    <input type="radio" name="M09b" id="M09be" value="energy_unit">
-                    <label for="M09be">Energy Unit</label>
-                    <input type="radio" name="M09b" id="M09br" value="rechargeable_battery">
-                    <label for="M09br">Rechargable Battery</label>
+                    <input type="radio" name="M09b" id="M09bn" value="n" checked>
+                    <label for="M09bn">No</label>
+                    <input type="radio" name="M09b" id="M09by" value="y">
+                    <label for="M09by">Yes</label>
                 </div>
             </td>
         </tr>
         <tr>
             <td colspan=3>
-                <label class="grouptitle">M10 - Power Plant</label>
+                <label class="grouptitle">M10 - Sound Mixer</label>
                 <div class="switch-field">
                     <input type="radio" name="M10" id="M100" value="0" checked>
                     <label for="M100">0</label>
@@ -226,56 +203,56 @@
         </tr>
         <tr>
             <td colspan=3>
-                <label class="grouptitle">M11 - Hydroelectric Dam</label>
+                <label class="grouptitle">M11 - Light Show</label>
                 <div class="switch-field">
-                    <input type="radio" name="M11" id="M11n" value="n" checked>
-                    <label for="M11n">No</label>
-                    <input type="radio" name="M11" id="M11y" value="y">
-                    <label for="M11y">Yes</label>
+                    <input type="radio" name="M11" id="M11a0" value="0" checked>
+                    <label for="M11a0">None</label>
+                    <input type="radio" name="M11" id="M11a1" value="1">
+                    <label for="M11a1">Yellow</label>
+                    <input type="radio" name="M11" id="M11a2" value="2">
+                    <label for="M11a2">Green</label>
+                    <input type="radio" name="M11" id="M11a3" value="3">
+                    <label for="M11a3">Blue</label>
                 </div>
             </td>
         </tr>
         <tr>
             <td colspan=3>
-                <label class="grouptitle">M12 - Water Resevoir</label>
+                <label class="grouptitle">M12 - Virtual Reality Artist</label>
                 <div class="switch-field">
-                    <input type="radio" name="M12a" id="M12a0" value="0" checked>
-                    <label for="M12a0">0</label>
-                    <input type="radio" name="M12a" id="M12a1" value="1">
-                    <label for="M12a1">1</label>
-                    <input type="radio" name="M12a" id="M12a2" value="2">
-                    <label for="M12a2">2</label>
-                    <input type="radio" name="M12a" id="M12a3" value="3">
-                    <label for="M12a3">3</label>
+                    <input type="radio" name="M12a" id="M12an" value="n" checked>
+                    <label for="M12an">No</label>
+                    <input type="radio" name="M12a" id="M12ay" value="y">
+                    <label for="M12ay">Yes</label>
                 </div>
                 <div class="switch-field">
-                    <input type="radio" name="M12b" id="M12b0" value="0" checked>
-                    <label for="M12b0">0</label>
-                    <input type="radio" name="M12b" id="M12b1" value="1">
-                    <label for="M12b1">1</label>
-                    <input type="radio" name="M12b" id="M12b2" value="2">
-                    <label for="M12b2">2</label>
+                    <input type="radio" name="M12b" id="M12bn" value="n" checked>
+                    <label for="M12bn">No</label>
+                    <input type="radio" name="M12b" id="M12by" value="y">
+                    <label for="M12by">Yes</label>
                 </div>
             </td>
         </tr>
         <tr>
             <td colspan=3>
-                <label class="grouptitle">M13 - Power-to-X</label>
+                <label class="grouptitle">M13 - Craft Creator</label>
                 <div class="switch-field">
-                    <input type="radio" name="M13" id="M130" value="0" checked>
-                    <label for="M130">0</label>
-                    <input type="radio" name="M13" id="M131" value="1">
-                    <label for="M131">1</label>
-                    <input type="radio" name="M13" id="M132" value="2">
-                    <label for="M132">2</label>
-                    <input type="radio" name="M13" id="M133" value="3">
-                    <label for="M133">3+</label>
+                    <input type="radio" name="M13a" id="M13an" value="n" checked>
+                    <label for="M13an">No</label>
+                    <input type="radio" name="M13a" id="M13ay" value="y">
+                    <label for="M13ay">Yes</label>
+                </div>
+                <div class="switch-field">
+                    <input type="radio" name="M13b" id="M13bn" value="n" checked>
+                    <label for="M13bn">No</label>
+                    <input type="radio" name="M13b" id="M13by" value="y">
+                    <label for="M13by">Yes</label>
                 </div>
             </td>
         </tr>
         <tr>
             <td colspan=3>
-                <label class="grouptitle">M14 - Toy Factory</label>
+                <label class="grouptitle">M14 - Audience Delivery</label>
                 <div class="switch-field">
                     <input type="radio" name="M14a" id="M14a0" value="0" checked>
                     <label for="M14a0">0</label>
@@ -284,19 +261,39 @@
                     <input type="radio" name="M14a" id="M14a2" value="2">
                     <label for="M14a2">2</label>
                     <input type="radio" name="M14a" id="M14a3" value="3">
-                    <label for="M14a3">3+</label>
+                    <label for="M14a3">3</label>
+                    <input type="radio" name="M14a" id="M14a4" value="4">
+                    <label for="M14a4">4</label>
+                    <input type="radio" name="M14a" id="M14a5" value="5">
+                    <label for="M14a5">5</label>
+                    <input type="radio" name="M14a" id="M14a6" value="6">
+                    <label for="M14a6">6</label>
+                    <input type="radio" name="M14a" id="M14a7" value="7">
+                    <label for="M14a7">7</label>
                 </div>
                 <div class="switch-field">
-                    <input type="radio" name="M14b" id="M14bn" value="n" checked>
-                    <label for="M14bn">No</label>
-                    <input type="radio" name="M14b" id="M14by" value="y">
-                    <label for="M14by">Yes</label>
+                    <input type="radio" name="M14b" id="M14b0" value="0" checked>
+                    <label for="M14b0">0</label>
+                    <input type="radio" name="M14b" id="M14b1" value="1">
+                    <label for="M14b1">1</label>
+                    <input type="radio" name="M14b" id="M14b2" value="2">
+                    <label for="M14b2">2</label>
+                    <input type="radio" name="M14b" id="M14b3" value="3">
+                    <label for="M14b3">3</label>
+                    <input type="radio" name="M14b" id="M14b4" value="4">
+                    <label for="M14b4">4</label>
+                    <input type="radio" name="M14b" id="M14b5" value="5">
+                    <label for="M14b5">5</label>
+                    <input type="radio" name="M14b" id="M14b6" value="6">
+                    <label for="M14b6">6</label>
+                    <input type="radio" name="M14b" id="M14b7" value="7">
+                    <label for="M14b7">7</label>
                 </div>
             </td>
         </tr>
         <tr>
             <td colspan=3>
-                <label class="grouptitle">M15 - Rechargable Battery</label>
+                <label class="grouptitle">M15 - Expert Delivery</label>
                 <div class="switch-field">
                     <input type="radio" name="M15" id="M150" value="0" checked>
                     <label for="M150">0</label>
@@ -305,7 +302,11 @@
                     <input type="radio" name="M15" id="M152" value="2">
                     <label for="M152">2</label>
                     <input type="radio" name="M15" id="M153" value="3">
-                    <label for="M153">3+</label>
+                    <label for="M153">3</label>
+                    <input type="radio" name="M15" id="M154" value="4">
+                    <label for="M154">4</label>
+                    <input type="radio" name="M15" id="M155" value="5">
+                    <label for="M155">5</label>
                 </div>
             </td>
         </tr>
@@ -354,12 +355,12 @@
             <td colspan=3>
                 <input type="button" class="button" id="submitButton" onclick="submitScore(team.value,
                                     calculateScore(M00.value, M01.value, M02a.value, M02b.value,
-                                                   M03a.value, M03b.value, M04.value,
-                                                   M05a.value, M05b.value, M06a.value, M06b.value,
-                                                   M07.value, M08a.value, M08b.value,
+                                                   M03.value, M04a.value, M04b.value, M05.value,
+                                                   M06a.value, M06b.value,M07.value, M08.value,
                                                    M09a.value, M09b.value, M10.value, M11.value,
-                                                   M12a.value, M12b.value, M13.value,
-                                                   M14a.value, M14b.value, M15.value, M16.value), GP.value)" value="Submit">
+                                                   M12a.value, M12b.value, M13a.value, M13b.value,
+                                                   M14a.value, M14b.value, M15.value, M16.value),
+                                    GP.value)" value="Submit">
             </td>
         </tr>
         </tbody>

@@ -38,8 +38,8 @@ html, body {
     height: 100%;
     margin: 0;
     background-image: url("../images/lego_plate_background.png");
-    background-repeat: no-repeat;
-    background-size: cover;
+    background-repeat: repeat-y;
+    background-size: 100% auto;
     font-family: "Lucida Console", Courier, monospace;
 }
 

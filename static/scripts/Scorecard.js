@@ -17,8 +17,8 @@ function onLoad() {
     }
 }
 
-function calculateScore(M00, M01, M02a, M02b, M03a, M03b, M04, M05a, M05b, M06a, M06b, M07, M08a, M08b, M09a, M09b,
-                        M10, M11, M12a, M12b, M13, M14a, M14b, M15, M16) {
+function calculateScore(M00, M01, M02a, M02b, M03, M04a, M04b, M05, M06a, M06b, M07, M08, M09a, M09b,
+                        M10, M11, M12a, M12b, M13a, M13b, M14a, M14b, M15, M16) {
     let score = 0;
 
     if(M00 === "y") {
@@ -26,81 +26,93 @@ function calculateScore(M00, M01, M02a, M02b, M03a, M03b, M04, M05a, M05b, M06a,
     }
 
     if(M01 === "y") {
-        score += 10;
-    }
-
-    score += 5 * parseInt(M02a);
-    if(parseInt(M02a) > 0 && M02b === "y") {
-        score += 10;
-    }
-
-    score += 10 * parseInt(M03a);
-    if(M03b === "y") {
-        score += 5;
-    }
-
-    let m04_energy_units_count = parseInt(M04);
-    score += 5 * m04_energy_units_count;
-    if(m04_energy_units_count === 3) {
-        score += 5;
-    }
-
-    // TODO: M05a=n & M05b=y is invalid ("Cannot have both team's orange connectors raised, but not the team's connector raised")
-    if(M05a === "y") {
         score += 20;
     }
-    if(M05b === "y") {
+
+    if(M02a === "blue") {
         score += 10;
+        if(M02b === "y") {
+            score += 20;
+        }
+    }
+    else if(M02a === "pink") {
+        score += 20;
+        if(M02b === "y") {
+            score += 30;
+        }
+    }
+    else if(M02a === "orange") {
+        score += 30;
+        if(M02b === "y") {
+            score += 10;
+        }
+    }
+
+    if(M03 === "y") {
+        score += 20;
+    }
+
+    if(M04a === "y") {
+        score += 10;
+        if(M04b === "y") {
+            score += 20;
+        }
+    }
+
+    if(M05 === "y") {
+        score += 30;
     }
 
     if(M06a === "y") {
         score += 10;
     }
     if(M06b === "y") {
-        score += 10
-    }
-
-    score += 10 * parseInt(M07);
-
-    if(M08a === "y") {
         score += 10;
     }
-    if(M08b === "y") {
+
+    if(M07 === "y") {
+        score += 20;
+    }
+
+    if(M08 === "1") {
         score += 10;
+    }
+    else if(M08 === "2") {
+        score += 20;
+    }
+    else if(M08 === "3") {
+        score += 30;
     }
 
     if(M09a === "y") {
         score += 10;
     }
-    if(M09b === "energy_unit") {
-        score += 10;
-    }
-    else if(M09b === "rechargeable_battery") {
-        score += 20;
-    }
-
-    let m10_energy_units = parseInt(M10);
-    score += 5 * m10_energy_units;
-    if(m10_energy_units === 3) {
+    if(M09b === "y") {
         score += 10;
     }
 
-    if(M11 === "y") {
-        score += 20;
+    score += 10 * parseInt(M10);
+
+    score += 10 * parseInt(M11);
+
+    if(M12a === "y") {
+        score += 10;
+        if(M12b === "y") {
+            score += 20;
+        }
     }
 
-    // TODO: Only some combinations are valid
-    score += 5 * parseInt(M12a);
-    score += 10 * parseInt(M12b);
-
-    score += 5 * parseInt(M13);
+    if(M13a === "y") {
+        score += 10;
+    }
+    if(M13b === "y") {
+        score += 20;
+    }
 
     score += 5 * parseInt(M14a);
-    if(M14b === "y") {
-        score += 10;
-    }
+    score += 5 * parseInt(M14b);
 
-    score += 5 * parseInt(M15);
+    score += 10 * parseInt(M15);
 
     if(M16 === "1") {
         score += 10;
