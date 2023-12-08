@@ -35,8 +35,6 @@ add_library(olympus_library STATIC
 target_include_directories(olympus_library PUBLIC src)
 target_link_libraries(olympus_library PUBLIC
     cpprestsdk::cpprest
-    cpprestsdk::cpprestsdk_zlib_internal
-    cpprestsdk::cpprestsdk_brotli_internal
     OpenSSL::SSL
     nlohmann_json::nlohmann_json
 )
@@ -45,7 +43,12 @@ if(UNIX AND NOT APPLE)
     target_link_libraries(olympus_library PUBLIC PkgConfig::Duktape)
 else()
 
-    target_link_libraries(olympus_library PUBLIC ${duktape_LIBRARY} iphlpapi.lib Ws2_32.lib)
+    target_link_libraries(olympus_library PUBLIC
+            ${duktape_LIBRARY}
+            iphlpapi.lib
+            Ws2_32.lib
+            cpprestsdk::cpprestsdk_zlib_internal
+            cpprestsdk::cpprestsdk_brotli_internal)
     target_include_directories(olympus_library PUBLIC ${DUKTAPE_INCLUDE_DIRS})
     target_compile_definitions(olympus_library PUBLIC _WIN32_WINNT=0x0A00)
 endif()
