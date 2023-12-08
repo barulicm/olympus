@@ -45,8 +45,8 @@ void TimerHandler::StartTimer() {
     timer_thread_ = std::thread([this](){
         const auto stop_time = std::chrono::steady_clock::now() + std::chrono::seconds(timer_match_length_);
         while(timer_running_) {
-            const auto seconds_remaining = std::chrono::duration_cast<std::chrono::seconds>(stop_time - std::chrono::steady_clock::now()).count();
-            timer_seconds_ = std::max(0ll, seconds_remaining);
+            const uint64_t seconds_remaining = std::chrono::duration_cast<std::chrono::seconds>(stop_time - std::chrono::steady_clock::now()).count();
+            timer_seconds_ = std::max((uint64_t)0, seconds_remaining);
             if(timer_seconds_ == 0) {
                 break;
             }
