@@ -15,25 +15,26 @@ std::vector<RequestHandlerDetails> TimerHandler::GetHandlers() {
 }
 
 bool TimerHandler::PathPredicateGet(const utility::string_t &path) {
-    return path == "/timer";
+    return path == U("/timer");
 }
 
 bool TimerHandler::PathPredicatePut(const utility::string_t &path) {
-    return path == "/timer/start" || path == "/timer/stop";
+    return path == U("/timer/start") || path == U("/timer/stop");
 }
 
 void TimerHandler::CallbackGet(const web::http::http_request &request) {
     nlohmann::json json_response = {
             {"time_remaining", timer_seconds_.load()}
     };
-    request.reply(web::http::status_codes::OK, json_response.dump(), U("application/json")).wait();
+    const auto json_dump = json_response.dump();
+    request.reply(web::http::status_codes::OK, utility::string_t(json_dump.begin(), json_dump.end()), U("application/json")).wait();
 }
 
 void TimerHandler::CallbackPut(const web::http::http_request &request) {
     const auto path = request.relative_uri().path();
-    if(path == "/timer/start") {
+    if(path == U("/timer/start")) {
         StartTimer();
-    } else if(path == "/timer/stop") {
+    } else if(path == U("/timer/stop")) {
         StopTimer();
     }
     request.reply(web::http::status_codes::OK).wait();
@@ -45,7 +46,7 @@ void TimerHandler::StartTimer() {
         const auto stop_time = std::chrono::steady_clock::now() + std::chrono::seconds(timer_match_length_);
         while(timer_running_) {
             const auto seconds_remaining = std::chrono::duration_cast<std::chrono::seconds>(stop_time - std::chrono::steady_clock::now()).count();
-            timer_seconds_ = std::max(0l, seconds_remaining);
+            timer_seconds_ = std::max(0ll, seconds_remaining);
             if(timer_seconds_ == 0) {
                 break;
             }

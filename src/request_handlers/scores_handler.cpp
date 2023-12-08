@@ -12,24 +12,24 @@ std::vector<RequestHandlerDetails> ScoresHandler::GetHandlers() {
     return {
             {
                 web::http::methods::PUT,
-                [](const auto& path){ return path.starts_with("/scores/");},
+                [](const auto& path){ return path.starts_with(U("/scores/"));},
                 std::bind_front(&ScoresHandler::CallbackPut, this)
             },
             {
                 web::http::methods::GET,
-                [](const auto& path){ return path.starts_with("/scores/export.csv");},
+                [](const auto& path){ return path.starts_with(U("/scores/export.csv"));},
                 std::bind_front(&ScoresHandler::CallbackGetExport, this)
             },
             {
                 web::http::methods::GET,
-                [](const auto& path){ return path.starts_with("/scores/export_gp.csv");},
+                [](const auto& path){ return path.starts_with(U("/scores/export_gp.csv"));},
                 std::bind_front(&ScoresHandler::CallbackGetGPExport, this)
             }
     };
 }
 
 void ScoresHandler::CallbackPut(web::http::http_request request) {
-    if(request.relative_uri().path() == "/scores/submit") {
+    if(request.relative_uri().path() == U("/scores/submit")) {
         request.extract_string().then([this,&request](const utility::string_t& body){
             try {
                 nlohmann::json j = nlohmann::json::parse(body);
@@ -42,7 +42,7 @@ void ScoresHandler::CallbackPut(web::http::http_request request) {
                                          });
 
                 if(team_iter == session_.teams.end()) {
-                    std::string rep = U("Score submission failed. Nonexistent team number.");
+                    utility::string_t rep = U("Score submission failed. Nonexistent team number.");
                     request.reply(web::http::status_codes::NotFound, rep).wait();
                     return;
                 }
@@ -52,21 +52,21 @@ void ScoresHandler::CallbackPut(web::http::http_request request) {
 
                 UpdateRanks();
 
-                std::string rep = U("Score submission successful.");
+                utility::string_t rep = U("Score submission successful.");
                 request.reply(web::http::status_codes::OK, rep).wait();
             } catch(const std::exception &e) {
-                std::string rep = U("Score submission failed.");
+                utility::string_t rep = U("Score submission failed.");
                 request.reply(web::http::status_codes::InternalError, rep).wait();
                 std::cerr << "Score submission: Exception occurred:\n\t";
                 std::cerr << e.what() << std::endl;
             }
         }).wait();
-    } else if (request.relative_uri().path() == "/scores/rerank") {
+    } else if (request.relative_uri().path() == U("/scores/rerank")) {
         try {
             UpdateRanks();
             request.reply(web::http::status_codes::OK, U("Score rerank successful.")).wait();
         } catch(const std::exception &e) {
-            std::string rep = U("Score rerank failed.");
+            utility::string_t rep = U("Score rerank failed.");
             request.reply(web::http::status_codes::InternalError, rep).wait();
             std::cerr << "Score rerank: Exception occurred:\n\t";
             std::cerr << e.what() << std::endl;
@@ -82,22 +82,22 @@ void ScoresHandler::CallbackGetExport(web::http::http_request request) {
         // TODO(barulicm): should Team::number just be an int now?
         std::ranges::sort(teams, std::ranges::less(), [](const Team& t){ return std::stoi(t.number); });
         const auto score_count = std::ranges::max(teams | std::views::transform([](const auto& t){ return t.scores.size(); }));
-        std::stringstream csv_content;
+        utility::stringstream_t csv_content;
         csv_content << "rank,team number,team name";
         for(auto i = 0ul; i < score_count; ++i) {
             csv_content << ",match " << (i+1);
         }
         csv_content << ",final score\n";
         for (const auto &team: teams) {
-            csv_content << team.rank << "," << team.number << "," << team.name << ",";
-            std::ranges::copy(team.scores, std::ostream_iterator<int>(csv_content, ","));
-            std::ranges::fill_n(std::ostream_iterator<int>(csv_content, ","), score_count - team.scores.size(), 0);
+            csv_content << team.rank << U(",") << utility::string_t(team.number.begin(), team.number.end()) << U(",") << utility::string_t(team.name.begin(), team.name.end()) << U(",");
+            std::ranges::copy(team.scores, std::ostream_iterator<int,utility::char_t>(csv_content, U(",")));
+            std::ranges::fill_n(std::ostream_iterator<int,utility::char_t>(csv_content, U(",")), score_count - team.scores.size(), 0);
             csv_content << team.display_score;
             csv_content << "\n";
         }
         request.reply(web::http::status_codes::OK, csv_content.str(), U("text/csv")).wait();
     } catch(const std::exception &e) {
-        std::string rep = U("Exporting scores failed.");
+        utility::string_t rep = U("Exporting scores failed.");
         request.reply(web::http::status_codes::InternalError, rep).wait();
         std::cerr << "Score export: Exception occurred:\n\t";
         std::cerr << e.what() << std::endl;
@@ -110,23 +110,23 @@ void ScoresHandler::CallbackGetGPExport(web::http::http_request request) {
         auto teams = session_.teams; // copying so we can sort locally
         std::ranges::sort(teams, std::ranges::less(), [](const Team& t){ return std::stoi(t.number); });
         const auto score_count = std::ranges::max(teams | std::views::transform([](const auto& t){ return t.gp_scores.size(); }));
-        std::stringstream csv_content;
+        utility::stringstream_t csv_content;
         csv_content << "team number,team name";
         for(auto i = 0ul; i < score_count; ++i) {
             csv_content << ",match " << (i+1);
         }
         csv_content << ",total GP points\n";
         for (const auto &team: teams) {
-            csv_content << team.number << "," << team.name << ",";
-            std::ranges::copy(team.gp_scores, std::ostream_iterator<int>(csv_content, ","));
-            std::ranges::fill_n(std::ostream_iterator<int>(csv_content, ","), score_count - team.gp_scores.size(), 0);
+            csv_content << utility::string_t(team.number.begin(),team.number.end()) << U(",") << utility::string_t(team.name.begin(),team.name.end()) << U(",");
+            std::ranges::copy(team.gp_scores, std::ostream_iterator<int,utility::char_t>(csv_content, U(",")));
+            std::ranges::fill_n(std::ostream_iterator<int,utility::char_t>(csv_content, U(",")), score_count - team.gp_scores.size(), 0);
             const auto total_gp_points = std::accumulate(team.gp_scores.begin(), team.gp_scores.end(), 0);
             csv_content << total_gp_points;
             csv_content << "\n";
         }
         request.reply(web::http::status_codes::OK, csv_content.str(), U("text/csv")).wait();
     } catch(const std::exception &e) {
-        std::string rep = U("Exporting scores failed.");
+        utility::string_t rep = U("Exporting scores failed.");
         request.reply(web::http::status_codes::InternalError, rep).wait();
         std::cerr << "Score export: Exception occurred:\n\t";
         std::cerr << e.what() << std::endl;

@@ -2,22 +2,22 @@
 
 #include <unordered_map>
 
-std::unordered_map<std::string, std::string> mime_types = {
-        {".html","text/html"},
-        {".css","text/css"},
-        {".js","text/javascript"},
-        {".bmp","image/bmp"},
-        {".gif","image/gif"},
-        {".jpg","image/jpeg"},
-        {".png","image/png"},
-        {".txt","text/plain"},
-        {".csv", "text/csv"}
+std::unordered_map<std::string, utility::string_t> mime_types = {
+        {".html",U("text/html")},
+        {".css",U("text/css")},
+        {".js",U("text/javascript")},
+        {".bmp",U("image/bmp")},
+        {".gif",U("image/gif")},
+        {".jpg",U("image/jpeg")},
+        {".png",U("image/png")},
+        {".txt",U("text/plain")},
+        {".csv",U("text/csv")}
 };
 
-std::string GetMimeTypeForPath(const std::filesystem::path &path) {
-    if(!mime_types.contains(path.extension())) {
-        return "text/plain";
+utility::string_t GetMimeTypeForPath(const std::filesystem::path &path) {
+    if(!mime_types.contains(path.extension().string())) {
+        return U("text/plain");
     } else {
-        return mime_types[path.extension()];
+        return mime_types[path.extension().string()];
     }
 }

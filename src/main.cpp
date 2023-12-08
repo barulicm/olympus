@@ -12,9 +12,15 @@ int main(int argc, char** argv) {
     Session session;
 
     try {
-        const auto share_path = GetCurrentExecutableDirectory() / "../share/olympus";
-
+        const auto share_path = GetCurrentExecutableDirectory().parent_path().parent_path() / std::filesystem::path("share/olympus").make_preferred();
+#ifdef __unix__
         const auto url = U("http://0.0.0.0:8080"); // listens on all interfaces on Linux
+#elif _WIN32
+        const auto url = U("http://127.0.0.1:8080"); // TODO make this work on all interfaces on windows
+#else
+#warning "Unsupported OS."
+        const auto url = U("http://127.0.0.1:8080");
+#endif
         web::uri_builder uri{url};
         const auto address = uri.to_uri().to_string();
 

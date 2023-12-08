@@ -16,7 +16,8 @@ std::vector<RequestHandlerDetails> StaticResourceHandler::GetHandlers() {
 }
 
 bool StaticResourceHandler::PathPredicate(const utility::string_t &path) {
-    return std::filesystem::exists(static_resources_dir / std::filesystem::path(path).relative_path()) || path == "/";
+
+    return std::filesystem::exists(static_resources_dir / std::filesystem::path(path).relative_path().make_preferred()) || path == U("/");
 }
 
 void StaticResourceHandler::Callback(const web::http::http_request &request) {
@@ -24,12 +25,15 @@ void StaticResourceHandler::Callback(const web::http::http_request &request) {
     if(path.empty() || path == "/") {
         path = "index.html";
     }
-    if(path.is_absolute()) {
-        path = path.relative_path();
-    }
-    path = static_resources_dir / path;
-    concurrency::streams::fstream::open_istream(U(path.string()), std::ios::in)
+    path = static_resources_dir / path.make_preferred().relative_path();
+#ifdef _UTF16_STRINGS
+    const auto path_str = path.wstring();
+#else
+    const auto path_str = path.string();
+#endif
+    concurrency::streams::fstream::open_istream(path_str, std::ios::in)
             .then([this, &request, &path](const concurrency::streams::istream &is) {
+
                 request.reply(web::http::status_codes::OK, is, GetMimeTypeForPath(path)).wait();
             }).wait();
 }

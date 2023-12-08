@@ -8,7 +8,7 @@ target_link_libraries(olympus_tests PRIVATE
   olympus_library
   GTest::gtest
   GTest::gtest_main
-  gmock
+  GTest::gmock
 )
 
 gtest_discover_tests(olympus_tests)

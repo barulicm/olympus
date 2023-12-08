@@ -10,88 +10,92 @@ std::vector<RequestHandlerDetails> ConfigHandler::GetHandlers() {
     return {
             {
                 web::http::methods::GET,
-                [](const auto& path) { return path == "/config"; },
+                [](const auto& path) { return path == U("/config"); },
                 std::bind_front(&ConfigHandler::CallbackGet, this)
             },
             {
                 web::http::methods::PUT,
-                [](const auto& path) { return path == "/config"; },
+                [](const auto& path) { return path == U("/config"); },
                 std::bind_front(&ConfigHandler::CallbackPut, this)
             }
     };
 }
 
 void ConfigHandler::CallbackGet(const web::http::http_request &request) {
-    const auto name_header_iter = request.headers().find("name");
+    const auto name_header_iter = request.headers().find(U("name"));
     if(name_header_iter == request.headers().end()) {
         request.reply(web::http::status_codes::BadRequest, U("Missing required header: name"), U("text/plain")).wait();
         return;
     }
     const auto name = name_header_iter->second;
-    std::string response;
-    if(name == "competition_name") {
-        response = config_.competition_name;
-    } else if(name == "show_timer") {
-        response = (config_.show_timer ? "true" : "false");
-    } else if(name == "rows_on_display") {
+    utility::string_t response;
+    if(name == U("competition_name")) {
+        response = utility::string_t(config_.competition_name.begin(), config_.competition_name.end());
+    } else if(name == U("show_timer")) {
+        response = (config_.show_timer ? U("true") : U("false"));
+    } else if(name == U("rows_on_display")) {
+#ifdef _UTF16_STRINGS
+        response = std::to_wstring(config_.rows_on_display);
+#else
         response = std::to_string(config_.rows_on_display);
-    } else if(name == "display_state") {
+#endif
+    } else if(name == U("display_state")) {
         switch(config_.display_state) {
             case Config::DisplayState::ShowScores:
-                response = "ShowScores";
+                response = U("ShowScores");
                 break;
             case Config::DisplayState::Blackout:
-                response = "Blackout";
+                response = U("Blackout");
                 break;
             case Config::DisplayState::FllLogo:
-                response = "FllLogo";
+                response = U("FllLogo");
                 break;
             default:
-                response = "unknown";
+                response = U("unknown");
                 break;
         }
     } else {
-        request.reply(web::http::status_codes::BadRequest, U("No such config value with name: '" + name + "'"), U("text/plain")).wait();
+        request.reply(web::http::status_codes::BadRequest, U("No such config value with name: '") + name + U("'"), U("text/plain")).wait();
         return;
     }
     request.reply(web::http::status_codes::OK, response, U("text/plain")).wait();
 }
 
 void ConfigHandler::CallbackPut(const web::http::http_request &request) {
-    const auto name_header_iter = request.headers().find("name");
+    const auto name_header_iter = request.headers().find(U("name"));
     if(name_header_iter == request.headers().end()) {
         request.reply(web::http::status_codes::BadRequest, U("Missing required header: name"), U("text/plain")).wait();
         return;
     }
     const auto name = name_header_iter->second;
-    const auto value_header_iter = request.headers().find("value");
+    const auto value_header_iter = request.headers().find(U("value"));
     if(value_header_iter == request.headers().end()) {
         request.reply(web::http::status_codes::BadRequest, U("Missing required header: value"), U("text/plain")).wait();
         return;
     }
     const auto value = value_header_iter->second;
-    if(name == "competition_name") {
+    if(name == U("competition_name")) {
         request.reply(web::http::status_codes::BadRequest, U("Config 'competition_name' is read-only."), U("text/plain")).wait();
-    } else if(name == "show_timer") {
-        config_.show_timer = value == "true";
+    } else if(name == U("show_timer")) {
+        config_.show_timer = value == U("true");
         request.reply(web::http::status_codes::OK);
-    } else if(name == "rows_on_display") {
+    } else if(name == U("rows_on_display")) {
         config_.rows_on_display = std::stoi(value);
         request.reply(web::http::status_codes::OK);
-    } else if(name == "display_state") {
-        if(value == "ShowScores") {
+    } else if(name == U("display_state")) {
+        if(value == U("ShowScores")) {
             config_.display_state = Config::DisplayState::ShowScores;
             request.reply(web::http::status_codes::OK);
-        } else if(value == "Blackout") {
+        } else if(value == U("Blackout")) {
             config_.display_state = Config::DisplayState::Blackout;
             request.reply(web::http::status_codes::OK);
-        } else if(value == "FllLogo") {
+        } else if(value == U("FllLogo")) {
             config_.display_state = Config::DisplayState::FllLogo;
             request.reply(web::http::status_codes::OK);
         } else {
             request.reply(web::http::status_codes::BadRequest, U("Unrecognized value for DisplayState"));
         }
     } else {
-        request.reply(web::http::status_codes::BadRequest, U("No such config value with name: '" + name + "'"), U("text/plain")).wait();
+        request.reply(web::http::status_codes::BadRequest, U("No such config value with name: '") + name + U("'"), U("text/plain")).wait();
     }
 }

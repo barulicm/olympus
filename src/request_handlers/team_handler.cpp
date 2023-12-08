@@ -11,7 +11,7 @@ TeamHandler::TeamHandler(Session &session)
 
 std::vector<RequestHandlerDetails> TeamHandler::GetHandlers() {
     auto path_predicate = [](const utility::string_t& path){
-        return path.starts_with("/team/");
+        return path.starts_with(U("/team/"));
     };
     return {{
                     web::http::methods::GET,
@@ -29,14 +29,16 @@ void TeamHandler::CallbackGet(const web::http::http_request &request) {
     auto team_number = std::filesystem::path{request.relative_uri().path()}.filename();
     if(team_number == "all") {
         nlohmann::json j = session_.teams;
-        request.reply(web::http::status_codes::OK, j.dump(), U("application/json")).wait();
+        const auto json_dump = j.dump();
+        request.reply(web::http::status_codes::OK, utility::string_t(json_dump.begin(), json_dump.end()), U("application/json")).wait();
     } else {
         auto team_iter = std::find_if(session_.teams.begin(), session_.teams.end(),
                                       [&team_number](const Team &t){
                                           return t.number == team_number;
                                       });
         if(team_iter != session_.teams.end()) {
-            request.reply(web::http::status_codes::OK, nlohmann::json(*team_iter).dump(), U("application/json")).wait();
+            const auto json_dump = nlohmann::json(*team_iter).dump();
+            request.reply(web::http::status_codes::OK, utility::string_t(json_dump.begin(), json_dump.end()), U("application/json")).wait();
         } else {
             request.reply(web::http::status_codes::NotFound, U("No such team")).wait();
         }
@@ -45,7 +47,7 @@ void TeamHandler::CallbackGet(const web::http::http_request &request) {
 
 void TeamHandler::CallbackPut(web::http::http_request request) {
     const auto path = request.relative_uri().path();
-    if(path == "/team/add") {
+    if(path == U("/team/add")) {
         request.extract_string().then([this,&request](const utility::string_t& body){
             try {
                 nlohmann::json j = nlohmann::json::parse(body);
@@ -54,14 +56,15 @@ void TeamHandler::CallbackPut(web::http::http_request request) {
                 newTeam.number = j["number"];
                 newTeam.name = j["name"];
                 session_.teams.push_back(newTeam);
-                std::string rep = U("Add team successful.");
+                utility::string_t rep = U("Add team successful.");
                 request.reply(web::http::status_codes::OK, rep).wait();
             } catch(const std::exception& e) {
-                std::string rep = U(std::string("Add team failed: ") + e.what());
+                const std::string error_msg = e.what();
+                utility::string_t rep = U("Add team failed: ") + utility::string_t(error_msg.begin(), error_msg.end());
                 request.reply(web::http::status_codes::InternalError, rep).wait();
             }
         }).wait();
-    } else if(path == "/team/remove") {
+    } else if(path == U("/team/remove")) {
         request.extract_string().then([this,&request](const utility::string_t& body){
             try {
                 nlohmann::json j = nlohmann::json::parse(body);
@@ -70,19 +73,19 @@ void TeamHandler::CallbackPut(web::http::http_request request) {
                     return team.number == teamNumber;
                 });
                 if(findIter == session_.teams.end()) {
-                    std::string rep = U("No such team.");
+                    utility::string_t rep = U("No such team.");
                     request.reply(web::http::status_codes::NotFound, rep).wait();
                 } else {
                     session_.teams.erase(findIter);
-                    std::string rep = U("Remove team successful.");
+                    utility::string_t rep = U("Remove team successful.");
                     request.reply(web::http::status_codes::OK, rep).wait();
                 }
             } catch(...) {
-                std::string rep = U("Remove team failed.");
+                utility::string_t rep = U("Remove team failed.");
                 request.reply(web::http::status_codes::InternalError, rep).wait();
             }
         }).wait();
-    } else if(path == "/team/edit") {
+    } else if(path == U("/team/edit")) {
         request.extract_string().then([this,&request](const utility::string_t& body){
             try {
                 nlohmann::json j = nlohmann::json::parse(body);
@@ -91,7 +94,7 @@ void TeamHandler::CallbackPut(web::http::http_request request) {
                     return team.number == teamNumber;
                 });
                 if(findIter == session_.teams.end()) {
-                    std::string rep = U("No such team.");
+                    utility::string_t rep = U("No such team.");
                     request.reply(web::http::status_codes::NotFound, rep).wait();
                 } else {
 
@@ -100,15 +103,16 @@ void TeamHandler::CallbackPut(web::http::http_request request) {
                     j["newScores"].get_to(findIter->scores);
                     j["newGPScores"].get_to(findIter->gp_scores);
                 }
-                std::string rep = U("Team edits saved.");
+                utility::string_t rep = U("Team edits saved.");
                 request.reply(web::http::status_codes::OK, rep).wait();
             } catch(std::exception &e) {
-                std::string rep = U(std::string("Editing team info failed.") + e.what());
+                const std::string error_msg = e.what();
+                utility::string_t rep = U("Editing team info failed.") + utility::string_t(error_msg.begin(), error_msg.end());
                 request.reply(web::http::status_codes::InternalError, rep).wait();
             }
         }).wait();
     } else {
-        std::string rep = U("Resource not found.");
+        utility::string_t rep = U("Resource not found.");
         request.reply(web::http::status_codes::NotFound, rep).wait();
     }
 }

@@ -49,6 +49,7 @@ CTestTestfile.cmake
 
 # CMake
 cmake-build-debug/
+cmake-build-debug*/
 
 # Mongo Explorer plugin:
 .idea/**/mongoSettings.xml
