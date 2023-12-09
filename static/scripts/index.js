@@ -119,9 +119,9 @@ function sendAddTeam(teamName, teamNumber, reload, async) {
             if(xhr.status === 200) {
                 if (reload) {
                     location.reload();
-                } else {
-                    alert("Adding team " + teamNumber + " failed. Status code " + xhr.status + '. ' + xhr.responseText);
                 }
+            } else {
+                alert("Adding team " + teamNumber + " failed. Status code " + xhr.status + '. ' + xhr.responseText);
             }
         }
     }
