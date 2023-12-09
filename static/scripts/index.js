@@ -119,9 +119,9 @@ function sendAddTeam(teamName, teamNumber, reload, async) {
             if(xhr.status === 200) {
                 if (reload) {
                     location.reload();
+                } else {
+                    alert("Adding team " + teamNumber + " failed. Status code " + xhr.status + '. ' + xhr.responseText);
                 }
-            } else {
-                alert("Adding team " + teamNumber + " failed. Status code " + xhr.status + '. ' + xhr.responseText);
             }
         }
     }
@@ -135,11 +135,12 @@ function rerankTeamsButtonClicked() {
         if(xhr.readyState === 4) {
             if(xhr.status === 200) {
                 location.reload();
+            } else {
+                alert("Reranking teams failed. Status code " + xhr.status + '. ' + xhr.responseText);
             }
-        } else {
-            alert("Reranking teams failed. Status code " + xhr.status + '. ' + xhr.responseText);
         }
     }
+    xhr.send();
 }
 
 function exportScoresButtonClicked() {
