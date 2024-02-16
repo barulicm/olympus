@@ -72,3 +72,5 @@ install(FILES $<TARGET_RUNTIME_DLLS:olympus_executable> DESTINATION ${CMAKE_INST
 if(TEST_OLYMPUS OR CMAKE_SOURCE_DIR STREQUAL Olympus_SOURCE_DIR)
     add_subdirectory(test)
 endif()
+
+add_subdirectory(packaging)

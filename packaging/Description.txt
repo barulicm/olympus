@@ -1,0 +1,2 @@
+Olympus is an unofficial scoring software for FIRST LEGO League. It allows you to easily track scores from robot matches
+ and display them to audiences at your events.
