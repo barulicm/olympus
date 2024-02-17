@@ -13,10 +13,10 @@
 
 class HttpListener {
 public:
+    explicit HttpListener(web::uri uri);
+
     pplx::task<void> open() { return m_listener.open(); }
     pplx::task<void> close() { return m_listener.close(); }
-
-    void setUrl(const utility::string_t &url);
 
     void registerRequestHandler(RequestHandlerDetails details);
 

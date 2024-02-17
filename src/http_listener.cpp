@@ -1,7 +1,8 @@
 #include "http_listener.hpp"
 
-void HttpListener::setUrl(const utility::string_t &url) {
-    m_listener = web::http::experimental::listener::http_listener{url};
+HttpListener::HttpListener(web::uri uri)
+    : m_listener(std::move(uri))
+{
     m_listener.support(web::http::methods::GET, std::bind_front(&HttpListener::handle_request, this));
     m_listener.support(web::http::methods::PUT, std::bind_front(&HttpListener::handle_request, this));
     m_listener.support(web::http::methods::POST, std::bind_front(&HttpListener::handle_request, this));

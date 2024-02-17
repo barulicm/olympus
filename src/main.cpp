@@ -13,19 +13,21 @@ int main(int argc, char** argv) {
 
     try {
         const auto share_path = GetCurrentExecutableDirectory().parent_path().parent_path() / std::filesystem::path("share/olympus").make_preferred();
+
+        web::uri_builder uri_builder;
+        uri_builder.set_scheme(U("http"));
+        uri_builder.set_port(8080);
+
 #ifdef __unix__
-        const auto url = U("http://0.0.0.0:8080"); // listens on all interfaces on Linux
+        uri_builder.set_host(U("0.0.0.0")); // listens on all interfaces on Linux
 #elif _WIN32
-        const auto url = U("http://127.0.0.1:8080"); // TODO make this work on all interfaces on windows
+        uri_builder.set_host(U("+"));
 #else
 #warning "Unsupported OS."
-        const auto url = U("http://127.0.0.1:8080");
+        uri_builder.set_host(U("127.0.0.1"));
 #endif
-        web::uri_builder uri{url};
-        const auto address = uri.to_uri().to_string();
 
-        HttpListener http_listener;
-        http_listener.setUrl(address);
+        HttpListener http_listener(uri_builder.to_uri());
 
         std::vector<std::unique_ptr<RequestHandler>> request_handlers;
         request_handlers.push_back(std::make_unique<SessionSaveHandler>(session));
