@@ -5,9 +5,10 @@
 using namespace olympus::game_description;
 
 TEST(JsonGame, NoMissionsFromJson) {
-    nlohmann::json data = nlohmann::json::parse(R"({"name":"TestName", "logo":"/path/to/logo.png", "missions":[]})");
+    nlohmann::json data = nlohmann::json::parse(R"({"name":"TestName", "description":"TestDescription", "logo":"/path/to/logo.png", "missions":[]})");
     const auto game = data.get<Game>();
     EXPECT_EQ(game.name, "TestName");
+    EXPECT_EQ(game.description, "TestDescription");
     EXPECT_EQ(game.logo_path, "/path/to/logo.png");
     EXPECT_TRUE(game.missions.empty());
 }
@@ -16,6 +17,7 @@ TEST(JsonGame, DefaultValidationFromJson) {
     nlohmann::json data = nlohmann::json::parse(R"(
 {
     "name":"TestName",
+    "description":"TestDescription",
     "logo":"/path/to/logo.png",
     "missions":[
         {
@@ -32,6 +34,7 @@ TEST(JsonGame, DefaultValidationFromJson) {
 })");
     const auto game = data.get<Game>();
     EXPECT_EQ(game.name, "TestName");
+    EXPECT_EQ(game.description, "TestDescription");
     EXPECT_EQ(game.logo_path, "/path/to/logo.png");
     ASSERT_EQ(game.missions.size(), 1);
     const auto & mission = game.missions.front();
@@ -49,6 +52,7 @@ TEST(JsonGame, NonDefaultValidationFromJson) {
     nlohmann::json data = nlohmann::json::parse(R"(
 {
     "name":"TestName2",
+    "description":"TestDescription2",
     "logo":"/path/to/logo2.png",
     "missions":[
         {
@@ -66,6 +70,7 @@ TEST(JsonGame, NonDefaultValidationFromJson) {
 })");
     const auto game = data.get<Game>();
     EXPECT_EQ(game.name, "TestName2");
+    EXPECT_EQ(game.description, "TestDescription2");
     EXPECT_EQ(game.logo_path, "/path/to/logo2.png");
     ASSERT_EQ(game.missions.size(), 1);
     const auto & mission = game.missions.front();
