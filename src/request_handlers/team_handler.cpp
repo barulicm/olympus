@@ -1,7 +1,7 @@
 #include <filesystem>
 #include "team_handler.hpp"
 #include <nlohmann/json.hpp>
-#include "json_team.hpp"
+#include "state_description/json_team.hpp"
 
 TeamHandler::TeamHandler(Session &session)
     : session_(session)

@@ -1,5 +1,5 @@
 #include "session_save_handler.hpp"
-#include "json_session.hpp"
+#include "state_description/json_session.hpp"
 
 SessionSaveHandler::SessionSaveHandler(Session &session)
     : session_(session)

@@ -1,15 +1,11 @@
-#include "json_mission.hpp"
+#include "game_description/json_mission.hpp"
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-TEST(JsonMission, NoMissionsFromJson) {
-    nlohmann::json data = nlohmann::json::parse(R"({"missions":[]})");
-    const auto missions = data.at("missions").get<std::vector<Mission >>();
-    EXPECT_TRUE(missions.empty());
-}
+using namespace olympus::game_description;
 
 TEST(JsonMission, MissionNameFromJson) {
-    nlohmann::json data = nlohmann::json::parse(R"({"name":"M10", "questions":[]})");
+    nlohmann::json data = nlohmann::json::parse(R"({"name":"M10", "questions":[], "scoring": "0"})");
     const auto mission = data.get<Mission>();
     EXPECT_EQ(mission.name, "M10");
 }
@@ -66,14 +62,17 @@ TEST(JsonMission, MultipleMissionsAllQuestionTypes) {
           "type": "bool",
           "description": "Question M00.1"
         }
-      ]
+      ],
+      "scoring": "0"
     },
     {
       "name": "M01",
       "questions": [
         {
           "type": "number",
-          "description": "Question M01.1"
+          "description": "Question M01.1",
+          "min": 0,
+          "max": 6
         },
         {
             "type": "enum",
@@ -84,7 +83,8 @@ TEST(JsonMission, MultipleMissionsAllQuestionTypes) {
                 "Opt 3"
             ]
         }
-      ]
+      ],
+      "scoring": "0"
     }
   ]
 }

@@ -2,7 +2,7 @@
 #define OLYMPUS_SCORES_HANDLER_H
 
 #include "request_handler.hpp"
-#include "session.hpp"
+#include "state_description/session.hpp"
 
 class ScoresHandler : public RequestHandler {
 public:

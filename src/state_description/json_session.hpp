@@ -1,8 +1,8 @@
 #ifndef OLYMPUS_JSON_SESSION_HPP
 #define OLYMPUS_JSON_SESSION_HPP
 
-#include "session.hpp"
-#include "config.hpp"
+#include "state_description/session.hpp"
+#include "state_description/config.hpp"
 #include <nlohmann/json.hpp>
 
 void to_json(nlohmann::json& json, const Session& session);

@@ -2,7 +2,7 @@
 #define OLYMPUS_CONFIG_HANDLER_H
 
 #include "request_handler.hpp"
-#include "config.hpp"
+#include "state_description/config.hpp"
 
 class ConfigHandler : public RequestHandler {
 public:

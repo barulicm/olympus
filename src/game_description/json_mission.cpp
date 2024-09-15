@@ -1,10 +1,12 @@
 #include "json_mission.hpp"
 
+namespace olympus::game_description {
+
 void to_json(nlohmann::json &json, const Mission &mission) {
     json = {
-            {"name",      mission.name},
-            {"questions", mission.questions},
-            {"scoring", mission.scoring_expression},
+            {"name",       mission.name},
+            {"questions",  mission.questions},
+            {"scoring",    mission.scoring_expression},
             {"validation", mission.validation_expression}
     };
 }
@@ -12,10 +14,8 @@ void to_json(nlohmann::json &json, const Mission &mission) {
 void from_json(const nlohmann::json &json, Mission &mission) {
     json.at("name").get_to(mission.name);
     json.at("questions").get_to(mission.questions);
-    if(json.contains("scoring")) {
-        json.at("scoring").get_to(mission.scoring_expression);
-    }
-    if(json.contains("validation")) {
+    json.at("scoring").get_to(mission.scoring_expression);
+    if (json.contains("validation")) {
         json.at("validation").get_to(mission.validation_expression);
     }
 }
@@ -66,21 +66,17 @@ void from_json(const nlohmann::json &json, BoolQuestion &question) {
 
 void to_json(nlohmann::json &json, const NumberQuestion &question) {
     json = {
-            {"description", question.description},
-            {"min", question.min},
-            {"max", question.max},
+            {"description",      question.description},
+            {"min",              question.min},
+            {"max",              question.max},
             {"show_plus_on_max", question.show_plus_on_max}
     };
 }
 
 void from_json(const nlohmann::json &json, NumberQuestion &question) {
     json.at("description").get_to(question.description);
-    if (json.contains("min")) {
-        json.at("min").get_to(question.min);
-    }
-    if (json.contains("max")) {
-        json.at("max").get_to(question.max);
-    }
+    json.at("min").get_to(question.min);
+    json.at("max").get_to(question.max);
     if (json.contains("show_plus_on_max")) {
         json.at("show_plus_on_max").get_to(question.show_plus_on_max);
     }
@@ -89,11 +85,13 @@ void from_json(const nlohmann::json &json, NumberQuestion &question) {
 void to_json(nlohmann::json &json, const EnumQuestion &question) {
     json = {
             {"description", question.description},
-            {"options", question.options}
+            {"options",     question.options}
     };
 }
 
 void from_json(const nlohmann::json &json, EnumQuestion &question) {
     json.at("description").get_to(question.description);
     json.at("options").get_to(question.options);
+}
+
 }

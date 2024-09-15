@@ -1,14 +1,15 @@
 #ifndef SESSION_HPP_
 #define SESSION_HPP_
 
-#include "mission.hpp"
+#include <optional>
+#include "game_description/game.hpp"
 #include "team.hpp"
 #include "config.hpp"
 
 struct Session
 {
     Config config;
-    std::vector<Mission> missions;
+    std::optional<olympus::game_description::Game> game;
     std::vector<Team> teams;
 };
 

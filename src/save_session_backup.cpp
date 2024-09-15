@@ -1,6 +1,6 @@
 #include "save_session_backup.hpp"
 #include <nlohmann/json.hpp>
-#include "json_session.hpp"
+#include "state_description/json_session.hpp"
 #include <fstream>
 
 void SaveSessionBackup(const Session& session) {

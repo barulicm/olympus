@@ -17,6 +17,10 @@
 </div>
 
 <div class="controlsContainer">
+    <div class="controlsGroup">
+        <label class="groupHeading">Game Definition</label>
+        <select id="gameSelect" onchange="sendGameChoice()"></select>
+    </div>
     <div class="controlsGroup" id="teamControls">
         <label class="groupHeading">Load Teams</label>
         <button id="importButton" onclick="importTeams()">Import Teams</button>

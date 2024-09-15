@@ -1,4 +1,3 @@
-- Generate scorecards from "mission descriptions"
 - clean up control page design
 - make a landing page with big blocky menu?
 - stylize timer display? (keep it legible)
@@ -13,8 +12,6 @@
     - show a list of displays and selecting one allows controlling just that display
     - have a button for controlling all of them
     - multi-select to control subset of displays?
-- solve ctrl+c handling issues (works in docker, doesn't in clion?)
-- restore windows native support
 - finish unit tests
 - setup CD actions
   - generate 3 artifacts:

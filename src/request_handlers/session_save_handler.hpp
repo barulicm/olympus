@@ -2,7 +2,7 @@
 #define OLYMPUS_SESSION_SAVE_HANDLER_H
 
 #include "request_handler.hpp"
-#include "session.hpp"
+#include "state_description/session.hpp"
 
 class SessionSaveHandler : public RequestHandler {
 public:

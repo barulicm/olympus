@@ -2,7 +2,7 @@
 #define OLYMPUS_TEAM_HANDLER_H
 
 #include "request_handler.hpp"
-#include "session.hpp"
+#include "state_description/session.hpp"
 
 class TeamHandler : public RequestHandler {
 public:

@@ -1,7 +1,7 @@
 #ifndef JSON_TEAM_HPP_
 #define JSON_TEAM_HPP_
 
-#include "team.hpp"
+#include "state_description/team.hpp"
 #include <nlohmann/json.hpp>
 
 void to_json(nlohmann::json& json, const Team& team);

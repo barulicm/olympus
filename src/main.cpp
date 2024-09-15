@@ -3,7 +3,7 @@
 #include <boost/bind/bind.hpp>
 #include "http_listener.hpp"
 #include "request_handlers/all_request_handlers.hpp"
-#include "session.hpp"
+#include "state_description/session.hpp"
 #include "get_exec_path.hpp"
 #include "get_ip_addresses.hpp"
 #include "save_session_backup.hpp"
@@ -36,6 +36,8 @@ int main(int argc, char** argv) {
         request_handlers.push_back(std::make_unique<ScoresHandler>(session));
         request_handlers.push_back(std::make_unique<ConfigHandler>(session.config));
         request_handlers.push_back(std::make_unique<ControlQueryHandler>(session));
+        request_handlers.push_back(std::make_unique<GameDefinitionHandler>(session, share_path / "game_configs"));
+        request_handlers.push_back(std::make_unique<GeneratedResourceHandler>(session));
         request_handlers.push_back(std::make_unique<StaticResourceHandler>(share_path));
 
         for (auto &handler: request_handlers) {

@@ -26,8 +26,8 @@ void ControlQueryHandler::Callback(const web::http::http_request &request) {
     utility::string_t response;
     if(query == U("hasTeams")) {
         response = (!session_.teams.empty() ? U("true") : U("false"));
-    } else if(query == U("hasMissions")) {
-        response = (!session_.missions.empty() ? U("true") : U("false"));
+    } else if(query == U("hasGame")) {
+        response = (session_.game ? U("true") : U("false"));
     }
     request.reply(web::http::status_codes::OK, response, U("text/plain")).wait();
 }

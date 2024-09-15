@@ -1,16 +1,22 @@
 #include "json_session.hpp"
-#include "json_mission.hpp"
+#include "game_description/json_game.hpp"
 #include "json_team.hpp"
 
 void to_json(nlohmann::json& json, const Session& session){
     json = {
-            {"missions", session.missions},
             {"teams", session.teams}
     };
+    if (session.game) {
+        json["game"] = *session.game;
+    }
 }
 
 void from_json(const nlohmann::json& json, Session& session){
-    json.at("missions").get_to(session.missions);
+    if (json.contains("game")) {
+        olympus::game_description::Game game;
+        json.at("game").get_to(game);
+        session.game = game;
+    }
     json.at("teams").get_to(session.teams);
 }
 
