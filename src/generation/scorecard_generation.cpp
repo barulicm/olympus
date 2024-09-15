@@ -13,7 +13,7 @@ const utility::string_t scorecard_prefix = U(R"!!!(
     <link rel="stylesheet" type="text/css" href="stylesheets/Scorecard.css" media="screen" />
     <script src="scripts/Scorecard.js"></script>
     <script src="ScoreCalculator.js"></script>
-    <title>FLL Masterpiece Scorecard</title>
+    <title>Olympus - Scorecard</title>
 </head>
 <body onload="onLoad()">
 <div class="navigation">
