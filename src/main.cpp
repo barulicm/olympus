@@ -38,6 +38,7 @@ int main(int argc, char** argv) {
         request_handlers.push_back(std::make_unique<ControlQueryHandler>(session));
         request_handlers.push_back(std::make_unique<GameDefinitionHandler>(session, share_path / "game_configs"));
         request_handlers.push_back(std::make_unique<GeneratedResourceHandler>(session));
+        request_handlers.push_back(std::make_unique<AnnouncementHandler>());
         request_handlers.push_back(std::make_unique<StaticResourceHandler>(share_path));
 
         for (auto &handler: request_handlers) {

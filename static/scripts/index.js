@@ -362,3 +362,17 @@ function setDisplayState() {
         }
     }
 }
+
+function setAnnouncement() {
+    let data = {};
+    data.visible = document.getElementById('showAnnouncement').checked;
+    data.content = document.getElementById('announcementContent').value;
+    let xhr = new XMLHttpRequest();
+    xhr.open('PUT', 'announcement', true);
+    xhr.send(JSON.stringify(data));
+    xhr.onreadystatechange = () => {
+        if (xhr.readyState === 4 && xhr.status !== 200) {
+            alert('Request failed: ' + xhr.responseText);
+        }
+    }
+}

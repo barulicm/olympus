@@ -194,6 +194,9 @@ function getTeamsPerPage() {
         if(xhr.readyState === 4) {
             if(xhr.status === 200) {
                 teams_per_page = parseInt(xhr.responseText);
+                if(document.getElementById("announcementContainer").style.display === "flex") {
+                    teams_per_page -= 1;
+                }
                 if(display_state === DisplayStates.ShowScores) {
                     setBlackoutTop(teams_per_page + 4);
                 }
@@ -210,6 +213,32 @@ function updateDisplayConfig() {
     getTeamsPerPage();
 }
 
+function updateAnnouncement() {
+    let xhr = new XMLHttpRequest();
+    xhr.open('GET', 'announcement', true);
+    xhr.send();
+    xhr.onreadystatechange = ()=>{
+        if(xhr.readyState === 4) {
+            if(xhr.status === 200) {
+                let announcementDetails = JSON.parse(xhr.responseText);
+                let announcementContainer = document.getElementById("announcementContainer");
+                let body = document.getElementsByTagName("body")[0];
+                console.log(body)
+                if(announcementDetails.visible) {
+                    announcementContainer.style.display = "flex";
+                    body.style.height = "calc(100% - var(--stud-size))";
+                } else {
+                    announcementContainer.style.display = "none";
+                    body.style.height = "100%";
+                }
+                document.getElementById("announcementHeader").innerText = announcementDetails.content;
+            } else {
+                console.error('Could not get announcement: ' + xhr.responseText);
+            }
+        }
+    }
+}
+
 function onLoad() {
     updateDisplayConfig();
     setInterval(updateDisplayConfig, 1000);
@@ -217,4 +246,6 @@ function onLoad() {
     setInterval(getInfo, 5000);
     updateTimer();
     setInterval(updateTimer, 100);
+    updateAnnouncement();
+    setInterval(updateAnnouncement, 1000);
 }

@@ -125,3 +125,15 @@ tr:nth-child(odd) > td{
 #fllLogoContainer >img {
     height: 80%;
 }
+
+#announcementContainer {
+    background-color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: var(--stud-size)
+}
+
+#announcementHeader {
+    margin: 0;
+}

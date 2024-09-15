@@ -72,6 +72,11 @@
             <option value="Blackout">Blackout</option>
             <option value="FllLogo">FLL Logo</option>
         </select>
+        <br/>
+        <label for="showAnnouncement">Show Announcement:</label>
+        <input type="checkbox" id="showAnnouncement" oninput="setAnnouncement()">
+        <label for="announcementContent">Announcement:</label>
+        <input type="text" id="announcementContent" onchange="setAnnouncement()">
     </div>
 </div>
 
