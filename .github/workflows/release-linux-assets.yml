@@ -2,7 +2,7 @@ name: Release Linux Assets
 
 on:
   release:
-    types: [ "created" ]
+    types: [ "published" ]
 
 jobs:
   build:
@@ -30,4 +30,4 @@ jobs:
         with:
           files: |
             ${{github.workspace}}/build/Olympus-*-Linux.deb
-            ${{github.workspace}}/build/Olympus*-Linux.zip
+            ${{github.workspace}}/build/Olympus-*-Linux.zip
