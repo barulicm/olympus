@@ -31,4 +31,8 @@ set(CPACK_NSIS_DISPLAY_NAME "Olympus Scoring Software")
 set(CPACK_NSIS_PACKAGE_NAME "Olympus")
 set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL YES)
 
+# DEB generator config
+set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Matthew Barulic")
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "")
+
 include(CPack)
