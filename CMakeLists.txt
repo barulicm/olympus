@@ -7,6 +7,7 @@ find_package(cpprestsdk REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_package(Threads REQUIRED)
 find_package(nlohmann_json REQUIRED)
+find_package(Boost REQUIRED)
 
 add_library(olympus_library STATIC
         src/game_description/json_game.cpp
@@ -32,6 +33,7 @@ add_library(olympus_library STATIC
         src/request_handlers/announcement_handler.cpp)
 target_include_directories(olympus_library PUBLIC src)
 target_link_libraries(olympus_library PUBLIC
+    Boost::boost
     cpprestsdk::cpprest
     OpenSSL::SSL
     nlohmann_json::nlohmann_json
