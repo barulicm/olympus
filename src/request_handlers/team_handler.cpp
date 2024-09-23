@@ -89,7 +89,7 @@ void TeamHandler::CallbackPut(web::http::http_request request) {
         request.extract_string().then([this,&request](const utility::string_t& body){
             try {
                 nlohmann::json j = nlohmann::json::parse(body);
-                auto teamNumber = j["oldTeamNumber"];
+                const std::string teamNumber = j["oldTeamNumber"];
                 auto findIter = std::find_if(session_.teams.begin(), session_.teams.end(), [&teamNumber](const auto &team) {
                     return team.number == teamNumber;
                 });
