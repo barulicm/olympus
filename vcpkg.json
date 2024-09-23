@@ -6,6 +6,7 @@
       "name": "cpprestsdk",
       "default-features": false
     },
-    "nlohmann-json"
+    "nlohmann-json",
+    "gtest"
   ]
 }
