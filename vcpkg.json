@@ -1,5 +1,6 @@
 {
   "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "builtin-baseline": "b051745c68faa6f65c493371d564c4eb8af34dad",
   "dependencies": [
     {
       "name": "cpprestsdk",
