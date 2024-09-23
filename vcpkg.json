@@ -4,7 +4,11 @@
   "dependencies": [
     {
       "name": "cpprestsdk",
-      "default-features": false
+      "default-features": false,
+      "features": [
+        "brotli",
+        "compression"
+      ]
     },
     "nlohmann-json",
     "gtest"
