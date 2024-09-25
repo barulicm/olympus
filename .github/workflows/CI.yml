@@ -8,12 +8,12 @@ on:
 
 jobs:
   job:
-    name: Build and Test - ${{ matrix.os }}
+    name: Build and Test - ${{ (startsWith(matrix.os, 'ubuntu') && 'Linux') || (startsWith(matrix.os, 'windows') && 'Windows') }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest, windows-latest ]
+        os: [ ubuntu-22.04, windows-2019 ]
 
     steps:
     - name: Checkout Repository
@@ -33,4 +33,4 @@ jobs:
     - name: Build and Test
       uses: lukka/run-cmake@v10.8
       with:
-        workflowPreset: ${{ (matrix.os == 'ubuntu-latest' && 'linux-release-buildandtest') || (matrix.os == 'windows-latest' && 'windows-release-buildandtest') }}
+        workflowPreset: ${{ (startsWith(matrix.os, 'ubuntu') && 'linux-release-buildandtest') || (startsWith(matrix.os, 'windows') && 'windows-release-buildandtest') }}
