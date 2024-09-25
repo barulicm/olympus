@@ -13,7 +13,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - uses: lukka/get-cmake@3.29.0
+    - uses: lukka/get-cmake@v3.30.3
 
     - name: Install Dependencies
       uses: lukka/run-vcpkg@v11.5
