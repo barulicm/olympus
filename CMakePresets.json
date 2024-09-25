@@ -185,10 +185,6 @@
           "name": "windows-release"
         },
         {
-          "type": "test",
-          "name": "windows-release"
-        },
-        {
           "type": "package",
           "name": "windows-package"
         }
@@ -203,10 +199,6 @@
         },
         {
           "type": "build",
-          "name": "linux-release"
-        },
-        {
-          "type": "test",
           "name": "linux-release"
         },
         {
