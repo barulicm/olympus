@@ -1,8 +1,0 @@
-build-essential
-cmake
-pkg-config
-duktape-dev
-libcpprest-dev
-nlohmann-json3-dev
-libgtest-dev
-libgmock-dev
