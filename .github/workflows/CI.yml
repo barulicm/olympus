@@ -22,6 +22,7 @@ jobs:
     - name: Install Dependencies
       uses: lukka/run-vcpkg@v11.5
       with:
+        vcpkgDirectory: '${{ github.workspace }}/external/vcpkg'
         vcpkgJsonGlob: 'vcpkg.json'
 
     - name: Build and Test
