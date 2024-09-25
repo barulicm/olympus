@@ -1,0 +1,132 @@
+{
+  "version": 8,
+  "configurePresets": [
+    {
+      "name": "common",
+      "binaryDir": "${sourceDir}/build",
+      "toolchainFile": "${sourceDir}/external/vcpkg/scripts/buildsystems/vcpkg.cmake",
+      "hidden": true
+    },
+    {
+      "name": "release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      },
+      "hidden": true
+    },
+    {
+      "name": "debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      },
+      "hidden": true
+    },
+    {
+      "name": "windows",
+      "inherits": "common",
+      "generator": "Visual Studio 16 2019",
+      "architecture": "x64",
+      "hidden": true
+    },
+    {
+      "name": "linux",
+      "inherits": "common",
+      "hidden": true
+    },
+    {
+      "name": "windows-debug",
+      "inherits": ["windows","debug"]
+    },
+    {
+      "name": "windows-release",
+      "inherits": ["windows","release"]
+    },
+    {
+      "name": "linux-debug",
+      "inherits": ["linux","debug"],
+      "binaryDir": "${sourceDir}/build-debug"
+    },
+    {
+      "name": "linux-release",
+      "inherits": ["linux","release"],
+      "binaryDir": "${sourceDir}/build-release"
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "windows-debug",
+      "configurePreset": "windows-debug",
+      "configuration": "Debug"
+    },
+    {
+      "name": "windows-release",
+      "configurePreset": "windows-release",
+      "configuration": "Release"
+    },
+    {
+      "name": "linux-debug",
+      "configurePreset": "linux-debug"
+    },
+    {
+      "name": "linux-release",
+      "configurePreset": "linux-release"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "windows-debug",
+      "configurePreset": "windows-debug",
+      "configuration": "Debug"
+    },
+    {
+      "name": "windows-release",
+      "configurePreset": "windows-release",
+      "configuration": "Release"
+    },
+    {
+      "name": "linux-debug",
+      "configurePreset": "linux-debug"
+    },
+    {
+      "name": "linux-release",
+      "configurePreset": "linux-release"
+    }
+  ],
+  "packagePresets": [],
+  "workflowPresets": [
+    {
+      "name": "windows-debug-buildandtest",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "windows-debug"
+        },
+        {
+          "type": "build",
+          "name": "windows-debug"
+        },
+        {
+          "type": "test",
+          "name": "windows-debug"
+        }
+      ]
+    },
+    {
+      "name": "windows-release-buildandtest",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "windows-release"
+        },
+        {
+          "type": "build",
+          "name": "windows-release"
+        },
+        {
+          "type": "test",
+          "name": "windows-release"
+        }
+      ]
+    }
+  ]
+}
