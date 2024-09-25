@@ -33,4 +33,4 @@ jobs:
     - name: Build and Test
       uses: lukka/run-cmake@v10.8
       with:
-        workflowPreset: ${{ join((matrix.os == 'ubuntu-latest' && 'linux') || (matrix.os == 'windows-latest' && 'windows'), '-release-buildandtest') }}
+        workflowPreset: ${{ (matrix.os == 'ubuntu-latest' && 'linux-release-buildandtest') || (matrix.os == 'windows-latest' && 'windows-release-buildandtest') }}
