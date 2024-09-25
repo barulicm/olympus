@@ -1,4 +1,4 @@
-name: CMake
+name: CI
 
 on:
   push:
@@ -11,18 +11,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout Repository
+      uses: actions/checkout@v4
       with:
         submodules: true
 
-    - uses: lukka/get-cmake@v3.30.3
+    - name: Get CMake
+      uses: lukka/get-cmake@v3.30.3
 
     - name: Install Dependencies
       uses: lukka/run-vcpkg@v11.5
       with:
         vcpkgJsonGlob: 'vcpkg.json'
 
-    - name: run-cmake
+    - name: Build and Test
       uses: lukka/run-cmake@v10.8
       with:
         workflowPreset: 'linux-release-buildandtest'
