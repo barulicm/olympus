@@ -92,7 +92,18 @@
       "configurePreset": "linux-release"
     }
   ],
-  "packagePresets": [],
+  "packagePresets": [
+    {
+      "name": "windows-package",
+      "configurePreset": "windows-release",
+      "generators": ["NSIS", "ZIP"]
+    },
+    {
+      "name": "linux-package",
+      "configurePreset": "linux-release",
+      "generators": ["DEB", "ZIP"]
+    }
+  ],
   "workflowPresets": [
     {
       "name": "windows-debug-buildandtest",
@@ -159,6 +170,48 @@
         {
           "type": "test",
           "name": "linux-debug"
+        }
+      ]
+    },
+    {
+      "name": "windows-package",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "windows-release"
+        },
+        {
+          "type": "build",
+          "name": "windows-release"
+        },
+        {
+          "type": "test",
+          "name": "windows-release"
+        },
+        {
+          "type": "package",
+          "name": "windows-package"
+        }
+      ]
+    },
+    {
+      "name": "linux-package",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "linux-release"
+        },
+        {
+          "type": "build",
+          "name": "linux-release"
+        },
+        {
+          "type": "test",
+          "name": "linux-release"
+        },
+        {
+          "type": "package",
+          "name": "linux-package"
         }
       ]
     }
