@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(Olympus)
+project(Olympus VERSION 2024.1)
 
 set(CMAKE_CXX_STANDARD 23)
 
@@ -49,10 +49,13 @@ if(WIN32)
 endif()
 
 add_executable(olympus_executable
+    resources.rc
     src/main.cpp
 )
 set_target_properties(olympus_executable PROPERTIES OUTPUT_NAME olympus)
 target_link_libraries(olympus_executable PRIVATE olympus_library)
+
+configure_file(Olympus.ico ${CMAKE_CURRENT_BINARY_DIR}/Olympus.ico COPYONLY)
 
 include(GNUInstallDirs)
 

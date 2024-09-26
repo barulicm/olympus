@@ -24,8 +24,8 @@ else()
 endif()
 
 # NSIS generator config
-set(CPACK_NSIS_MUI_ICON ${CMAKE_CURRENT_LIST_DIR}/Olympus.ico)
-set(CPACK_NSIS_MUI_UNIICON ${CMAKE_CURRENT_LIST_DIR}/Olympus.ico)
+set(CPACK_NSIS_MUI_ICON ${CMAKE_CURRENT_LIST_DIR}/../Olympus.ico)
+set(CPACK_NSIS_MUI_UNIICON ${CMAKE_CURRENT_LIST_DIR}/../Olympus.ico)
 set(CPACK_NSIS_INSTALLED_ICON_NAME bin/Olympus.exe)
 set(CPACK_NSIS_DISPLAY_NAME "Olympus Scoring Software")
 set(CPACK_NSIS_PACKAGE_NAME "Olympus")

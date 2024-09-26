@@ -56,6 +56,8 @@ int main(int argc, char** argv) {
         for (const auto &ip_address: ip_addresses) {
             std::cout << "\thttp://" << ip_address << ":8080\n";
         }
+        std::cout << "\n";
+        std::cout << "Press Ctrl+C to quit.\n";
         std::cout << std::endl;
 
         boost::asio::io_service signal_handling_io_service;
