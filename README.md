@@ -1,40 +1,9 @@
 # Olympus
 Unofficial score keeping software for FIRST LEGO League.
 
-## Installation
+## User Documentation
 
-### Windows
-
-Download and run the latest Windows installer from the [Releases page](https://github.com/barulicm/olympus/releases).
-
-Once the installer finishes, you can run Olympus using the Start Menu shortcut.
-
-### Linux
-
-Download the latest debian package from the [Releases page](https://github.com/barulicm/olympus/releases).
-
-Install the package with the following command, replacing `VERSION` with the version number in your
-downloaded file.
-
-```bash
-sudo dpkg -i Olympus-VERSION-Linux.deb
-```
-
-You can now start the Olympus server with the 'olympus' command.
-
-### Docker
-
-Pull the latest image from the GitHub container registry.
-
-```shell
-docker pull ghcr.io/barulicm/olympus:main
-```
-
-When running the docker image, make sure to publish exposed ports.
-
-```shell
-docker run -P ghcr.io/barulicm/olympus
-```
+User documentation is available in [this repository's wiki](https://github.com/barulicm/olympus/wiki).
 
 ## Developer Quick Start
 
