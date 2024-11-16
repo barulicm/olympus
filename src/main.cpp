@@ -7,9 +7,12 @@
 #include "get_exec_path.hpp"
 #include "get_ip_addresses.hpp"
 #include "save_session_backup.hpp"
+#include "version.hpp"
 
 int main(int argc, char** argv) {
     Session session;
+
+    std::cout << "Olympus " << OLYMPUS_VERSION << std::endl;
 
     try {
         const auto share_path = GetCurrentExecutableDirectory().parent_path().parent_path() / std::filesystem::path("share/olympus").make_preferred();

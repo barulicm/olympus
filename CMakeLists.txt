@@ -9,6 +9,11 @@ find_package(Threads REQUIRED)
 find_package(nlohmann_json REQUIRED)
 find_package(Boost REQUIRED)
 
+include(cmake/CheckGit.cmake)
+CheckGitSetup()
+
+configure_file(src/version.hpp.in generated/version.hpp @ONLY)
+
 add_library(olympus_library STATIC
         src/game_description/json_game.cpp
         src/game_description/json_mission.cpp
@@ -32,11 +37,13 @@ add_library(olympus_library STATIC
         src/generation/score_calculator_generation.cpp
         src/request_handlers/announcement_handler.cpp)
 target_include_directories(olympus_library PUBLIC src)
+target_include_directories(olympus_library PUBLIC "${CMAKE_CURRENT_BINARY_DIR}/generated")
 target_link_libraries(olympus_library PUBLIC
     Boost::boost
     cpprestsdk::cpprest
     OpenSSL::SSL
     nlohmann_json::nlohmann_json
+        git_version
 )
 
 if(WIN32)
