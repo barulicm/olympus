@@ -8,6 +8,7 @@
 #include "generated_resource_handler.hpp"
 #include "scores_handler.hpp"
 #include "session_save_handler.hpp"
+#include "sponsors_handler.hpp"
 #include "static_resources_handler.hpp"
 #include "team_handler.hpp"
 #include "timer_handler.hpp"

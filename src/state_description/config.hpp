@@ -10,7 +10,8 @@ struct Config {
     enum class DisplayState {
         ShowScores,
         Blackout,
-        FllLogo
+        FllLogo,
+        Sponsors
     } display_state = DisplayState::ShowScores;
 };
 

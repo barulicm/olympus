@@ -4,7 +4,9 @@
 
 void to_json(nlohmann::json& json, const Session& session){
     json = {
-            {"teams", session.teams}
+            {"config", session.config},
+            {"teams", session.teams},
+            {"sponsors", session.sponsors}
     };
     if (session.game) {
         json["game"] = *session.game;
@@ -17,7 +19,9 @@ void from_json(const nlohmann::json& json, Session& session){
         json.at("game").get_to(game);
         session.game = game;
     }
+    json.at("config").get_to(session.config);
     json.at("teams").get_to(session.teams);
+    json.at("sponsors").get_to(session.sponsors);
 }
 
 void to_json(nlohmann::json& json, const Config& config)

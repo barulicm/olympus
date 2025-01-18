@@ -50,6 +50,9 @@ void ConfigHandler::CallbackGet(const web::http::http_request &request) {
             case Config::DisplayState::FllLogo:
                 response = U("FllLogo");
                 break;
+            case Config::DisplayState::Sponsors:
+                response = U("Sponsors");
+                break;
             default:
                 response = U("unknown");
                 break;
@@ -91,6 +94,9 @@ void ConfigHandler::CallbackPut(const web::http::http_request &request) {
             request.reply(web::http::status_codes::OK);
         } else if(value == U("FllLogo")) {
             config_.display_state = Config::DisplayState::FllLogo;
+            request.reply(web::http::status_codes::OK);
+        } else if(value == U("Sponsors")) {
+            config_.display_state = Config::DisplayState::Sponsors;
             request.reply(web::http::status_codes::OK);
         } else {
             request.reply(web::http::status_codes::BadRequest, U("Unrecognized value for DisplayState"));

@@ -11,6 +11,7 @@ struct Session
     Config config;
     std::optional<olympus::game_description::Game> game;
     std::vector<Team> teams;
+    std::vector<std::string> sponsors;
 };
 
 #endif //SESSION_HPP_

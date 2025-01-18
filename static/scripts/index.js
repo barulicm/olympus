@@ -127,12 +127,46 @@ function sendGameChoice() {
     xhr.send(chosenGameName);
 }
 
+function getSponsors() {
+    let sponsorTable = document.getElementById('sponsorTable');
+    sponsorTable.innerHTML = '';  // Clears any existing children
+    let xhr = new XMLHttpRequest();
+    xhr.open('GET', 'sponsors', true);
+    xhr.send();
+    xhr.onreadystatechange = () => {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                let sponsorArr = JSON.parse(xhr.responseText)["sponsors"];
+                for (let i = 0; i < sponsorArr.length; i++) {
+                    let row = document.createElement("tr");
+                    let imageCell = document.createElement("td");
+                    let sponsorImage = new Image();
+                    sponsorImage.src = sponsorArr[i];
+                    sponsorImage.className = "sponsorImage";
+                    imageCell.appendChild(sponsorImage);
+                    row.appendChild(imageCell);
+                    let delButtonCell = document.createElement("td");
+                    let delButton = document.createElement("button");
+                    delButton.classList.add("deleteButton");
+                    delButton.onclick = ()=>{ deleteSponsor(i); };
+                    delButtonCell.appendChild(delButton);
+                    row.appendChild(delButtonCell);
+                    sponsorTable.appendChild(row);
+                }
+            } else {
+                alert('Request failed: ' + xhr.responseText);
+            }
+        }
+    }
+}
+
 function onLoad() {
     queryHasTeams();
     getShowTimer();
     getRowsPerDisplay();
     getDisplayState();
     getGames();
+    getSponsors();
     setInterval(updateTimer, 100);
 }
 
@@ -375,4 +409,47 @@ function setAnnouncement() {
             alert('Request failed: ' + xhr.responseText);
         }
     }
+}
+
+function addSponsor(element) {
+    let file = element.files[0];
+    if(file == null) {
+        return;
+    }
+    var reader = new FileReader();
+    reader.onloadend = function() {
+        let data = {};
+        data.image_data = reader.result;
+        let xhr = new XMLHttpRequest();
+        xhr.open('PUT', 'sponsors/add', true);
+        xhr.send(JSON.stringify(data));
+        xhr.onreadystatechange = ()=>{
+            if(xhr.readyState === 4) {
+                if(xhr.status === 200) {
+                    element.value = '';
+                    getSponsors();
+                } else {
+                    alert('Request failed: ' + xhr.responseText);
+                }
+            }
+        }
+    }
+    reader.readAsDataURL(file);
+}
+
+function deleteSponsor(index) {
+    let xhr = new XMLHttpRequest();
+    xhr.open('PUT', 'sponsors/delete', true);
+    let data = {};
+    data['index'] = index;
+    xhr.send(JSON.stringify(data));
+    xhr.onreadystatechange = ()=>{
+        if(xhr.readyState === 4) {
+            if(xhr.status === 200) {
+                getSponsors();
+            } else {
+                alert('Request failed: ' + xhr.responseText);
+            }
+        }
+    };
 }

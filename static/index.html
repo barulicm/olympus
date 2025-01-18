@@ -71,12 +71,24 @@
             <option value="ShowScores">Show Scores</option>
             <option value="Blackout">Blackout</option>
             <option value="FllLogo">FLL Logo</option>
+            <option value="Sponsors">Sponsors</option>
         </select>
         <br/>
         <label for="showAnnouncement">Show Announcement:</label>
         <input type="checkbox" id="showAnnouncement" oninput="setAnnouncement()">
         <label for="announcementContent">Announcement:</label>
         <input type="text" id="announcementContent" onchange="setAnnouncement()">
+    </div>
+</div>
+
+<div class="controlsContainer">
+    <div class="controlsGroup">
+        <label class="groupHeading">Sponsors</label>
+        <label for="addSponsorInput">Add Sponsor:</label>
+        <input type="file" id="addSponsorInput" onchange="addSponsor(this)" />
+        <table id="sponsorTable">
+            <!-- populated by javascript -->
+        </table>
     </div>
 </div>
 

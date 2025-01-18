@@ -1,7 +1,8 @@
 const DisplayStates = {
     ShowScores: "ShowScores",
     Blackout: "Blackout",
-    FllLogo: "FllLogo"
+    FllLogo: "FllLogo",
+    Sponsors: "Sponsors"
 }
 
 let current_top_team = 0;
@@ -124,6 +125,8 @@ function setBlackoutTop(val_in_studs) {
     // Set FllLogo's bottom so cropping works on logo screen too
     let fllLogoElement = document.getElementById("fllLogoContainer");
     fllLogoElement.style.setProperty('bottom', 'calc(100% - (' + val_in_studs + ' * var(--stud-size)))');
+    let sponsorsElement = document.getElementById("sponsorsContainer");
+    sponsorsElement.style.setProperty('bottom', 'calc(100% - (' + val_in_studs + ' * var(--stud-size)))');
 }
 
 function setFllLogoVisibility(visible) {
@@ -132,6 +135,17 @@ function setFllLogoVisibility(visible) {
         fllLogoElement.style.setProperty("top", "0");
     } else {
         fllLogoElement.style.setProperty("top", "100%");
+    }
+}
+
+function setSponsorsVisibility(visible) {
+    let sponsorsContainer = document.getElementById("sponsorsContainer");
+    if(visible === true) {
+        sponsorsContainer.style.visibility = "visible";
+        // sponsorsContainer.style.setProperty("top", "0");
+    } else {
+        sponsorsContainer.style.visibility = "hidden";
+        // sponsorsContainer.style.setProperty("top", "100%");
     }
 }
 
@@ -148,14 +162,22 @@ function getDisplayState() {
                     case DisplayStates.ShowScores:
                         setBlackoutTop(teams_per_page + 4);
                         setFllLogoVisibility(false);
+                        setSponsorsVisibility(false);
                         break;
                     case DisplayStates.Blackout:
                         setBlackoutTop(0);
                         setFllLogoVisibility(false);
+                        setSponsorsVisibility(false);
                         break;
                     case DisplayStates.FllLogo:
                         setBlackoutTop(teams_per_page + 4);
                         setFllLogoVisibility(true);
+                        setSponsorsVisibility(false);
+                        break;
+                    case DisplayStates.Sponsors:
+                        setBlackoutTop(teams_per_page + 4);
+                        setFllLogoVisibility(false);
+                        setSponsorsVisibility(true);
                         break;
                 }
             } else {
@@ -239,6 +261,29 @@ function updateAnnouncement() {
     }
 }
 
+function updateSponsors() {
+    let xhr = new XMLHttpRequest();
+    xhr.open('GET', 'sponsors', true);
+    xhr.send();
+    xhr.onreadystatechange = ()=>{
+        if(xhr.readyState === 4) {
+            if(xhr.status === 200) {
+                let sponsorArr = JSON.parse(xhr.responseText)["sponsors"];
+                let sponsorList = document.getElementById("sponsorList");
+                sponsorList.innerText = "";  // clear any existing sponsor images
+                for (let i = 0; i < sponsorArr.length; i++) {
+                    let sponsorImage = new Image();
+                    sponsorImage.src = sponsorArr[i];
+                    sponsorImage.className = "sponsorImage";
+                    sponsorList.appendChild(sponsorImage);
+                }
+            } else {
+                console.error('Could not get sponsors: ' + xhr.responseText);
+            }
+        }
+    }
+}
+
 function onLoad() {
     updateDisplayConfig();
     setInterval(updateDisplayConfig, 1000);
@@ -248,4 +293,6 @@ function onLoad() {
     setInterval(updateTimer, 100);
     updateAnnouncement();
     setInterval(updateAnnouncement, 1000);
+    updateSponsors();
+    setInterval(updateSponsors, 60000);
 }
