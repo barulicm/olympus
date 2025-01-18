@@ -160,7 +160,43 @@ function getSponsors() {
     }
 }
 
+function checkForNewRelease() {
+    const currentVersionPromise = new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', 'controlQuery', true);
+        xhr.setRequestHeader('query', 'version');
+        xhr.onload = () => {
+            let version = xhr.responseText;
+            resolve('v' + version.substring(0, version.indexOf('-')));
+        };
+        xhr.onerror = reject;
+        xhr.send();
+    });
+
+    const latestVersionPromise = new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', 'http://api.github.com/repos/barulicm/olympus/releases/latest', true);
+        xhr.onload = () => {
+            let json_data = JSON.parse(xhr.responseText);
+            resolve(json_data['tag_name'])
+        };
+        xhr.onerror = reject;
+        xhr.send();
+    });
+
+    Promise.all([currentVersionPromise, latestVersionPromise])
+        .then(([currentVersion, latestVersion]) => {
+            if(currentVersion < latestVersion) {
+                document.getElementById("updateAlert").style.display = 'block';
+            }
+        })
+        .catch(error => {
+            console.error("Failed to check for updates: ", error);
+        });
+}
+
 function onLoad() {
+    checkForNewRelease();
     queryHasTeams();
     getShowTimer();
     getRowsPerDisplay();

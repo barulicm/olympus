@@ -1,4 +1,5 @@
 #include "control_query_handler.hpp"
+#include "version.hpp"
 
 ControlQueryHandler::ControlQueryHandler(Session &session)
     : session_(session)
@@ -28,6 +29,8 @@ void ControlQueryHandler::Callback(const web::http::http_request &request) {
         response = (!session_.teams.empty() ? U("true") : U("false"));
     } else if(query == U("hasGame")) {
         response = (session_.game ? U("true") : U("false"));
+    } else if(query == U("version")) {
+        response = U(OLYMPUS_VERSION);
     }
     request.reply(web::http::status_codes::OK, response, U("text/plain")).wait();
 }
