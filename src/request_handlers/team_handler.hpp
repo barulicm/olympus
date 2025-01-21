@@ -16,6 +16,7 @@ private:
     void CallbackGet(const web::http::http_request& request);
     void CallbackPut(web::http::http_request request);
     Team& GetTeamByNumber(const std::string& number);
+    bool TeamNumberExists(const std::string& number);
 
 };
 

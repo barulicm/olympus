@@ -216,6 +216,7 @@ function onTeamsFileSelected(e) {
         return function (e) {
             var contents = e.target.result;
             var lines = contents.split("\n");
+            var foundEmptyNumber = false;
             for (var i = 0; i < lines.length; i++) {
                 if (lines[i].length === 0) {
                     // Skip empty lines
@@ -223,7 +224,13 @@ function onTeamsFileSelected(e) {
                 }
                 var tokens = lines[i].split(",");
                 var team_number = tokens[0].replace(/[^0-9]/gi, '');
-                ;
+                if(!team_number) {
+                    if(!foundEmptyNumber) {
+                        alert("Some teams in your file have no team number. These will be skipped.");
+                    }
+                    foundEmptyNumber = true;
+                    continue;
+                }
                 var team_name = tokens[1].replace(/[^a-z0-9 -]/gi, '');
                 sendAddTeam(team_name, team_number, false, false);
             }

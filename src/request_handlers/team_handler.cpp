@@ -53,7 +53,18 @@ void TeamHandler::CallbackPut(web::http::http_request request) {
                 nlohmann::json j = nlohmann::json::parse(body);
                 Team newTeam;
                 newTeam.rank = 0;
-                newTeam.number = j["number"];
+                const std::string teamNumber = j["number"];
+                if(teamNumber.empty()) {
+                    const auto rep = U("Team number must not be empty.");
+                    request.reply(web::http::status_codes::BadRequest, rep).wait();
+                    return;
+                }
+                if(TeamNumberExists(teamNumber)) {
+                    const auto rep = U("Another team is already using the new team number.");
+                    request.reply(web::http::status_codes::BadRequest, rep).wait();
+                    return;
+                }
+                newTeam.number = teamNumber;
                 newTeam.name = j["name"];
                 session_.teams.push_back(newTeam);
                 utility::string_t rep = U("Add team successful.");
@@ -97,8 +108,18 @@ void TeamHandler::CallbackPut(web::http::http_request request) {
                     utility::string_t rep = U("No such team.");
                     request.reply(web::http::status_codes::NotFound, rep).wait();
                 } else {
-
-                    findIter->number = j["newTeamNumber"];
+                    const std::string newTeamNumber = j["newTeamNumber"];
+                    if(newTeamNumber.empty()) {
+                        const auto rep = U("Team number must not be empty.");
+                        request.reply(web::http::status_codes::BadRequest, rep).wait();
+                        return;
+                    }
+                    if(TeamNumberExists(newTeamNumber)) {
+                        const auto rep = U("Another team is already using the new team number.");
+                        request.reply(web::http::status_codes::BadRequest, rep).wait();
+                        return;
+                    }
+                    findIter->number = newTeamNumber;
                     findIter->name = j["newTeamName"];
                     j["newScores"].get_to(findIter->scores);
                     j["newGPScores"].get_to(findIter->gp_scores);
@@ -125,4 +146,10 @@ Team &TeamHandler::GetTeamByNumber(const std::string &number) {
         throw std::invalid_argument("No team found with number: " + number);
     }
     return *found_iter;
+}
+
+bool TeamHandler::TeamNumberExists(const std::string& number) {
+    return std::any_of(session_.teams.begin(), session_.teams.end(), [&number](const auto & team){
+        return team.number == number;
+    });
 }

@@ -80,7 +80,7 @@ function sendAddTeam(teamName, teamNumber, reload, async) {
                     location.reload();
                 }
             } else {
-                alert("Adding team " + teamNumber + " failed. Status code " + xhr.status);
+                alert("Adding team " + teamNumber + " failed. " + xhr.responseText + ' (' + xhr.status + ')');
             }
         }
     }

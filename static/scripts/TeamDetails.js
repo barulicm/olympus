@@ -62,7 +62,8 @@ function submitEdits() {
 
     let current_url = window.location.href;
     jsonData.oldTeamNumber = current_url.substr(current_url.indexOf("?team=")+6);
-    jsonData.newTeamNumber = document.getElementById("teamNumber").value;
+    let newTeamNumber = document.getElementById("teamNumber").value;
+    jsonData.newTeamNumber = newTeamNumber;
     jsonData.newTeamName   = document.getElementById("teamName").value;
 
     jsonData.newScores = [];
@@ -86,7 +87,7 @@ function submitEdits() {
         if(xhr.readyState === 4) {
             if(xhr.status === 200) {
                 alert("Edits Saved");
-                location.reload();
+                location.replace('TeamDetails.html?team=' + newTeamNumber);
             } else {
                 alert("Submitting team edits failed.\nStatus: " + xhr.status + "\nMessage: " + xhr.responseText);
             }
