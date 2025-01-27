@@ -57,6 +57,8 @@ void ConfigHandler::CallbackGet(const web::http::http_request &request) {
                 response = U("unknown");
                 break;
         }
+    } else if(name == U("display_seconds_per_page")) {
+        response = std::to_wstring(config_.display_seconds_per_page);
     } else {
         request.reply(web::http::status_codes::BadRequest, U("No such config value with name: '") + name + U("'"), U("text/plain")).wait();
         return;
@@ -81,26 +83,29 @@ void ConfigHandler::CallbackPut(const web::http::http_request &request) {
         request.reply(web::http::status_codes::BadRequest, U("Config 'competition_name' is read-only."), U("text/plain")).wait();
     } else if(name == U("show_timer")) {
         config_.show_timer = value == U("true");
-        request.reply(web::http::status_codes::OK);
+        request.reply(web::http::status_codes::OK).wait();
     } else if(name == U("rows_on_display")) {
         config_.rows_on_display = std::stoi(value);
-        request.reply(web::http::status_codes::OK);
+        request.reply(web::http::status_codes::OK).wait();
     } else if(name == U("display_state")) {
-        if(value == U("ShowScores")) {
+        if (value == U("ShowScores")) {
             config_.display_state = Config::DisplayState::ShowScores;
-            request.reply(web::http::status_codes::OK);
-        } else if(value == U("Blackout")) {
+            request.reply(web::http::status_codes::OK).wait();
+        } else if (value == U("Blackout")) {
             config_.display_state = Config::DisplayState::Blackout;
-            request.reply(web::http::status_codes::OK);
-        } else if(value == U("FllLogo")) {
+            request.reply(web::http::status_codes::OK).wait();
+        } else if (value == U("FllLogo")) {
             config_.display_state = Config::DisplayState::FllLogo;
-            request.reply(web::http::status_codes::OK);
-        } else if(value == U("Sponsors")) {
+            request.reply(web::http::status_codes::OK).wait();
+        } else if (value == U("Sponsors")) {
             config_.display_state = Config::DisplayState::Sponsors;
-            request.reply(web::http::status_codes::OK);
+            request.reply(web::http::status_codes::OK).wait();
         } else {
-            request.reply(web::http::status_codes::BadRequest, U("Unrecognized value for DisplayState"));
+            request.reply(web::http::status_codes::BadRequest, U("Unrecognized value for DisplayState")).wait();
         }
+    } else if(name == U("display_seconds_per_page")) {
+        config_.display_seconds_per_page = std::stoi(value);
+        request.reply(web::http::status_codes::OK).wait();
     } else {
         request.reply(web::http::status_codes::BadRequest, U("No such config value with name: '") + name + U("'"), U("text/plain")).wait();
     }

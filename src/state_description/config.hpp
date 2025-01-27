@@ -13,6 +13,7 @@ struct Config {
         FllLogo,
         Sponsors
     } display_state = DisplayState::ShowScores;
+    int display_seconds_per_page{5};
 };
 
 #endif //OLYMPUS_CONFIG_HPP

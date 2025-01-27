@@ -8,6 +8,8 @@ const DisplayStates = {
 let current_top_team = 0;
 let teams_per_page = 8;
 let display_state = DisplayStates.ShowScores;
+let paging_interval = null;
+let seconds_per_page = 5;
 
 function getInfo() {
     var xhr = new XMLHttpRequest();
@@ -229,10 +231,32 @@ function getTeamsPerPage() {
     }
 }
 
+function getSecondsPerPage() {
+    let xhr = new XMLHttpRequest();
+    xhr.open('GET', 'config', true);
+    xhr.setRequestHeader('name', 'display_seconds_per_page');
+    xhr.send();
+    xhr.onreadystatechange = () => {
+        if(xhr.readyState === 4) {
+            if(xhr.status === 200) {
+                let new_seconds_per_page = parseInt(xhr.responseText);
+                if(new_seconds_per_page !== seconds_per_page) {
+                    seconds_per_page = new_seconds_per_page;
+                    clearInterval(paging_interval);
+                    paging_interval = setInterval(getInfo, seconds_per_page * 1000);
+                }
+            } else {
+                console.error('Could not get seconds per page config: ' + xhr.responseText);
+            }
+        }
+    }
+}
+
 function updateDisplayConfig() {
     getDisplayState();
     getShowTimer();
     getTeamsPerPage();
+    getSecondsPerPage();
 }
 
 function updateAnnouncement() {
@@ -245,7 +269,6 @@ function updateAnnouncement() {
                 let announcementDetails = JSON.parse(xhr.responseText);
                 let announcementContainer = document.getElementById("announcementContainer");
                 let body = document.getElementsByTagName("body")[0];
-                console.log(body)
                 if(announcementDetails.visible) {
                     announcementContainer.style.display = "flex";
                     body.style.height = "calc(100% - var(--stud-size))";
@@ -288,7 +311,7 @@ function onLoad() {
     updateDisplayConfig();
     setInterval(updateDisplayConfig, 1000);
     getInfo();
-    setInterval(getInfo, 5000);
+    paging_interval = setInterval(getInfo, 5000);
     updateTimer();
     setInterval(updateTimer, 100);
     updateAnnouncement();
