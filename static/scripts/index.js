@@ -353,12 +353,13 @@ function timerButtonClicked() {
             if (xhr.readyState === 4) {
                 if (xhr.status !== 200) {
                     alert(xhr.responseText);
+                } else {
+                    document.getElementById('startAudio').play();
                 }
             }
         }
         xhr.send();
         timer_button.innerText = 'Stop Timer';
-        document.getElementById('startAudio').play();
     } else {
         let xhr = new XMLHttpRequest()
         xhr.open('PUT', 'timer/stop', true);
@@ -395,7 +396,7 @@ function updateTimer() {
             } else if (time_remaining === 0 && prev_time_remaining > 0) {
                 document.getElementById('endAudio').play();
             }
-            if (time_remaining === 0 && timer_button.innerText === 'Stop Timer') {
+            if (time_remaining === 0) {
                 timer_button.innerText = 'Reset Timer';
             }
             prev_time_remaining = time_remaining;

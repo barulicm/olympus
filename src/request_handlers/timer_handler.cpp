@@ -31,16 +31,24 @@ void TimerHandler::CallbackGet(const web::http::http_request &request) {
 }
 
 void TimerHandler::CallbackPut(const web::http::http_request &request) {
-    const auto path = request.relative_uri().path();
-    if(path == U("/timer/start")) {
-        StartTimer();
-    } else if(path == U("/timer/stop")) {
-        StopTimer();
+    try {
+        const auto path = request.relative_uri().path();
+        if (path == U("/timer/start")) {
+            StartTimer();
+        } else if (path == U("/timer/stop")) {
+            StopTimer();
+        }
+        request.reply(web::http::status_codes::OK).wait();
+    } catch (const std::exception & e) {
+        const std::string error_msg = e.what();
+        request.reply(web::http::status_codes::InternalError, utility::string_t(error_msg.begin(), error_msg.end())).wait();
     }
-    request.reply(web::http::status_codes::OK).wait();
 }
 
 void TimerHandler::StartTimer() {
+    if(timer_running_) {
+        throw std::runtime_error("Timer is already running.");
+    }
     timer_running_ = true;
     timer_thread_ = std::thread([this](){
         const auto stop_time = std::chrono::steady_clock::now() + std::chrono::seconds(timer_match_length_);
