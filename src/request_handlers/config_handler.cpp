@@ -58,7 +58,11 @@ void ConfigHandler::CallbackGet(const web::http::http_request &request) {
                 break;
         }
     } else if(name == U("display_seconds_per_page")) {
+#ifdef _UTF16_STRINGS
         response = std::to_wstring(config_.display_seconds_per_page);
+#else
+        response = std::to_string(config_.display_seconds_per_page);
+#endif
     } else {
         request.reply(web::http::status_codes::BadRequest, U("No such config value with name: '") + name + U("'"), U("text/plain")).wait();
         return;
