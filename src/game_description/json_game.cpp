@@ -8,7 +8,7 @@ void to_json(nlohmann::json &json, const Game &game) {
     json = {
             {"name",      game.name},
             {"description", game.description},
-            {"logo_path", game.logo_path},
+            {"logo", game.logo_path},
             {"missions",  game.missions}
     };
 }
