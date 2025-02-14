@@ -114,12 +114,14 @@ void TeamHandler::CallbackPut(web::http::http_request request) {
                         request.reply(web::http::status_codes::BadRequest, rep).wait();
                         return;
                     }
-                    if(TeamNumberExists(newTeamNumber)) {
-                        const auto rep = U("Another team is already using the new team number.");
-                        request.reply(web::http::status_codes::BadRequest, rep).wait();
-                        return;
+                    if(newTeamNumber != teamNumber) {
+                        if(TeamNumberExists(newTeamNumber)) {
+                            const auto rep = U("Another team is already using the new team number.");
+                            request.reply(web::http::status_codes::BadRequest, rep).wait();
+                            return;
+                        }
+                        findIter->number = newTeamNumber;
                     }
-                    findIter->number = newTeamNumber;
                     findIter->name = j["newTeamName"];
                     j["newScores"].get_to(findIter->scores);
                     j["newGPScores"].get_to(findIter->gp_scores);
