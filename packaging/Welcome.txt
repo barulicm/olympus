@@ -1,1 +1,0 @@
-Welcome to the Olympus installer. This tool will guide you through installing Olympus on this machine.

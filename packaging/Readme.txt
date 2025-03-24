@@ -1,1 +1,0 @@
-Thank you for installing Olympus. For complete documentation, please go to https://github.com/barulicm/olympus
