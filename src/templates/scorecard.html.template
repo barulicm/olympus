@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/Scorecard.css" media="screen" />
+  <script src="scripts/Scorecard.js"></script>
+  <script src="ScoreCalculator.js"></script>
+  <title>Olympus - Scorecard</title>
+</head>
+
+<body onload="onLoad()">
+  <div class="navigation">
+    <a class="navigation" href="index.html">Home</a>
+    <a class="navigation" href="teams.html">Teams</a>
+    <a class="navigation" href="Scorecard.html">Scorecard</a>
+    <a class="navigation" href="Display.html">Display</a>
+    <a class="navigation" href="results.html">Results</a>
+    <a class="navigation" href="TimerDisplay.html">Timer</a>
+  </div>
+  <img id="logo" src="game/logo" />
+  <form class="form-style-7"
+    onchange="scoreOutput.value=calculateScore({{ for q_id in question_ids }}{q_id}.value{{ if not @last }},{{ endif }}{{ endfor }})">
+    <h1>Scorecard</h1>
+    <table>
+      <tbody>
+        <tr>
+          <td>
+            <label for="team" class="grouptitle">Team</label>
+            <input type="text" id="team" name="team" list="teams" onchange="onTeamChange(this.value)">
+            <datalist id="teams">
+            </datalist>
+          </td>
+          <td>
+            <label class="grouptitle">Match</label>
+            <output id="matchOutput">0</output>
+          </td>
+          <td>
+            <input type="reset">
+          </td>
+        </tr>
+
+        {{ for mission in missions}}
+        <tr>
+          <td colspan=3>
+            <label class="grouptitle">{ mission.name }</label>
+            {{ for question in mission.questions }}
+            <div class="switch-field">
+              {{ if question.is_bool }}
+              <input type="radio" id="{ question.id}n" name="{ question.id }" value="n" checked>
+              <label for="{ question.id }n">No</label>
+              <input type="radio" id="{ question.id }y" name="{ question.id }" value="y">
+              <label for="{ question.id }y">Yes</label>
+              {{ endif }}
+              {{ if question.is_enum }}
+              {{ for option in question.options }}
+              <input type="radio" id="{ question.id }{ @index }" name="{ question.id }" value="{ option }" {{ if @first }}checked{{ endif }}>
+              <label for="{ question.id }{ @index }">{ option }</label>
+              {{ endfor }}
+              {{ endif }}
+              {{ if question.is_number }}
+              {{ for option in question.options }}
+              <input type="radio" id="{ question.id }{ option }" name="{ question.id }" value="{ option }" {{ if @first }}checked{{ endif }}>
+              <label for="{ question.id }{ option }">{ option }{{ if @last }}{{ if question.show_plus_on_max }}+{{ endif }}{{ endif }}</label>
+              {{ endfor }}
+              {{ endif }}
+            </div>
+            {{ endfor }}
+          </td>
+        </tr>
+        {{ endfor }}
+
+        <tr>
+          <td colspan=3>
+            <label class="grouptitle">GP - Gracious Professionalism</label>
+            <div class="switch-field">
+              <input type="radio" name="GP" id="GP2" value="2">
+              <label for="GP2">Developing</label>
+              <input type="radio" name="GP" id="GP3" value="3" checked>
+              <label for="GP3">Accomplished</label>
+              <input type="radio" name="GP" id="GP4" value="4">
+              <label for="GP4">Exceeds</label>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td colspan=3>
+            <label for="scoreOutput" class="grouptitle">Final Score</label>
+            <output id="scoreOutput" name="scoreOutput">0</output>
+          </td>
+        </tr>
+        <tr>
+          <td colspan=3>
+            <label for="comments" class="grouptitle">Comments</label>
+            <textarea id="comments" name="comments" rows="4" cols="50"></textarea>
+          </td>
+          <td colspan=3>
+            <input type="button" class="button" id="submitButton"
+              onclick="submitScore(team.value,calculateScore({{ for q_id in question_ids }}{q_id}.value{{ if not @last }},{{ endif }}{{ endfor }}),GP.value)"
+              value="Submit">
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </form>
+</body>
+
+</html>
