@@ -12,3 +12,6 @@ strum_macros = "0.27.1"
 tinytemplate = "1.2.1"
 tokio = { version = "1.44.1", features = ["full"] }
 tower-http = { version = "0.6.2", features = ["timeout"] }
+
+[package.metadata.packager]
+before-packaging-command = "cargo build --release"
