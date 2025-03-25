@@ -7,14 +7,24 @@ use app_state::SharedAppState;
 use axum::Router;
 use std::time::Duration;
 use tokio::signal;
-use tower_http::timeout::TimeoutLayer;
+use tower_http::{services::ServeDir, timeout::TimeoutLayer};
 
 #[tokio::main]
 async fn main() {
+    let resources_path = std::env::current_exe()
+        .unwrap()
+        .parent()
+        .unwrap()
+        .join("resources");
     let app_state = app_state::create_new_shared_state();
+    app_state.lock().unwrap().resources_path = resources_path.clone();
+    app_state.lock().unwrap().game_description = serde_json::from_str(std::fs::read_to_string(r"C:\Users\matth\Documents\GitHub\olympus\game_configs\fll_2024.json").unwrap().as_str()).unwrap();
+
+    
     let router = Router::<SharedAppState>::new()
         .merge(handlers::register_all_handlers())
         .with_state(app_state)
+        .fallback_service(ServeDir::new(resources_path.join("static_files")))
         .layer((TimeoutLayer::new(Duration::from_secs(10)),));
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
     axum::serve(listener, router)

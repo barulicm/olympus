@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8">
+<head>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/index.css" media="screen" />
+    <script src="scripts/index.js"></script>
+    <title>Olympus</title>
+</head>
+<body onload="onLoad()">
+<div class="navigation">
+    <a class="navigation" href="index.html">Home</a>
+    <a class="navigation" href="teams.html">Teams</a>
+    <a class="navigation" href="Scorecard.html">Scorecard</a>
+    <a class="navigation" href="Display.html">Display</a>
+    <a class="navigation" href="results.html">Results</a>
+    <a class="navigation" href="TimerDisplay.html">Timer</a>
+</div>
+
+<div id="updateAlert"><p>⚠️ A new version of Olympus is available <a href="https://github.com/barulicm/olympus/releases/latest">here</a>. Please consider updating.</p></div>
+
+<div class="controlsContainer">
+    <div class="controlsGroup">
+        <label class="groupHeading">Game Definition</label>
+        <select id="gameSelect" onchange="sendGameChoice()"></select>
+    </div>
+    <div class="controlsGroup" id="teamControls">
+        <label class="groupHeading">Load Teams</label>
+        <button id="importButton" onclick="importTeams()">Import Teams</button>
+    </div>
+    <div class="controlsGroup">
+        <label class="groupHeading">Scores</label>
+        <button id="rerankTeams" onclick="rerankTeamsButtonClicked()">Rerank Teams</button>
+    </div>
+    <div class="controlsGroup">
+        <label class="groupHeading">Export</label>
+        <button id="exportScores" onclick="exportScoresButtonClicked()">Export Scores</button>
+        <button id="exportGPScores" onclick="exportGPScoresButtonClicked()">Export GP Scores</button>
+        <button id="exportSession" onclick="exportSessionButtonClicked()">Export Session</button>
+    </div>
+    <div class="controlsGroup">
+        <label class="groupHeading">Recovery</label>
+        <button id="importSession" onclick="importSessionButtonClicked()">Import Session</button>
+    </div>
+</div>
+
+<div class="controlsContainer">
+    <div class="controlsGroup">
+        <label class="groupHeading">Timer</label>
+        <label class="display" id="timerDisplay">-:--</label>
+        <br/>
+        <button id="timerButton" onclick="timerButtonClicked()">Start Timer</button>
+        <br/>
+        <label class="display" for="volumeRange">Volume:</label>
+        <input type="range" id="volumeRange" min="0" max="100" value="100" oninput="adjustVolumes()">
+        <audio id="startAudio" src="sounds/start.mp3"></audio>
+        <audio id="stopAudio" src="sounds/stop.mp3"></audio>
+        <audio id="endGameAudio" src="sounds/end-game.mp3"></audio>
+        <audio id="endAudio" src="sounds/end.mp3"></audio>
+    </div>
+</div>
+
+<div class="controlsContainer">
+    <div class="controlsGroup">
+        <label class="groupHeading">Display</label>
+        <label for="showTimerCheckbox">Show timer:</label>
+        <input type="checkbox" id="showTimerCheckbox" oninput="setShowTimer()">
+        <br/>
+        <label for="rowsPerDisplay">Rows:</label>
+        <input type="number" id="rowsPerDisplay" min="1" oninput="setRowsPerDisplay()" style="width: 50px">
+        <br/>
+        <label for="displaySecondsPerPage">Seconds per page:</label>
+        <input type="number" id="displaySecondsPerPage" min="1" oninput="setDisplaySecondsPerPage()" style="width: 50px">
+        <br/>
+        <label for="displayState">Display State:</label>
+        <select id="displayState" oninput="setDisplayState()">
+            <option value="ShowScores">Show Scores</option>
+            <option value="Blackout">Blackout</option>
+            <option value="FllLogo">FLL Logo</option>
+            <option value="Sponsors">Sponsors</option>
+        </select>
+        <br/>
+        <label for="showAnnouncement">Show Announcement:</label>
+        <input type="checkbox" id="showAnnouncement" oninput="setAnnouncement()">
+        <label for="announcementContent">Announcement:</label>
+        <input type="text" id="announcementContent" onchange="setAnnouncement()">
+    </div>
+</div>
+
+<div class="controlsContainer">
+    <div class="controlsGroup">
+        <label class="groupHeading">Sponsors</label>
+        <label for="addSponsorInput">Add Sponsor:</label>
+        <input type="file" id="addSponsorInput" onchange="addSponsor(this)" />
+        <table id="sponsorTable">
+            <!-- populated by javascript -->
+        </table>
+    </div>
+</div>
+
+</body>
+</html>

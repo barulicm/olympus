@@ -15,7 +15,7 @@ function calculateScore({{ for q_id in question_ids }}{q_id}{{ if not @last }},{
     let q{ question.in_mission_id } = parseInt({ question.id });
     {{ endif }}
     {{ endfor }}
-    score += { mission.scoring_expression };
+    score += { mission.scoring_expression | unescaped };
   }
   {{ endfor }}
 

@@ -1,0 +1,162 @@
+:root {
+    --stud-size: calc(100vw / 32); /* background is 32 studs wide*/
+}
+
+.topBar {
+    display: flex;
+    margin-left: var(--stud-size);
+    margin-right: var(--stud-size);
+}
+
+.topImage {
+    margin: 0;
+    height: calc((2 * var(--stud-size)) - 20px);
+    padding: 6px;
+    border: 4px solid;
+    border-image: url(../images/white_tile_slice.png) 4 fill;
+    border-image-repeat: stretch;
+}
+
+#logosSpacer {
+    width: calc(7 * var(--stud-size));
+}
+
+#timerDisplay {
+    margin: 0;
+    margin-left: auto;
+    height: calc(( 2 * var(--stud-size) ) - 20px);
+    width: 280px;
+    font-size: calc(( 2 * var(--stud-size) ) - 20px);
+    padding: 6px 6px 6px 6px;
+    border: 4px solid;
+    border-image: url(../images/white_tile_slice.png) 4 fill;
+    border-image-repeat: stretch;
+    text-align: center;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+    background-image: url("../images/lego_plate_background.png");
+    background-repeat: repeat-y;
+    background-size: 100% auto;
+    font-family: "Lucida Console", Courier, monospace;
+}
+
+table {
+    border: none;
+    table-layout: fixed;
+    width: calc(30 * var(--stud-size));
+    margin-left:auto;
+    margin-right:auto;
+    margin-top:0;
+    border-spacing: 0;
+    font-size: calc(var(--stud-size) - 10px);
+}
+
+th {
+    color: black;
+    border: 4px solid;
+    border-image: url(../images/red_tile_slice.png) 4 fill;
+    border-image-repeat: stretch;
+}
+
+th, td {
+    text-align: left;
+    overflow: hidden;
+    padding: 2px 1px 0 1px;
+}
+
+tr {
+    height: var(--stud-size);
+}
+
+td {
+    border: 4px solid;
+    border-image: url(../images/white_tile_slice.png) 4 fill;
+    border-image-repeat: stretch;
+}
+
+tr:nth-child(odd) > td{
+    border: 4px solid;
+    border-image: url(../images/grey_tile_slice.png) 4 fill;
+    border-image-repeat: stretch;
+}
+
+#rankHeader {
+    width: calc((3 * var(--stud-size)) - 10px);
+}
+
+#finalScoreHeader {
+    width: calc((3 * var(--stud-size)) - 10px);
+}
+
+.RoundHeader {
+    width: calc((2 * var(--stud-size)) - 10px);
+}
+
+#scoresTableContainer {
+    overflow: hidden;
+    /*resize: vertical;*/
+    height: 100%;
+}
+
+#blackout {
+    background-color: black;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: 100%;
+}
+
+#fllLogoContainer {
+    background-color: white;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#fllLogoContainer >img {
+    height: 80%;
+}
+
+#announcementContainer {
+    background-color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: var(--stud-size)
+}
+
+#announcementHeader {
+    margin: 0;
+}
+
+#sponsorsContainer {
+    background-color: white;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#sponsorsList {
+    display: flex;
+    align-content: center;
+    align-items: center;
+}
+
+#sponsorList img {
+    margin: 10px;
+}
