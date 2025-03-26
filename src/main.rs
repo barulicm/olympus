@@ -18,8 +18,6 @@ async fn main() {
         .join("resources");
     let app_state = app_state::create_new_shared_state();
     app_state.lock().unwrap().resources_path = resources_path.clone();
-    app_state.lock().unwrap().game_description = serde_json::from_str(std::fs::read_to_string(r"C:\Users\matth\Documents\GitHub\olympus\game_configs\fll_2024.json").unwrap().as_str()).unwrap();
-
     
     let router = Router::<SharedAppState>::new()
         .merge(handlers::register_all_handlers())
