@@ -49,6 +49,7 @@ function removeTeam(evt) {
 
     let xhr = new XMLHttpRequest();
     xhr.open('PUT','team/remove',true);
+    xhr.setRequestHeader("Content-Type", "application/json");
     xhr.send(jsonString);
     xhr.onreadystatechange = ()=>{
         if(xhr.readyState === 4) {
@@ -84,6 +85,7 @@ function sendAddTeam(teamName, teamNumber, reload, async) {
             }
         }
     }
+    xhr.setRequestHeader("Content-Type", "application/json");
     xhr.send(jsonString);
 }
 

@@ -65,7 +65,22 @@ pub struct Team {
   pub number: String,
   pub name: String,
   pub scores: Vec<i64>,
+  #[serde(rename="gpScores")]
   pub gp_scores: Vec<i64>,
+  #[serde(rename="displayScore")]
   pub display_score: i64,
   pub rank: i64,
+}
+
+impl Team {
+  pub fn new(number: String, name: String) -> Self {
+    Self {
+      number,
+      name,
+      scores: vec![],
+      gp_scores: vec![],
+      display_score: 0,
+      rank: 0
+    }
+  }
 }

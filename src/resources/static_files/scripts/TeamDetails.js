@@ -82,6 +82,7 @@ function submitEdits() {
 
     let xhr = new XMLHttpRequest();
     xhr.open('PUT', 'team/edit', true);
+    xhr.setRequestHeader("Content-Type", "application/json");
     xhr.send(JSON.stringify(jsonData));
     xhr.onreadystatechange = ()=>{
         if(xhr.readyState === 4) {
