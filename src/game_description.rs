@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use std::io;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GameDescription {
@@ -6,6 +7,14 @@ pub struct GameDescription {
     pub description: String,
     pub logo: String,
     pub missions: Vec<MissionDescription>,
+}
+
+impl GameDescription {
+    pub fn from_path(path: &std::path::PathBuf) -> io::Result<Self> {
+        let file_contents = std::fs::read_to_string(path)?;
+        let json_value = serde_json::from_str(file_contents.as_str())?;
+        Ok(json_value)
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
