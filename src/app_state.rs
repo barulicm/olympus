@@ -15,6 +15,7 @@ pub struct AppState {
   pub game_description: Option<GameDescription>,
   pub teams: Vec<Team>,
   pub sponsor_logos: Vec<String>,
+  #[serde(skip)]
   pub resources_path: std::path::PathBuf,
 }
 
