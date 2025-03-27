@@ -1,3 +1,4 @@
+mod announcement_handler;
 mod config_handler;
 mod control_query_handler;
 mod game_description_handler;
@@ -16,6 +17,7 @@ pub trait Handler {
 
 pub fn register_all_handlers() -> Router::<SharedAppState> {
   Router::<SharedAppState>::new()
+    .merge(announcement_handler::AnnouncementHandler::register_routes())
     .merge(config_handler::ConfigHandler::register_routes())
     .merge(control_query_handler::ControlQueryHandler::register_routes())
     .merge(game_description_handler::GameDescriptionHandler::register_routes())

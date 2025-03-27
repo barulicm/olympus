@@ -165,7 +165,7 @@ function getSponsors() {
                     let delButtonCell = document.createElement("td");
                     let delButton = document.createElement("button");
                     delButton.classList.add("deleteButton");
-                    delButton.onclick = ()=>{ deleteSponsor(i); };
+                    delButton.onclick = () => { deleteSponsor(i); };
                     delButtonCell.appendChild(delButton);
                     row.appendChild(delButtonCell);
                     sponsorTable.appendChild(row);
@@ -203,7 +203,7 @@ function checkForNewRelease() {
 
     Promise.all([currentVersionPromise, latestVersionPromise])
         .then(([currentVersion, latestVersion]) => {
-            if(currentVersion < latestVersion) {
+            if (currentVersion < latestVersion) {
                 document.getElementById("updateAlert").style.display = 'block';
             }
         })
@@ -242,8 +242,8 @@ function onTeamsFileSelected(e) {
                 }
                 var tokens = lines[i].split(",");
                 var team_number = tokens[0].replace(/[^0-9]/gi, '');
-                if(!team_number) {
-                    if(!foundEmptyNumber) {
+                if (!team_number) {
+                    if (!foundEmptyNumber) {
                         alert("Some teams in your file have no team number. These will be skipped.");
                     }
                     foundEmptyNumber = true;
@@ -480,6 +480,7 @@ function setAnnouncement() {
     data.content = document.getElementById('announcementContent').value;
     let xhr = new XMLHttpRequest();
     xhr.open('PUT', 'announcement', true);
+    xhr.setRequestHeader("Content-Type", "application/json");
     xhr.send(JSON.stringify(data));
     xhr.onreadystatechange = () => {
         if (xhr.readyState === 4 && xhr.status !== 200) {
@@ -490,19 +491,19 @@ function setAnnouncement() {
 
 function addSponsor(element) {
     let file = element.files[0];
-    if(file == null) {
+    if (file == null) {
         return;
     }
     var reader = new FileReader();
-    reader.onloadend = function() {
+    reader.onloadend = function () {
         let data = {};
         data.image_data = reader.result;
         let xhr = new XMLHttpRequest();
         xhr.open('PUT', 'sponsors/add', true);
         xhr.send(JSON.stringify(data));
-        xhr.onreadystatechange = ()=>{
-            if(xhr.readyState === 4) {
-                if(xhr.status === 200) {
+        xhr.onreadystatechange = () => {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
                     element.value = '';
                     getSponsors();
                 } else {
@@ -520,9 +521,9 @@ function deleteSponsor(index) {
     let data = {};
     data['index'] = index;
     xhr.send(JSON.stringify(data));
-    xhr.onreadystatechange = ()=>{
-        if(xhr.readyState === 4) {
-            if(xhr.status === 200) {
+    xhr.onreadystatechange = () => {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
                 getSponsors();
             } else {
                 alert('Request failed: ' + xhr.responseText);
