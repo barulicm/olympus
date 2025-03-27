@@ -500,6 +500,7 @@ function addSponsor(element) {
         data.image_data = reader.result;
         let xhr = new XMLHttpRequest();
         xhr.open('PUT', 'sponsors/add', true);
+        xhr.setRequestHeader("Content-Type", "application/json");
         xhr.send(JSON.stringify(data));
         xhr.onreadystatechange = () => {
             if (xhr.readyState === 4) {
@@ -520,6 +521,7 @@ function deleteSponsor(index) {
     xhr.open('PUT', 'sponsors/delete', true);
     let data = {};
     data['index'] = index;
+    xhr.setRequestHeader("Content-Type", "application/json");
     xhr.send(JSON.stringify(data));
     xhr.onreadystatechange = () => {
         if (xhr.readyState === 4) {
