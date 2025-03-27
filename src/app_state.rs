@@ -1,7 +1,7 @@
-use std::sync::{Arc, Mutex};
-use serde::{Deserialize, Serialize};
-use strum_macros::Display;
 use crate::game_description::GameDescription;
+use serde::{Deserialize, Serialize};
+use std::sync::{Arc, Mutex};
+use strum_macros::Display;
 
 pub type SharedAppState = Arc<Mutex<AppState>>;
 
@@ -11,12 +11,12 @@ pub fn create_new_shared_state() -> SharedAppState {
 
 #[derive(Serialize, Deserialize)]
 pub struct AppState {
-  pub config: Config,
-  pub game_description: Option<GameDescription>,
-  pub teams: Vec<Team>,
-  pub sponsor_logos: Vec<String>,
-  #[serde(skip)]
-  pub resources_path: std::path::PathBuf,
+    pub config: Config,
+    pub game_description: Option<GameDescription>,
+    pub teams: Vec<Team>,
+    pub sponsor_logos: Vec<String>,
+    #[serde(skip)]
+    pub resources_path: std::path::PathBuf,
 }
 
 impl AppState {
@@ -33,11 +33,11 @@ impl AppState {
 
 #[derive(Serialize, Deserialize)]
 pub struct Config {
-  pub show_timer: bool,
-  pub competition_name: String,
-  pub rows_on_display: usize,
-  pub display_state: DisplayState,
-  pub display_seconds_per_page: u64,
+    pub show_timer: bool,
+    pub competition_name: String,
+    pub rows_on_display: usize,
+    pub display_state: DisplayState,
+    pub display_seconds_per_page: u64,
 }
 
 impl Default for Config {
@@ -54,33 +54,33 @@ impl Default for Config {
 
 #[derive(Display, Serialize, Deserialize)]
 pub enum DisplayState {
-  ShowScores,
-  Blackout,
-  FllLogo,
-  Sponsors
+    ShowScores,
+    Blackout,
+    FllLogo,
+    Sponsors,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct Team {
-  pub number: String,
-  pub name: String,
-  pub scores: Vec<i64>,
-  #[serde(rename="gpScores")]
-  pub gp_scores: Vec<i64>,
-  #[serde(rename="displayScore")]
-  pub display_score: i64,
-  pub rank: i64,
+    pub number: String,
+    pub name: String,
+    pub scores: Vec<i64>,
+    #[serde(rename = "gpScores")]
+    pub gp_scores: Vec<i64>,
+    #[serde(rename = "displayScore")]
+    pub display_score: i64,
+    pub rank: i64,
 }
 
 impl Team {
-  pub fn new(number: String, name: String) -> Self {
-    Self {
-      number,
-      name,
-      scores: vec![],
-      gp_scores: vec![],
-      display_score: 0,
-      rank: 0
+    pub fn new(number: String, name: String) -> Self {
+        Self {
+            number,
+            name,
+            scores: vec![],
+            gp_scores: vec![],
+            display_score: 0,
+            rank: 0,
+        }
     }
-  }
 }

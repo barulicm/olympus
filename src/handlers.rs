@@ -3,6 +3,7 @@ mod config_handler;
 mod control_query_handler;
 mod game_description_handler;
 mod generated_files_handler;
+mod scores_handler;
 mod session_save_handler;
 mod sponsors_handler;
 mod team_handler;
@@ -21,6 +22,7 @@ pub fn register_all_handlers() -> Router<SharedAppState> {
         .merge(config_handler::ConfigHandler::register_routes())
         .merge(control_query_handler::ControlQueryHandler::register_routes())
         .merge(game_description_handler::GameDescriptionHandler::register_routes())
+        .merge(scores_handler::ScoresHandler::register_routes())
         .merge(session_save_handler::SessionSaveHandler::register_routes())
         .merge(sponsors_handler::SponsorsHandler::register_routes())
         .merge(team_handler::TeamHandler::register_routes())
