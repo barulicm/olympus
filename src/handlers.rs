@@ -4,6 +4,7 @@ mod game_description_handler;
 mod generated_files_handler;
 mod session_save_handler;
 mod team_handler;
+mod timer_handler;
 
 use axum::Router;
 use crate::app_state::SharedAppState;
@@ -20,5 +21,6 @@ pub fn register_all_handlers() -> Router::<SharedAppState> {
     .merge(game_description_handler::GameDescriptionHandler::register_routes())
     .merge(session_save_handler::SessionSaveHandler::register_routes())
     .merge(team_handler::TeamHandler::register_routes())
+    .merge(timer_handler::TimerHandler::register_routes())
     .merge(generated_files_handler::GeneratedFilesHandler::register_routes())
 }
