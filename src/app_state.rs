@@ -52,7 +52,7 @@ impl Default for Config {
     }
 }
 
-#[derive(Display, Serialize, Deserialize)]
+#[derive(Display, Debug, Serialize, Deserialize, PartialEq)]
 pub enum DisplayState {
     ShowScores,
     Blackout,
