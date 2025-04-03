@@ -52,3 +52,46 @@ impl SessionSaveHandler {
         Ok(StatusCode::OK)
     }
 }
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::app_state::create_new_shared_state;
+    use axum::body::Body;
+    use axum::http::{Request, StatusCode};
+    use tower::{Service, ServiceExt};
+
+    #[tokio::test]
+    async fn export_and_reimport() {
+        let app_state = create_new_shared_state();
+        let mut app = SessionSaveHandler::register_routes()
+            .with_state(app_state)
+            .into_service();
+
+        let req = Request::builder()
+            .method("GET")
+            .uri("/session_backup.json")
+            .body(Body::empty())
+            .unwrap();
+        let response = ServiceExt::<Request<Body>>::ready(&mut app)
+            .await
+            .unwrap()
+            .call(req)
+            .await
+            .unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+
+        let req = Request::builder()
+            .method("PUT")
+            .uri("/session/import")
+            .header(header::CONTENT_TYPE, "application/json")
+            .body(response.into_body())
+            .unwrap();
+        let response = ServiceExt::<Request<Body>>::ready(&mut app)
+            .await
+            .unwrap()
+            .call(req)
+            .await
+            .unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+    }
+}
