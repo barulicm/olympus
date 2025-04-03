@@ -275,6 +275,7 @@ function sendAddTeam(teamName, teamNumber, reload, async) {
 
     var xhr = new XMLHttpRequest();
     xhr.open('PUT', 'team/add', async);
+    xhr.setRequestHeader("Content-Type", "application/json");
     xhr.onreadystatechange = () => {
         if (xhr.readyState === 4) {
             if (xhr.status === 200) {

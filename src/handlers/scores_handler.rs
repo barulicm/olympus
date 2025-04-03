@@ -191,13 +191,157 @@ impl ScoresHandler {
             team.display_score = *team.scores.iter().max().unwrap_or(&0);
         }
         teams.sort_by_key(|t| t.display_score);
+        teams.reverse();
         let mut rank = 1;
         teams[0].rank = rank;
         for i in 1..teams.len() {
-            if teams[i].display_score > teams[i - 1].display_score {
+            if teams[i].display_score < teams[i - 1].display_score {
                 rank += 1;
             }
             teams[i].rank = rank;
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::app_state::create_new_shared_state;
+    use axum::body::Body;
+    use axum::http::{Request, StatusCode, header};
+    use http_body_util::BodyExt;
+    use tower::ServiceExt;
+
+    #[tokio::test]
+    async fn export_scores() {
+        let app_state = create_new_shared_state();
+        let team = Team {
+            number: String::from("1234"),
+            name: String::from("Test Team"),
+            scores: vec![10, 0, 25],
+            gp_scores: vec![2, 3, 4],
+            display_score: 25,
+            rank: 1,
+        };
+        app_state.lock().unwrap().teams.push(team);
+        let app = ScoresHandler::register_routes().with_state(app_state);
+
+        let req = Request::builder()
+            .method("GET")
+            .uri("/scores/export.csv")
+            .body(Body::empty())
+            .unwrap();
+        let response = app.oneshot(req).await.unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+        let body = response.into_body().collect().await.unwrap().to_bytes();
+        let expected_body = b"rank,team number,team name,match 1,match 2,match 3,final score\n1,1234,Test Team,10,0,25,25\n";
+        assert_eq!(&body[..], expected_body);
+    }
+
+    #[tokio::test]
+    async fn export_gp_scores() {
+        let app_state = create_new_shared_state();
+        let team = Team {
+            number: String::from("1234"),
+            name: String::from("Test Team"),
+            scores: vec![10, 0, 25],
+            gp_scores: vec![2, 3, 4],
+            display_score: 25,
+            rank: 1,
+        };
+        app_state.lock().unwrap().teams.push(team);
+        let app = ScoresHandler::register_routes().with_state(app_state);
+
+        let req = Request::builder()
+            .method("GET")
+            .uri("/scores/export_gp.csv")
+            .body(Body::empty())
+            .unwrap();
+        let response = app.oneshot(req).await.unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+        let body = response.into_body().collect().await.unwrap().to_bytes();
+        let expected_body =
+            b"team number,team name,match 1,match 2,match 3\n1234,Test Team,2,3,4\n";
+        assert_eq!(&body[..], expected_body);
+    }
+
+    #[tokio::test]
+    async fn submit_score() {
+        let app_state = create_new_shared_state();
+        let team = Team::new(String::from("1234"), String::from("Test Team"));
+        app_state.lock().unwrap().teams.push(team);
+        let app = ScoresHandler::register_routes().with_state(app_state.clone());
+
+        let req = Request::builder()
+            .method("PUT")
+            .uri("/scores/submit")
+            .header(header::CONTENT_TYPE, "application/json")
+            .body(Body::from(
+                "\
+                {\"teamNumber\": \"1234\", \"score\": 10, \"gpScore\": 2}",
+            ))
+            .unwrap();
+        let response = app.oneshot(req).await.unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+        let team = &app_state.lock().unwrap().teams[0];
+        assert_eq!(team.scores, vec![10]);
+        assert_eq!(team.gp_scores, vec![2]);
+    }
+
+    #[tokio::test]
+    async fn rerank() {
+        let app_state = create_new_shared_state();
+        app_state.lock().unwrap().teams = vec![
+            Team {
+                number: String::from("1234"),
+                name: String::from("Test Team A"),
+                scores: vec![10, 20],
+                gp_scores: vec![2, 2],
+                display_score: 0,
+                rank: 0,
+            },
+            Team {
+                number: String::from("5678"),
+                name: String::from("Test Team B"),
+                scores: vec![11, 12],
+                gp_scores: vec![2, 2],
+                display_score: 0,
+                rank: 0,
+            },
+            Team {
+                number: String::from("9012"),
+                name: String::from("Test Team C"),
+                scores: vec![50, 0],
+                gp_scores: vec![2, 2],
+                display_score: 0,
+                rank: 0,
+            },
+        ];
+        let app = ScoresHandler::register_routes().with_state(app_state.clone());
+
+        let req = Request::builder()
+            .method("PUT")
+            .uri("/scores/rerank")
+            .body(Body::empty())
+            .unwrap();
+        let response = app.oneshot(req).await.unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+        let teams = &app_state.lock().unwrap().teams;
+        assert_eq!(
+            teams.iter().map(|t| t.rank).collect::<Vec<_>>(),
+            vec![1, 2, 3]
+        );
+        assert_eq!(
+            teams.iter().map(|t| t.display_score).collect::<Vec<_>>(),
+            vec![50, 20, 12]
+        );
+        assert_eq!(
+            teams.iter().map(|t| t.number.clone()).collect::<Vec<_>>(),
+            vec![
+                String::from("9012"),
+                String::from("1234"),
+                String::from("5678")
+            ]
+        );
     }
 }
