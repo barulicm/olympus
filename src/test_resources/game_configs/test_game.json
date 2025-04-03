@@ -1,0 +1,44 @@
+{
+  "name": "Test Game",
+  "description": "Test Game Description",
+  "logo": "test_game_logo.bmp",
+  "missions": [
+    {
+      "name": "Test Bool Mission",
+      "questions": [
+        {
+          "type": "bool",
+          "description": "This tests bool questions"
+        }
+      ],
+      "scoring": "(qa ? 20 : 0)"
+    },
+    {
+      "name": "Test Number Mission",
+      "questions": [
+        {
+          "type": "number",
+          "description": "this tests number questions",
+          "min": 0,
+          "max": 3
+        }
+      ],
+      "scoring": "(qa * 5)"
+    },
+    {
+      "name": "Test Enum Mission",
+      "questions": [
+        {
+          "type": "enum",
+          "description": "this tests enum questions",
+          "options": [
+            "Option A",
+            "Option B",
+            "Option C"
+          ]
+        }
+      ],
+      "scoring": "(qa == \"Option A\" ? 10 : 0)"
+    }
+  ]
+}

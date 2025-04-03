@@ -122,3 +122,141 @@ impl GameDescriptionHandler {
         Ok((StatusCode::BAD_REQUEST, "No game with requested name."))
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::app_state::create_new_shared_state;
+    use axum::body::Body;
+    use axum::http::{Request, StatusCode};
+    use http_body_util::BodyExt;
+    use tower::ServiceExt;
+
+    #[tokio::test]
+    async fn available_games() {
+        let app_state = create_new_shared_state();
+        app_state.lock().unwrap().resources_path = std::env::current_dir()
+            .unwrap()
+            .join("src")
+            .join("test_resources");
+        let app = GameDescriptionHandler::register_routes().with_state(app_state);
+
+        let req = Request::builder()
+            .method("GET")
+            .uri("/game/available_games")
+            .body(Body::empty())
+            .unwrap();
+        let response = app.oneshot(req).await.unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+        let body = response.into_body().collect().await.unwrap().to_bytes();
+        let body: Value = serde_json::from_slice(&body).unwrap();
+        assert_eq!(
+            body,
+            json!([
+                {
+                    "name": "Test Game",
+                    "description": "Test Game Description"
+                }
+            ])
+        );
+    }
+
+    #[tokio::test]
+    async fn metadata() {
+        let app_state = create_new_shared_state();
+        let resource_path = std::env::current_dir()
+            .unwrap()
+            .join("src")
+            .join("test_resources");
+        app_state.lock().unwrap().resources_path = resource_path.clone();
+        app_state.lock().unwrap().game_description = Some(
+            GameDescription::from_path(&resource_path.join("game_configs").join("test_game.json"))
+                .unwrap(),
+        );
+        let app = GameDescriptionHandler::register_routes().with_state(app_state);
+
+        let req = Request::builder()
+            .method("GET")
+            .uri("/game/meta")
+            .body(Body::empty())
+            .unwrap();
+        let response = app.oneshot(req).await.unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+        let body = response.into_body().collect().await.unwrap().to_bytes();
+        let body: Value = serde_json::from_slice(&body).unwrap();
+        assert_eq!(
+            body,
+            json!(
+                {
+                    "name": "Test Game",
+                    "description": "Test Game Description"
+                }
+            )
+        );
+    }
+
+    #[tokio::test]
+    async fn logo() {
+        let app_state = create_new_shared_state();
+        let resource_path = std::env::current_dir()
+            .unwrap()
+            .join("src")
+            .join("test_resources");
+        app_state.lock().unwrap().resources_path = resource_path.clone();
+        app_state.lock().unwrap().game_description = Some(
+            GameDescription::from_path(&resource_path.join("game_configs").join("test_game.json"))
+                .unwrap(),
+        );
+        let app = GameDescriptionHandler::register_routes().with_state(app_state);
+
+        let req = Request::builder()
+            .method("GET")
+            .uri("/game/logo")
+            .body(Body::empty())
+            .unwrap();
+        let response = app.oneshot(req).await.unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+        assert_eq!(
+            response
+                .headers()
+                .get(header::CONTENT_TYPE)
+                .unwrap()
+                .to_str()
+                .unwrap(),
+            "image/bmp"
+        );
+        let body = response.into_body().collect().await.unwrap().to_bytes();
+        let expected_bytes =
+            include_bytes!("../../src/test_resources/game_configs/test_game_logo.bmp");
+        assert_eq!(&body[..], expected_bytes);
+    }
+
+    #[tokio::test]
+    async fn choose() {
+        let app_state = create_new_shared_state();
+        let resource_path = std::env::current_dir()
+            .unwrap()
+            .join("src")
+            .join("test_resources");
+        app_state.lock().unwrap().resources_path = resource_path.clone();
+        let app = GameDescriptionHandler::register_routes().with_state(app_state.clone());
+
+        let req = Request::builder()
+            .method("PUT")
+            .uri("/game/choose")
+            .body(Body::from("Test Game"))
+            .unwrap();
+        let response = app.oneshot(req).await.unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+        assert_eq!(
+            app_state
+                .lock()
+                .unwrap()
+                .game_description
+                .as_ref()
+                .unwrap()
+                .name,
+            "Test Game"
+        );
+    }
+}
