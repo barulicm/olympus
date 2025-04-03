@@ -1,4 +1,5 @@
 use super::Handler;
+use crate::app_error::AppError;
 use crate::app_state::SharedAppState;
 use axum::{
     Router,
@@ -35,17 +36,22 @@ impl Handler for AnnouncementHandler {
 impl AnnouncementHandler {
     async fn handle_get(
         Extension(handler): Extension<SharedAnnouncementHandler>,
-    ) -> impl IntoResponse {
-        let handler = handler.lock().unwrap();
-        axum::Json(handler.clone())
+    ) -> Result<impl IntoResponse, AppError> {
+        let handler = handler.lock()?;
+        Ok(axum::Json(handler.clone()))
     }
 
     async fn handle_put(
         Extension(handler): Extension<SharedAnnouncementHandler>,
         Json(body): Json<Value>,
-    ) -> impl IntoResponse {
-        let mut handler = handler.lock().unwrap();
-        *handler = serde_json::from_value(body).unwrap();
-        StatusCode::OK
+    ) -> Result<impl IntoResponse, AppError> {
+        let mut handler = handler.lock()?;
+        *handler = serde_json::from_value(body).map_err(|e| {
+            AppError::new(
+                StatusCode::BAD_REQUEST,
+                format!("Failed to parse request body: {}", &e),
+            )
+        })?;
+        Ok(StatusCode::OK)
     }
 }

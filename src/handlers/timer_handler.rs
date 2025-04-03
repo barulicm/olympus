@@ -1,4 +1,5 @@
 use super::Handler;
+use crate::app_error::AppError;
 use crate::app_state::SharedAppState;
 use axum::{
     Json, Router,
@@ -36,8 +37,10 @@ impl Handler for TimerHandler {
 }
 
 impl TimerHandler {
-    async fn handle_get(Extension(handler): Extension<SharedTimerHandler>) -> impl IntoResponse {
-        let handler = handler.lock().unwrap();
+    async fn handle_get(
+        Extension(handler): Extension<SharedTimerHandler>,
+    ) -> Result<impl IntoResponse, AppError> {
+        let handler = handler.lock()?;
         let seconds_left = if handler.timer_running {
             let seconds_elapsed = handler.timer_start_time.elapsed().as_secs();
             if seconds_elapsed < handler.match_length {
@@ -48,32 +51,33 @@ impl TimerHandler {
         } else {
             handler.match_length
         };
-        (
+        Ok((
             StatusCode::OK,
             Json::from(json!({"time_remaining": seconds_left})),
-        )
+        ))
     }
 
     async fn handle_start_timer(
         Extension(handler): Extension<SharedTimerHandler>,
-    ) -> impl IntoResponse {
-        let mut handler = handler.lock().unwrap();
+    ) -> Result<impl IntoResponse, AppError> {
+        let mut handler = handler.lock()?;
         if handler.timer_running {
-            return (
+            return Err((
                 StatusCode::INTERNAL_SERVER_ERROR,
                 "Timer is already running",
-            );
+            )
+                .into());
         }
         handler.timer_running = true;
         handler.timer_start_time = Instant::now();
-        (StatusCode::OK, "")
+        Ok(StatusCode::OK)
     }
 
     async fn handle_stop_timer(
         Extension(handler): Extension<SharedTimerHandler>,
-    ) -> impl IntoResponse {
-        let mut handler = handler.lock().unwrap();
+    ) -> Result<impl IntoResponse, AppError> {
+        let mut handler = handler.lock()?;
         handler.timer_running = false;
-        (StatusCode::OK, "")
+        Ok(StatusCode::OK)
     }
 }

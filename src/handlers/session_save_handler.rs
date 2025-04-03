@@ -1,4 +1,5 @@
 use super::Handler;
+use crate::app_error::AppError;
 use crate::app_state::SharedAppState;
 use axum::{
     Router,
@@ -20,31 +21,34 @@ impl Handler for SessionSaveHandler {
 }
 
 impl SessionSaveHandler {
-    async fn export_session(State(app_state): State<SharedAppState>) -> impl IntoResponse {
-        let app_state = app_state.lock().unwrap();
-        let session_json = serde_json::to_string(&*app_state).unwrap();
-        let response = axum::http::Response::builder()
+    async fn export_session(
+        State(app_state): State<SharedAppState>,
+    ) -> Result<impl IntoResponse, AppError> {
+        let app_state = app_state.lock()?;
+        let session_json = serde_json::to_string(&*app_state)?;
+        axum::http::Response::builder()
             .header(header::CONTENT_TYPE, "application/x-download-me")
             .body(session_json)
-            .unwrap();
-        response
+            .map_err(|e| {
+                AppError::new(
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    format!("Failed to create response: {}", e),
+                )
+            })
     }
 
     async fn import_session(
         State(app_state): State<SharedAppState>,
         Json(body): Json<Value>,
-    ) -> impl IntoResponse {
-        let mut app_state = app_state.lock().unwrap();
-        let parse_result = serde_json::from_value(body);
-        match parse_result {
-            Ok(new_state) => {
-                *app_state = new_state;
-                (StatusCode::OK, String::new())
-            }
-            Err(e) => (
+    ) -> Result<impl IntoResponse, AppError> {
+        let mut app_state = app_state.lock()?;
+        let new_state = serde_json::from_value(body).map_err(|e| {
+            AppError::new(
                 StatusCode::BAD_REQUEST,
-                format!("Error importing session: {:?}", e),
-            ),
-        }
+                format!("Failed to parse session JSON: {}", e),
+            )
+        })?;
+        *app_state = new_state;
+        Ok(StatusCode::OK)
     }
 }

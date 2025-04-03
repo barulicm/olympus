@@ -1,4 +1,5 @@
 use super::Handler;
+use crate::app_error::AppError;
 use crate::app_state::SharedAppState;
 use axum::{
     Router,
@@ -25,59 +26,71 @@ impl Handler for SponsorsHandler {
 }
 
 impl SponsorsHandler {
-    async fn handle_get(State(app_state): State<SharedAppState>) -> impl IntoResponse {
-        let app_state = app_state.lock().unwrap();
-        axum::Json(json!({"sponsors": app_state.sponsor_logos.clone()}))
+    async fn handle_get(
+        State(app_state): State<SharedAppState>,
+    ) -> Result<impl IntoResponse, AppError> {
+        let app_state = app_state.lock()?;
+        Ok(axum::Json(
+            json!({"sponsors": app_state.sponsor_logos.clone()}),
+        ))
     }
 
     async fn handle_add_sponsor(
         State(app_state): State<SharedAppState>,
         Json(body): Json<Value>,
-    ) -> impl IntoResponse {
-        let mut app_state = app_state.lock().unwrap();
+    ) -> Result<impl IntoResponse, AppError> {
+        let mut app_state = app_state.lock()?;
         let image_data = body
             .get("image_data")
-            .unwrap()
-            .as_str()
-            .unwrap()
+            .and_then(|v| v.as_str())
+            .ok_or(AppError::new(
+                StatusCode::BAD_REQUEST,
+                String::from("Missing or invalid image_data"),
+            ))?
             .to_string();
         if !image_data.starts_with("data:image/") {
-            return (
+            return Err((
                 StatusCode::BAD_REQUEST,
                 "Failed to add sponsor: File not recognized as an image.",
-            );
+            )
+                .into());
         }
         app_state.sponsor_logos.push(image_data);
-        (StatusCode::OK, "")
+        Ok(StatusCode::OK)
     }
 
     async fn handle_delete_sponsor(
         State(app_state): State<SharedAppState>,
         Json(body): Json<Value>,
-    ) -> impl IntoResponse {
-        let mut app_state = app_state.lock().unwrap();
+    ) -> Result<impl IntoResponse, AppError> {
+        let mut app_state = app_state.lock()?;
         let index = body
             .get("index")
-            .unwrap()
-            .as_i64()
-            .unwrap()
+            .and_then(|v| v.as_i64())
+            .ok_or(AppError::new(
+                StatusCode::BAD_REQUEST,
+                String::from("Missing or invalid index"),
+            ))?
             .try_into()
-            .unwrap();
+            .map_err(|e| {
+                AppError::new(StatusCode::BAD_REQUEST, format!("Bad index value: {}", e))
+            })?;
         if index > app_state.sponsor_logos.len() {
-            return (
+            return Err((
                 StatusCode::BAD_REQUEST,
                 "Failed to add sponsor: Index out of range.",
-            );
+            )
+                .into());
         }
         app_state.sponsor_logos.remove(index);
-        (StatusCode::OK, "")
+        Ok(StatusCode::OK)
     }
 
     async fn handle_delete_all_sponsors(
         State(app_state): State<SharedAppState>,
-    ) -> impl IntoResponse {
-        let mut app_state = app_state.lock().unwrap();
+    ) -> Result<impl IntoResponse, AppError> {
+        let mut app_state = app_state.lock()?;
         app_state.sponsor_logos.clear();
-        StatusCode::OK
+        Ok(StatusCode::OK)
     }
 }

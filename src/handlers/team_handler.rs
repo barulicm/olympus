@@ -1,4 +1,5 @@
 use super::Handler;
+use crate::app_error::AppError;
 use crate::app_state::{SharedAppState, Team};
 use axum::{
     Router,
@@ -25,116 +26,170 @@ impl TeamHandler {
     async fn handle_get(
         State(app_state): State<SharedAppState>,
         Path(team_number): Path<String>,
-    ) -> impl IntoResponse {
-        let app_state = app_state.lock().unwrap();
+    ) -> Result<impl IntoResponse, AppError> {
+        let app_state = app_state.lock()?;
         if team_number == "all" {
-            (
+            let response_body = serde_json::to_string(&app_state.teams).map_err(|e| {
+                AppError::new(
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    format!("Failed to serialize teams: {}", e),
+                )
+            })?;
+            Ok((
                 StatusCode::OK,
                 [(header::CONTENT_TYPE, "application/json")],
-                serde_json::to_string(&app_state.teams).unwrap(),
-            )
+                response_body,
+            ))
         } else {
-            let team = app_state.teams.iter().find(|t| t.number == team_number);
-            match team {
-                Some(t) => (
-                    StatusCode::OK,
-                    [(header::CONTENT_TYPE, "application/json")],
-                    serde_json::to_string(&t).unwrap(),
-                ),
-                None => (
+            let team = app_state
+                .teams
+                .iter()
+                .find(|t| t.number == team_number)
+                .ok_or(AppError::new(
                     StatusCode::BAD_REQUEST,
-                    [(header::CONTENT_TYPE, "text/plain")],
-                    String::from("No team with requested number"),
-                ),
-            }
+                    format!("No team with number '{}'", team_number),
+                ))?;
+            let response_body = serde_json::to_string(&team).map_err(|e| {
+                AppError::new(
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    format!("Failed to serialize team: {}", e),
+                )
+            })?;
+            Ok((
+                StatusCode::OK,
+                [(header::CONTENT_TYPE, "application/json")],
+                response_body,
+            ))
         }
     }
 
     async fn handle_add_team(
         State(app_state): State<SharedAppState>,
         Json(body): Json<Value>,
-    ) -> impl IntoResponse {
-        let team_name = body.get("name").unwrap().as_str().unwrap().to_string();
-        let team_number = body.get("number").unwrap().as_str().unwrap().to_string();
+    ) -> Result<impl IntoResponse, AppError> {
+        let team_name = body
+            .get("name")
+            .and_then(|v| v.as_str())
+            .ok_or(AppError::new(
+                StatusCode::BAD_REQUEST,
+                String::from("Missing or invalid team name."),
+            ))?
+            .to_string();
+        let team_number = body
+            .get("number")
+            .and_then(|v| v.as_str())
+            .ok_or(AppError::new(
+                StatusCode::BAD_REQUEST,
+                String::from("Missing or invalid team number."),
+            ))?
+            .to_string();
         let new_team = Team::new(team_number, team_name);
         if new_team.number.is_empty() {
-            return (
+            return Err((
                 StatusCode::BAD_REQUEST,
                 String::from("Team number must not be empty"),
-            );
+            )
+                .into());
         }
-        let mut app_state = app_state.lock().unwrap();
+        let mut app_state = app_state.lock()?;
         let old_team = app_state.teams.iter().find(|t| t.number == new_team.number);
         if old_team.is_some() {
-            return (
+            return Err((
                 StatusCode::BAD_REQUEST,
-                String::from("Another team is already using the new team number."),
-            );
+                "Another team is already using the new team number.",
+            )
+                .into());
         }
         app_state.teams.push(new_team);
-        (StatusCode::OK, String::new())
+        Ok(StatusCode::OK)
     }
 
     async fn handle_remove_team(
         State(app_state): State<SharedAppState>,
         Json(body): Json<Value>,
-    ) -> impl IntoResponse {
-        let team_number = body.get("number");
-        if team_number.is_none() {
-            return (
+    ) -> Result<impl IntoResponse, AppError> {
+        let team_number = body
+            .get("number")
+            .and_then(|v| v.as_str())
+            .ok_or(AppError::new(
                 StatusCode::BAD_REQUEST,
-                String::from("Invalid request body"),
-            );
-        }
-        let team_number = team_number.unwrap().as_str().unwrap();
-        let mut app_state = app_state.lock().unwrap();
-        let found_team_position = app_state.teams.iter().position(|t| t.number == team_number);
-        if let Some(position) = found_team_position {
-            app_state.teams.remove(position);
-            (StatusCode::OK, String::from("Remove team successful."))
-        } else {
-            (StatusCode::NOT_FOUND, String::from("No such team."))
-        }
+                String::from("Missing or invalid team number."),
+            ))?;
+        let mut app_state = app_state.lock()?;
+        let found_team_position = app_state
+            .teams
+            .iter()
+            .position(|t| t.number == team_number)
+            .ok_or(AppError::new(
+                StatusCode::NOT_FOUND,
+                format!("No team with number '{}'", team_number),
+            ))?;
+        app_state.teams.remove(found_team_position);
+        Ok((StatusCode::OK, "Remove team successful."))
     }
 
     async fn handle_edit_team(
         State(app_state): State<SharedAppState>,
         Json(body): Json<Value>,
-    ) -> impl IntoResponse {
-        let old_team_number = body.get("oldTeamNumber").unwrap().as_str().unwrap();
-        let new_team_number = body.get("newTeamNumber").unwrap().as_str().unwrap();
+    ) -> Result<impl IntoResponse, AppError> {
+        let old_team_number =
+            body.get("oldTeamNumber")
+                .and_then(|v| v.as_str())
+                .ok_or(AppError::new(
+                    StatusCode::BAD_REQUEST,
+                    String::from("Missing or invalid old team number."),
+                ))?;
+        let new_team_number =
+            body.get("newTeamNumber")
+                .and_then(|v| v.as_str())
+                .ok_or(AppError::new(
+                    StatusCode::BAD_REQUEST,
+                    String::from("Missing or invalid new team number."),
+                ))?;
         if new_team_number.is_empty() {
-            return (StatusCode::BAD_REQUEST, "Team number must not be empty.");
+            return Err((StatusCode::BAD_REQUEST, "Team number must not be empty.").into());
         }
-        let mut app_state = app_state.lock().unwrap();
+        let mut app_state = app_state.lock()?;
         if new_team_number != old_team_number {
             if app_state.teams.iter().any(|t| t.number == new_team_number) {
-                return (
+                return Err((
                     StatusCode::BAD_REQUEST,
                     "Another team is already using the new team number.",
-                );
+                )
+                    .into());
             }
         }
         let team = app_state
             .teams
             .iter_mut()
-            .find(|t| t.number == old_team_number);
-        if let Some(team) = team {
-            team.number = new_team_number.to_string();
-            team.name = body
-                .get("newTeamName")
-                .unwrap()
-                .as_str()
-                .unwrap()
-                .to_string();
-            team.scores =
-                serde_json::from_value::<Vec<i64>>(body.get("newScores").unwrap().clone()).unwrap();
-            team.gp_scores =
-                serde_json::from_value::<Vec<i64>>(body.get("newGPScores").unwrap().clone())
-                    .unwrap();
-            (StatusCode::OK, "Team edits saved.")
-        } else {
-            (StatusCode::NOT_FOUND, "No such team.")
-        }
+            .find(|t| t.number == old_team_number)
+            .ok_or(AppError::new(
+                StatusCode::NOT_FOUND,
+                format!("No team with number '{}'", old_team_number),
+            ))?;
+        let new_team_name = body
+            .get("newTeamNumber")
+            .and_then(|v| v.as_str())
+            .ok_or(AppError::new(
+                StatusCode::BAD_REQUEST,
+                String::from("Missing or invalid new team number."),
+            ))?
+            .to_string();
+        let new_scores = body.get("newScores").ok_or(AppError::new(
+            StatusCode::BAD_REQUEST,
+            String::from("Missing new scores."),
+        ))?;
+        let new_scores = serde_json::from_value(new_scores.clone())?;
+        let new_gp_scores = body.get("newGPScores").ok_or(AppError::new(
+            StatusCode::BAD_REQUEST,
+            String::from("Missing new GP scores."),
+        ))?;
+        let new_gp_scores = serde_json::from_value(new_gp_scores.clone())?;
+
+        team.number = new_team_number.to_string();
+        team.name = new_team_name;
+        team.scores = new_scores;
+        team.gp_scores = new_gp_scores;
+        Ok((StatusCode::OK, "Team edits saved."))
     }
 }

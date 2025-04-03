@@ -1,11 +1,12 @@
 use super::Handler;
+use crate::app_error::AppError;
 use crate::app_state::SharedAppState;
 use crate::game_description::GameDescription;
 use axum::{
     Router,
     extract::State,
     http::{StatusCode, header},
-    response::{IntoResponse, Response},
+    response::IntoResponse,
     routing::{get, put},
 };
 use mime_guess;
@@ -25,45 +26,58 @@ impl Handler for GameDescriptionHandler {
 }
 
 impl GameDescriptionHandler {
-    async fn get_available_games(State(app_state): State<SharedAppState>) -> impl IntoResponse {
-        let app_state = app_state.lock().unwrap();
+    async fn get_available_games(
+        State(app_state): State<SharedAppState>,
+    ) -> Result<impl IntoResponse, AppError> {
+        let app_state = app_state.lock()?;
         let game_configs_dir = app_state.resources_path.join("game_configs");
-        let available_games = std::fs::read_dir(game_configs_dir)
-            .unwrap()
+        let available_games = std::fs::read_dir(game_configs_dir)?
             .filter(|e| {
-                let path = e.as_ref().unwrap().path();
-                path.is_file() && path.extension().unwrap() == "json"
+                let path = e.as_ref().and_then(|v| Ok(v.path())).unwrap_or_default();
+                path.is_file() && path.extension().unwrap_or_default() == "json"
             })
-            .map(|e| {
-                let description = GameDescription::from_path(&e.unwrap().path()).unwrap();
-                json!({
-                    "name": description.name,
-                    "description": description.description,
-                })
+            .filter_map(|e| {
+                if let Ok(e) = e {
+                    let description = GameDescription::from_path(&e.path());
+                    if let Ok(description) = description {
+                        Some(json!({
+                            "name": description.name,
+                            "description": description.description,
+                        }))
+                    } else {
+                        None
+                    }
+                } else {
+                    None
+                }
             })
             .collect::<Vec<Value>>();
-        (
-            StatusCode::OK,
-            serde_json::to_string(&available_games).unwrap(),
-        )
+        Ok((StatusCode::OK, serde_json::to_string(&available_games)?))
     }
 
-    async fn get_game_metadata(State(app_state): State<SharedAppState>) -> impl IntoResponse {
-        let app_state = app_state.lock().unwrap();
+    async fn get_game_metadata(
+        State(app_state): State<SharedAppState>,
+    ) -> Result<impl IntoResponse, AppError> {
+        let app_state = app_state.lock()?;
         let game_description = &app_state.game_description;
         if let Some(game_description) = game_description {
-            (
+            Ok((
                 StatusCode::OK,
                 json!({"name": game_description.name, "description": game_description.description})
                     .to_string(),
-            )
+            ))
         } else {
-            (StatusCode::NO_CONTENT, "No game selected".to_string())
+            Err(AppError::new(
+                StatusCode::NO_CONTENT,
+                String::from("No game selected"),
+            ))
         }
     }
 
-    async fn get_game_logo(State(app_state): State<SharedAppState>) -> Response {
-        let app_state = app_state.lock().unwrap();
+    async fn get_game_logo(
+        State(app_state): State<SharedAppState>,
+    ) -> Result<impl IntoResponse, AppError> {
+        let app_state = app_state.lock()?;
         let game_description = &app_state.game_description;
         if let Some(game_description) = game_description {
             let logo_path = app_state
@@ -74,42 +88,40 @@ impl GameDescriptionHandler {
                 Ok(logo) => {
                     let mime_type =
                         mime_guess::from_path(&game_description.logo).first_or_octet_stream();
-                    (
+                    Ok((
                         StatusCode::OK,
                         [(header::CONTENT_TYPE, mime_type.to_string())],
                         logo,
-                    )
-                        .into_response()
+                    ))
                 }
-                Err(_) => {
-                    (StatusCode::INTERNAL_SERVER_ERROR, "Failed to load logo").into_response()
-                }
+                Err(_) => Err((StatusCode::INTERNAL_SERVER_ERROR, "Failed to load logo").into()),
             }
         } else {
-            (StatusCode::NOT_FOUND, "No game selected".to_string()).into_response()
+            Err((StatusCode::NOT_FOUND, "No game selected").into())
         }
     }
 
     async fn set_game_selection(
         State(app_state): State<SharedAppState>,
         body: String,
-    ) -> impl IntoResponse {
-        let mut app_state = app_state.lock().unwrap();
+    ) -> Result<impl IntoResponse, AppError> {
+        let mut app_state = app_state.lock()?;
         let game_configs_dir = app_state.resources_path.join("game_configs");
-        for entry in std::fs::read_dir(game_configs_dir).unwrap() {
-            let path = entry.unwrap().path();
-            if !(path.is_file() && path.extension().unwrap() == "json") {
-                continue;
-            }
-            let game_description = GameDescription::from_path(&path).unwrap();
-            if game_description.name == body {
-                app_state.game_description = Some(game_description);
-                return (StatusCode::OK, String::new());
+        for entry in std::fs::read_dir(game_configs_dir)? {
+            if let Ok(entry) = entry {
+                let path = entry.path();
+                if !(path.is_file() && path.extension().unwrap_or_default() == "json") {
+                    continue;
+                }
+                let game_description = GameDescription::from_path(&path);
+                if let Ok(game_description) = game_description {
+                    if game_description.name == body {
+                        app_state.game_description = Some(game_description);
+                        return Ok((StatusCode::OK, ""));
+                    }
+                }
             }
         }
-        (
-            StatusCode::BAD_REQUEST,
-            String::from("No game with requested name."),
-        )
+        Ok((StatusCode::BAD_REQUEST, "No game with requested name."))
     }
 }

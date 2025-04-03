@@ -1,3 +1,4 @@
+mod app_error;
 mod app_state;
 mod game_description;
 mod handlers;
@@ -12,23 +13,35 @@ use tower_http::{services::ServeDir, timeout::TimeoutLayer};
 #[tokio::main]
 async fn main() {
     let resources_path = std::env::current_exe()
-        .unwrap()
+        .expect("Failed to get current executable path.")
         .parent()
-        .unwrap()
+        .expect("Failed to get parent directory of the executable.")
         .join("resources");
+    if !resources_path.exists() {
+        eprintln!("Resources path does not exist: {:?}", resources_path);
+        std::process::exit(1);
+    }
+
     let app_state = app_state::create_new_shared_state();
-    app_state.lock().unwrap().resources_path = resources_path.clone();
-    
+    app_state
+        .lock()
+        .expect("Failed to lock app state to set resources path.")
+        .resources_path = resources_path.clone();
+
     let router = Router::<SharedAppState>::new()
         .merge(handlers::register_all_handlers())
         .with_state(app_state)
         .fallback_service(ServeDir::new(resources_path.join("static_files")))
         .layer((TimeoutLayer::new(Duration::from_secs(10)),));
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
+
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000")
+        .await
+        .expect("Failed to bind TCP listener.");
+
     axum::serve(listener, router)
         .with_graceful_shutdown(shutdown_signal())
         .await
-        .unwrap();
+        .expect("Failed to start the server.");
     // TODO backup app state on uncaught exceptions & graceful shutdown
 }
 
