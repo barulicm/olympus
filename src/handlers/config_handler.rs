@@ -217,6 +217,21 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn get_nonexistent() {
+        let app_state = create_new_shared_state();
+        initialize_configs(app_state.clone());
+        let app = ConfigHandler::register_routes().with_state(app_state);
+        let req = Request::builder()
+            .method("GET")
+            .uri("/config")
+            .header("name", "nonexistent")
+            .body(Body::empty())
+            .unwrap();
+        let response = app.oneshot(req).await.unwrap();
+        assert_eq!(response.status(), StatusCode::BAD_REQUEST);
+    }
+
+    #[tokio::test]
     async fn set_competition_name() {
         let app_state = create_new_shared_state();
         let app = ConfigHandler::register_routes().with_state(app_state.clone());
@@ -280,5 +295,20 @@ mod tests {
             app_state.lock().unwrap().config.display_state,
             DisplayState::FllLogo
         );
+    }
+
+    #[tokio::test]
+    async fn set_nonexistent() {
+        let app_state = create_new_shared_state();
+        initialize_configs(app_state.clone());
+        let app = ConfigHandler::register_routes().with_state(app_state);
+        let req = Request::builder()
+            .method("PUT")
+            .uri("/config")
+            .header("name", "nonexistent")
+            .body(Body::empty())
+            .unwrap();
+        let response = app.oneshot(req).await.unwrap();
+        assert_eq!(response.status(), StatusCode::BAD_REQUEST);
     }
 }
