@@ -81,3 +81,93 @@ impl TimerHandler {
         Ok(StatusCode::OK)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::app_state::create_new_shared_state;
+    use axum::body::Body;
+    use axum::http::{Request, StatusCode};
+    use http_body_util::BodyExt;
+    use serde_json::{Value, json};
+    use tower::{Service, ServiceExt};
+
+    #[tokio::test]
+    async fn test_get() {
+        let app_state = create_new_shared_state();
+        let app = TimerHandler::register_routes().with_state(app_state);
+
+        let req = Request::builder()
+            .method("GET")
+            .uri("/timer")
+            .body(Body::empty())
+            .unwrap();
+        let response = app.oneshot(req).await.unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+        let body = response.into_body().collect().await.unwrap().to_bytes();
+        let body: Value = serde_json::from_slice(&body).unwrap();
+        assert_eq!(body, json!({ "time_remaining": 150 }));
+    }
+
+    #[tokio::test]
+    async fn test_start_timer() {
+        let app_state = create_new_shared_state();
+        let app = TimerHandler::register_routes().with_state(app_state);
+
+        let req = Request::builder()
+            .method("PUT")
+            .uri("/timer/start")
+            .body(Body::empty())
+            .unwrap();
+        let response = app.oneshot(req).await.unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+    }
+
+    #[tokio::test]
+    async fn test_start_timer_arleady_running() {
+        let app_state = create_new_shared_state();
+        let mut app = TimerHandler::register_routes()
+            .with_state(app_state)
+            .into_service();
+
+        let req = Request::builder()
+            .method("PUT")
+            .uri("/timer/start")
+            .body(Body::empty())
+            .unwrap();
+        let response = ServiceExt::<Request<Body>>::ready(&mut app)
+            .await
+            .unwrap()
+            .call(req)
+            .await
+            .unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+
+        let req = Request::builder()
+            .method("PUT")
+            .uri("/timer/start")
+            .body(Body::empty())
+            .unwrap();
+        let response = ServiceExt::<Request<Body>>::ready(&mut app)
+            .await
+            .unwrap()
+            .call(req)
+            .await
+            .unwrap();
+        assert_eq!(response.status(), StatusCode::INTERNAL_SERVER_ERROR);
+    }
+
+    #[tokio::test]
+    async fn test_sop_timer() {
+        let app_state = create_new_shared_state();
+        let app = TimerHandler::register_routes().with_state(app_state);
+
+        let req = Request::builder()
+            .method("PUT")
+            .uri("/timer/stop")
+            .body(Body::empty())
+            .unwrap();
+        let response = app.oneshot(req).await.unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+    }
+}
