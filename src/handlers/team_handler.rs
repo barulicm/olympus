@@ -150,14 +150,14 @@ impl TeamHandler {
             return Err((StatusCode::BAD_REQUEST, "Team number must not be empty.").into());
         }
         let mut app_state = app_state.lock()?;
-        if new_team_number != old_team_number {
-            if app_state.teams.iter().any(|t| t.number == new_team_number) {
-                return Err((
-                    StatusCode::BAD_REQUEST,
-                    "Another team is already using the new team number.",
-                )
-                    .into());
-            }
+        if new_team_number != old_team_number
+            && app_state.teams.iter().any(|t| t.number == new_team_number)
+        {
+            return Err((
+                StatusCode::BAD_REQUEST,
+                "Another team is already using the new team number.",
+            )
+                .into());
         }
         let team = app_state
             .teams

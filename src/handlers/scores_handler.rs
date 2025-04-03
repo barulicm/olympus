@@ -186,7 +186,7 @@ impl ScoresHandler {
         Ok(StatusCode::OK)
     }
 
-    fn update_ranks(teams: &mut Vec<Team>) {
+    fn update_ranks(teams: &mut [Team]) {
         for team in teams.iter_mut() {
             team.display_score = *team.scores.iter().max().unwrap_or(&0);
         }

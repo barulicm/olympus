@@ -9,7 +9,6 @@ use axum::{
     response::IntoResponse,
     routing::{get, put},
 };
-use mime_guess;
 use serde_json::{Value, json};
 
 #[derive(Clone)]
@@ -33,7 +32,7 @@ impl GameDescriptionHandler {
         let game_configs_dir = app_state.resources_path.join("game_configs");
         let available_games = std::fs::read_dir(game_configs_dir)?
             .filter(|e| {
-                let path = e.as_ref().and_then(|v| Ok(v.path())).unwrap_or_default();
+                let path = e.as_ref().map(|v| v.path()).unwrap_or_default();
                 path.is_file() && path.extension().unwrap_or_default() == "json"
             })
             .filter_map(|e| {
@@ -107,18 +106,16 @@ impl GameDescriptionHandler {
     ) -> Result<impl IntoResponse, AppError> {
         let mut app_state = app_state.lock()?;
         let game_configs_dir = app_state.resources_path.join("game_configs");
-        for entry in std::fs::read_dir(game_configs_dir)? {
-            if let Ok(entry) = entry {
-                let path = entry.path();
-                if !(path.is_file() && path.extension().unwrap_or_default() == "json") {
-                    continue;
-                }
-                let game_description = GameDescription::from_path(&path);
-                if let Ok(game_description) = game_description {
-                    if game_description.name == body {
-                        app_state.game_description = Some(game_description);
-                        return Ok((StatusCode::OK, ""));
-                    }
+        for entry in (std::fs::read_dir(game_configs_dir)?).flatten() {
+            let path = entry.path();
+            if !(path.is_file() && path.extension().unwrap_or_default() == "json") {
+                continue;
+            }
+            let game_description = GameDescription::from_path(&path);
+            if let Ok(game_description) = game_description {
+                if game_description.name == body {
+                    app_state.game_description = Some(game_description);
+                    return Ok((StatusCode::OK, ""));
                 }
             }
         }

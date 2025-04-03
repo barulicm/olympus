@@ -40,10 +40,7 @@ impl From<(StatusCode, &str)> for AppError {
 
 impl From<(StatusCode, String)> for AppError {
     fn from((status, message): (StatusCode, String)) -> Self {
-        AppError {
-            status,
-            message: message,
-        }
+        AppError { status, message }
     }
 }
 
