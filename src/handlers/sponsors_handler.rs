@@ -94,3 +94,92 @@ impl SponsorsHandler {
         Ok(StatusCode::OK)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::app_state::create_new_shared_state;
+    use axum::body::Body;
+    use axum::http::{Request, StatusCode, header};
+    use http_body_util::BodyExt;
+    use serde_json::{Value, json};
+    use tower::ServiceExt;
+
+    #[tokio::test]
+    async fn defaults_to_no_sponsors() {
+        let app_state = create_new_shared_state();
+        let app = SponsorsHandler::register_routes().with_state(app_state);
+
+        let req = Request::builder()
+            .method("GET")
+            .uri("/sponsors")
+            .body(Body::empty())
+            .unwrap();
+        let response = app.oneshot(req).await.unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+        let body = response.into_body().collect().await.unwrap().to_bytes();
+        let body: Value = serde_json::from_slice(&body).unwrap();
+        assert_eq!(body, json!({ "sponsors": Vec::<String>::new() }));
+    }
+
+    #[tokio::test]
+    async fn add_sponsor() {
+        let app_state = create_new_shared_state();
+        let app = SponsorsHandler::register_routes().with_state(app_state.clone());
+
+        let req = Request::builder()
+            .method("PUT")
+            .uri("/sponsors/add")
+            .header(header::CONTENT_TYPE, "application/json")
+            .body(Body::from(r#"{"image_data": "data:image/00000000"}"#))
+            .unwrap();
+        let response = app.oneshot(req).await.unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+        assert_eq!(
+            app_state.lock().unwrap().sponsor_logos,
+            vec![String::from("data:image/00000000")]
+        );
+    }
+
+    #[tokio::test]
+    async fn delete_sponsor() {
+        let app_state = create_new_shared_state();
+        app_state.lock().unwrap().sponsor_logos = vec![
+            String::from("data:image/00000000"),
+            String::from("data:image/11111111"),
+        ];
+        let app = SponsorsHandler::register_routes().with_state(app_state.clone());
+
+        let req = Request::builder()
+            .method("PUT")
+            .uri("/sponsors/delete")
+            .header(header::CONTENT_TYPE, "application/json")
+            .body(Body::from(r#"{"index": 0}"#))
+            .unwrap();
+        let response = app.oneshot(req).await.unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+        assert_eq!(
+            app_state.lock().unwrap().sponsor_logos,
+            vec![String::from("data:image/11111111")]
+        );
+    }
+
+    #[tokio::test]
+    async fn delete_all_sponsors() {
+        let app_state = create_new_shared_state();
+        app_state.lock().unwrap().sponsor_logos = vec![
+            String::from("data:image/00000000"),
+            String::from("data:image/11111111"),
+        ];
+        let app = SponsorsHandler::register_routes().with_state(app_state.clone());
+
+        let req = Request::builder()
+            .method("PUT")
+            .uri("/sponsors/delete_all")
+            .body(Body::empty())
+            .unwrap();
+        let response = app.oneshot(req).await.unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+        assert!(app_state.lock().unwrap().sponsor_logos.is_empty());
+    }
+}
