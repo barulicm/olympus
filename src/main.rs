@@ -3,6 +3,7 @@ mod app_state;
 mod game_description;
 mod handlers;
 mod templates;
+mod version;
 
 use app_state::SharedAppState;
 use axum::Router;
@@ -12,6 +13,8 @@ use tower_http::{services::ServeDir, timeout::TimeoutLayer};
 
 #[tokio::main]
 async fn main() {
+    println!("Olympus {}", version::get_version());
+
     let resources_path = std::env::current_exe()
         .expect("Failed to get current executable path.")
         .parent()

@@ -1,6 +1,7 @@
 use super::Handler;
 use crate::app_error::AppError;
 use crate::app_state::SharedAppState;
+use crate::version::get_version;
 use axum::{
     Router,
     extract::State,
@@ -50,7 +51,7 @@ impl ControlQueryHandler {
                     String::from("false")
                 },
             )),
-            "version" => Ok((StatusCode::OK, String::from("0000.0-0000000"))),
+            "version" => Ok((StatusCode::OK, String::from(get_version()))),
             _ => Err((StatusCode::BAD_REQUEST, "Unrecognized query").into()),
         }
     }

@@ -1,5 +1,6 @@
 use std::path::{Path, PathBuf};
 use std::{fs, io};
+use vergen_gitcl::{Emitter, GitclBuilder};
 
 fn copy_directory_recursively(src: &Path, dest: &Path) -> io::Result<()> {
     if src.is_dir() {
@@ -28,4 +29,15 @@ fn copy_directory_to_output(dir: &str, dest_path: &str) -> io::Result<()> {
 fn main() {
     copy_directory_to_output("src/resources", "resources")
         .expect("Failed to copy resources directory");
+
+    let git_instructions = GitclBuilder::default()
+        .commit_date(true)
+        .sha(true)
+        .build()
+        .expect("Failed to build vergen git instructions.");
+    Emitter::default()
+        .add_instructions(&git_instructions)
+        .expect("Failed to add vergen git instructions.")
+        .emit()
+        .expect("Failed to emit version information");
 }
