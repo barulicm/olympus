@@ -193,3 +193,265 @@ impl TeamHandler {
         Ok((StatusCode::OK, "Team edits saved."))
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::app_state::create_new_shared_state;
+    use axum::body::Body;
+    use axum::http::{Request, StatusCode, header};
+    use http_body_util::BodyExt;
+    use serde_json::{Value, json};
+    use tower::{Service, ServiceExt};
+
+    #[tokio::test]
+    async fn defaults_to_no_teams() {
+        let app_state = create_new_shared_state();
+        let app = TeamHandler::register_routes().with_state(app_state);
+
+        let req = Request::builder()
+            .method("GET")
+            .uri("/team/all")
+            .body(Body::empty())
+            .unwrap();
+        let response = app.oneshot(req).await.unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+        let body = response.into_body().collect().await.unwrap().to_bytes();
+        let body: Value = serde_json::from_slice(&body).unwrap();
+        assert_eq!(body, json!(Vec::<Team>::new()));
+    }
+
+    #[tokio::test]
+    async fn get_teams() {
+        let app_state = create_new_shared_state();
+        app_state.lock().unwrap().teams = vec![
+            Team::new(String::from("1234"), String::from("Test Team 1")),
+            Team::new(String::from("5678"), String::from("Test Team 2")),
+        ];
+        let app = TeamHandler::register_routes().with_state(app_state);
+
+        let req = Request::builder()
+            .method("GET")
+            .uri("/team/all")
+            .body(Body::empty())
+            .unwrap();
+        let response = app.oneshot(req).await.unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+        let body = response.into_body().collect().await.unwrap().to_bytes();
+        let body: Value = serde_json::from_slice(&body).unwrap();
+        assert_eq!(
+            body,
+            json!([{
+                "number": "1234",
+                "name": "Test Team 1",
+                "scores": [],
+                "gpScores": [],
+                "displayScore": 0,
+                "rank": 0
+            }, {
+                "number": "5678",
+                "name": "Test Team 2",
+                "scores": [],
+                "gpScores": [],
+                "displayScore": 0,
+                "rank": 0
+            }])
+        );
+    }
+
+    #[tokio::test]
+    async fn get_specific_team() {
+        let app_state = create_new_shared_state();
+        app_state.lock().unwrap().teams = vec![
+            Team::new(String::from("1234"), String::from("Test Team 1")),
+            Team::new(String::from("5678"), String::from("Test Team 2")),
+        ];
+        let app = TeamHandler::register_routes().with_state(app_state);
+
+        let req = Request::builder()
+            .method("GET")
+            .uri("/team/5678")
+            .body(Body::empty())
+            .unwrap();
+        let response = app.oneshot(req).await.unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+        let body = response.into_body().collect().await.unwrap().to_bytes();
+        let body: Value = serde_json::from_slice(&body).unwrap();
+        assert_eq!(
+            body,
+            json!({
+                "number": "5678",
+                "name": "Test Team 2",
+                "scores": [],
+                "gpScores": [],
+                "displayScore": 0,
+                "rank": 0
+            })
+        );
+    }
+
+    #[tokio::test]
+    async fn add_team() {
+        let app_state = create_new_shared_state();
+        let mut app = TeamHandler::register_routes()
+            .with_state(app_state.clone())
+            .into_service();
+
+        let req = Request::builder()
+            .method("PUT")
+            .uri("/team/add")
+            .header(header::CONTENT_TYPE, "application/json")
+            .body(Body::from(r#"{"number": "1234", "name": "Test Team"}"#))
+            .unwrap();
+        let response = ServiceExt::<Request<Body>>::ready(&mut app)
+            .await
+            .unwrap()
+            .call(req)
+            .await
+            .unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+        let team = app_state.lock().unwrap().teams.first().unwrap().clone();
+        assert_eq!(team.number, "1234");
+        assert_eq!(team.name, "Test Team");
+
+        let req = Request::builder()
+            .method("PUT")
+            .uri("/team/add")
+            .header(header::CONTENT_TYPE, "application/json")
+            .body(Body::from(r#"{"number": "", "name": "Empty number"}"#))
+            .unwrap();
+        let response = ServiceExt::<Request<Body>>::ready(&mut app)
+            .await
+            .unwrap()
+            .call(req)
+            .await
+            .unwrap();
+        assert_eq!(response.status(), StatusCode::BAD_REQUEST);
+
+        let req = Request::builder()
+            .method("PUT")
+            .uri("/team/add")
+            .header(header::CONTENT_TYPE, "application/json")
+            .body(Body::from(
+                r#"{"number": "1234", "name": "Duplicate number"}"#,
+            ))
+            .unwrap();
+        let response = ServiceExt::<Request<Body>>::ready(&mut app)
+            .await
+            .unwrap()
+            .call(req)
+            .await
+            .unwrap();
+        assert_eq!(response.status(), StatusCode::BAD_REQUEST);
+    }
+
+    #[tokio::test]
+    async fn edit_team() {
+        let app_state = create_new_shared_state();
+        app_state.lock().unwrap().teams = vec![
+            Team::new(String::from("1234"), String::from("Test Team 1")),
+            Team::new(String::from("5678"), String::from("Test Team 2")),
+        ];
+        let mut app = TeamHandler::register_routes()
+            .with_state(app_state.clone())
+            .into_service();
+
+        let req = Request::builder()
+            .method("PUT")
+            .uri("/team/edit")
+            .header(header::CONTENT_TYPE, "application/json")
+            .body(Body::from(r#"{"oldTeamNumber": "1234", "newTeamNumber": "1234", "name": "Test Team", "newScores": [], "newGPScores": []}"#))
+            .unwrap();
+        let response = ServiceExt::<Request<Body>>::ready(&mut app)
+            .await
+            .unwrap()
+            .call(req)
+            .await
+            .unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+
+        let req = Request::builder()
+            .method("PUT")
+            .uri("/team/edit")
+            .header(header::CONTENT_TYPE, "application/json")
+            .body(Body::from(r#"{"oldTeamNumber": "1234", "newTeamNumber": "", "name": "Test Team", "newScores": [], "newGPScores": []}"#))
+            .unwrap();
+        let response = ServiceExt::<Request<Body>>::ready(&mut app)
+            .await
+            .unwrap()
+            .call(req)
+            .await
+            .unwrap();
+        assert_eq!(response.status(), StatusCode::BAD_REQUEST);
+
+        let req = Request::builder()
+            .method("PUT")
+            .uri("/team/edit")
+            .header(header::CONTENT_TYPE, "application/json")
+            .body(Body::from(r#"{"oldTeamNumber": "1234", "newTeamNumber": "5678", "name": "Test Team", "newScores": [], "newGPScores": []}"#))
+            .unwrap();
+        let response = ServiceExt::<Request<Body>>::ready(&mut app)
+            .await
+            .unwrap()
+            .call(req)
+            .await
+            .unwrap();
+        assert_eq!(response.status(), StatusCode::BAD_REQUEST);
+    }
+
+    #[tokio::test]
+    async fn remove_team() {
+        let app_state = create_new_shared_state();
+        app_state.lock().unwrap().teams =
+            vec![Team::new(String::from("1234"), String::from("Test Team"))];
+        let mut app = TeamHandler::register_routes()
+            .with_state(app_state.clone())
+            .into_service();
+
+        let req = Request::builder()
+            .method("PUT")
+            .uri("/team/remove")
+            .header(header::CONTENT_TYPE, "application/json")
+            .body(Body::from(r#"{"number": "1234"}"#))
+            .unwrap();
+        let response = ServiceExt::<Request<Body>>::ready(&mut app)
+            .await
+            .unwrap()
+            .call(req)
+            .await
+            .unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+        assert!(app_state.lock().unwrap().teams.is_empty());
+
+        app_state.lock().unwrap().teams =
+            vec![Team::new(String::from("1234"), String::from("Test Team"))];
+
+        let req = Request::builder()
+            .method("PUT")
+            .uri("/team/add")
+            .header(header::CONTENT_TYPE, "application/json")
+            .body(Body::from(r#"{"number": ""}"#))
+            .unwrap();
+        let response = ServiceExt::<Request<Body>>::ready(&mut app)
+            .await
+            .unwrap()
+            .call(req)
+            .await
+            .unwrap();
+        assert_eq!(response.status(), StatusCode::BAD_REQUEST);
+
+        let req = Request::builder()
+            .method("PUT")
+            .uri("/team/add")
+            .header(header::CONTENT_TYPE, "application/json")
+            .body(Body::from(r#"{"number": "nonexistent"}"#))
+            .unwrap();
+        let response = ServiceExt::<Request<Body>>::ready(&mut app)
+            .await
+            .unwrap()
+            .call(req)
+            .await
+            .unwrap();
+        assert_eq!(response.status(), StatusCode::BAD_REQUEST);
+    }
+}
