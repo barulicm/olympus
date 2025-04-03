@@ -20,7 +20,7 @@
     <a class="navigation" href="TimerDisplay.html">Timer</a>
   </div>
   <img id="logo" src="game/logo" />
-  <form class="form-style-7" onchange="scoreOutput.value=calculateScore({{ for q_id in question_ids }}{q_id}.value{{ if not @last }},{{ endif }}{{ endfor }})">
+  <form class="form-style-7" onchange="scoreOutput.value=calculateScore(M0a.value,M1a.value,M2a.value)">
     <h1>Scorecard</h1>
     <table>
       <tbody>
@@ -40,35 +40,76 @@
           </td>
         </tr>
 
-        {{ for mission in missions}}
+        
         <tr>
           <td colspan=3>
-            <label class="grouptitle">{ mission.name }</label>
-            {{ for question in mission.questions }}
+            <label class="grouptitle">Test Bool Mission</label>
+            
             <div class="switch-field">
-              {{ if question.is_bool }}
-              <input type="radio" id="{ question.id}n" name="{ question.id }" value="n" checked>
-              <label for="{ question.id }n">No</label>
-              <input type="radio" id="{ question.id }y" name="{ question.id }" value="y">
-              <label for="{ question.id }y">Yes</label>
-              {{ endif }}
-              {{ if question.is_enum }}
-              {{ for option in question.options }}
-              <input type="radio" id="{ question.id }{ @index }" name="{ question.id }" value="{ option }"{{ if @first }} checked{{ endif }}>
-              <label for="{ question.id }{ @index }">{ option }</label>
-              {{ endfor }}
-              {{ endif }}
-              {{ if question.is_number }}
-              {{ for option in question.options }}
-              <input type="radio" id="{ question.id }{ option }" name="{ question.id }" value="{ option }"{{ if @first }} checked{{ endif }}>
-              <label for="{ question.id }{ option }">{ option }{{ if @last }}{{ if question.show_plus_on_max }}+{{ endif }}{{ endif }}</label>
-              {{ endfor }}
-              {{ endif }}
+              
+              <input type="radio" id="M0an" name="M0a" value="n" checked>
+              <label for="M0an">No</label>
+              <input type="radio" id="M0ay" name="M0a" value="y">
+              <label for="M0ay">Yes</label>
+              
+              
+              
             </div>
-            {{ endfor }}
+            
           </td>
         </tr>
-        {{ endfor }}
+        
+        <tr>
+          <td colspan=3>
+            <label class="grouptitle">Test Number Mission</label>
+            
+            <div class="switch-field">
+              
+              
+              
+              
+              <input type="radio" id="M1a0" name="M1a" value="0" checked>
+              <label for="M1a0">0</label>
+              
+              <input type="radio" id="M1a1" name="M1a" value="1">
+              <label for="M1a1">1</label>
+              
+              <input type="radio" id="M1a2" name="M1a" value="2">
+              <label for="M1a2">2</label>
+              
+              <input type="radio" id="M1a3" name="M1a" value="3">
+              <label for="M1a3">3</label>
+              
+              
+            </div>
+            
+          </td>
+        </tr>
+        
+        <tr>
+          <td colspan=3>
+            <label class="grouptitle">Test Enum Mission</label>
+            
+            <div class="switch-field">
+              
+              
+              
+              <input type="radio" id="M2a0" name="M2a" value="Option A" checked>
+              <label for="M2a0">Option A</label>
+              
+              <input type="radio" id="M2a1" name="M2a" value="Option B">
+              <label for="M2a1">Option B</label>
+              
+              <input type="radio" id="M2a2" name="M2a" value="Option C">
+              <label for="M2a2">Option C</label>
+              
+              
+              
+            </div>
+            
+          </td>
+        </tr>
+        
 
         <tr>
           <td colspan=3>
@@ -96,7 +137,7 @@
           </td>
           <td colspan=3>
             <input type="button" class="button" id="submitButton"
-              onclick="submitScore(team.value,calculateScore({{ for q_id in question_ids }}{q_id}.value{{ if not @last }},{{ endif }}{{ endfor }}),GP.value)" value="Submit">
+              onclick="submitScore(team.value,calculateScore(M0a.value,M1a.value,M2a.value),GP.value)" value="Submit">
           </td>
         </tr>
       </tbody>

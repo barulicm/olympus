@@ -77,3 +77,67 @@ impl GeneratedFilesHandler {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::app_state::create_new_shared_state;
+    use crate::game_description::GameDescription;
+    use axum::body::Body;
+    use axum::http::{Request, StatusCode, header::HeaderValue};
+    use http_body_util::BodyExt;
+    use tower::ServiceExt;
+
+    #[tokio::test]
+    async fn scorecard() {
+        let app_state = create_new_shared_state();
+        let game_desc_path = std::env::current_dir()
+            .unwrap()
+            .join("src/test_resources/game_configs/test_game.json");
+        app_state.lock().unwrap().game_description =
+            Some(GameDescription::from_path(&game_desc_path).unwrap());
+        let app = GeneratedFilesHandler::register_routes().with_state(app_state);
+
+        let req = Request::builder()
+            .method("GET")
+            .uri("/Scorecard.html")
+            .body(Body::empty())
+            .unwrap();
+        let response = app.oneshot(req).await.unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+        assert_eq!(
+            response.headers().get(header::CONTENT_TYPE),
+            Some(HeaderValue::from_static("text/html")).as_ref()
+        );
+        let body = response.into_body().collect().await.unwrap().to_bytes();
+        let expected_bytes = include_bytes!("../../src/test_resources/expected_scorecard.html");
+        assert_eq!(&body[..], expected_bytes);
+    }
+
+    #[tokio::test]
+    async fn score_calculator() {
+        let app_state = create_new_shared_state();
+        let game_desc_path = std::env::current_dir()
+            .unwrap()
+            .join("src/test_resources/game_configs/test_game.json");
+        app_state.lock().unwrap().game_description =
+            Some(GameDescription::from_path(&game_desc_path).unwrap());
+        let app = GeneratedFilesHandler::register_routes().with_state(app_state);
+
+        let req = Request::builder()
+            .method("GET")
+            .uri("/ScoreCalculator.js")
+            .body(Body::empty())
+            .unwrap();
+        let response = app.oneshot(req).await.unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+        assert_eq!(
+            response.headers().get(header::CONTENT_TYPE),
+            Some(HeaderValue::from_static("application/javascript")).as_ref()
+        );
+        let body = response.into_body().collect().await.unwrap().to_bytes();
+        let expected_bytes =
+            include_bytes!("../../src/test_resources/expected_score_calculator.js");
+        assert_eq!(&body[..], expected_bytes);
+    }
+}
