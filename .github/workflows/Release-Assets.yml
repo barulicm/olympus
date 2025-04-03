@@ -8,69 +8,41 @@ on:
 jobs:
   job1:
     name: Build Linux Assets
-    runs-on: ubuntu-22.04
-    steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
-      with:
-        submodules: true
-
-    - name: Get CMake
-      uses: lukka/get-cmake@v3.30.3
-
-    - name: Install Dependencies
-      uses: lukka/run-vcpkg@v11.5
-      with:
-        vcpkgDirectory: '${{ github.workspace }}/external/vcpkg'
-        vcpkgJsonGlob: 'vcpkg.json'
-
-    - name: Build and Test
-      uses: lukka/run-cmake@v10.8
-      with:
-        workflowPreset: 'linux-package'
-
-    - name: Publish Assets
-      uses: softprops/action-gh-release@v2
-      if: ${{github.event_name == 'release'}}
-      with:
-        files: |
-          ${{github.workspace}}/build-release/Olympus-*-Linux.deb
-          ${{github.workspace}}/build-release/Olympus-*-Linux.zip
-
-  job2:
-    name: Build Windows Assets
-    runs-on: windows-2019
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-        with:
-          submodules: true
 
-      - name: Get CMake
-        uses: lukka/get-cmake@v3.30.3
-
-      - name: Install Dependencies
-        uses: lukka/run-vcpkg@v11.5
-        with:
-          vcpkgDirectory: '${{ github.workspace }}/external/vcpkg'
-          vcpkgJsonGlob: 'vcpkg.json'
-
-      - name: Build and Test
-        uses: lukka/run-cmake@v10.8
-        with:
-          workflowPreset: 'windows-package'
+      - name: Build Installer
+        run: cargo packager --release --formats deb
 
       - name: Publish Assets
         uses: softprops/action-gh-release@v2
         if: ${{github.event_name == 'release'}}
         with:
           files: |
-            ${{github.workspace}}/build/Olympus-*-win64.exe
-            ${{github.workspace}}/build/Olympus-*-win64.zip
+            ${{github.workspace}}/targets/release/olympus_*.deb
+
+  job2:
+    name: Build Windows Assets
+    runs-on: windows-2022
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Build Installer
+        run: cargo packager --release --formats nsis
+
+      - name: Publish Assets
+        uses: softprops/action-gh-release@v2
+        if: ${{github.event_name == 'release'}}
+        with:
+          files: |
+            ${{github.workspace}}/targets/release/olympus_*-setup.exe
 
   job3:
     name: Publish Docker Image
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       packages: write
