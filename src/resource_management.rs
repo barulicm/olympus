@@ -1,7 +1,7 @@
 use crate::version::get_version;
 use directories::ProjectDirs;
 use include_dir::{Dir, DirEntry, include_dir};
-use std::path::PathBuf;
+use std::{env, path::PathBuf};
 
 const DEFAULT_RESOURCES: Dir = include_dir!("./src/resources");
 
@@ -27,8 +27,10 @@ pub fn initialize_resources_directory(
     }
 
     let version_tag = check_resources_version_tag(resources_path).unwrap_or_default();
+    let resources_are_dirty = version_tag.contains("dirty");
+    let code_is_dirty = env!("VERGEN_GIT_DIRTY") == "true";
 
-    if !(force_init || version_tag.contains("dirty") || version_tag != get_version()) {
+    if !(force_init || code_is_dirty || resources_are_dirty || version_tag != get_version()) {
         return Ok(());
     }
 
