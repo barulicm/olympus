@@ -1,12 +1,15 @@
 mod app_error;
 mod app_state;
+mod arguments;
 mod game_description;
 mod handlers;
+mod resource_management;
 mod templates;
 mod version;
 
 use app_state::SharedAppState;
 use axum::Router;
+use clap::Parser;
 use std::time::Duration;
 use tokio::signal;
 use tower_http::{services::ServeDir, timeout::TimeoutLayer};
@@ -15,15 +18,15 @@ use tower_http::{services::ServeDir, timeout::TimeoutLayer};
 async fn main() {
     println!("Olympus {}", version::get_version());
 
-    let resources_path = std::env::current_exe()
-        .expect("Failed to get current executable path.")
-        .parent()
-        .expect("Failed to get parent directory of the executable.")
-        .join("resources");
-    if !resources_path.exists() {
-        eprintln!("Resources path does not exist: {:?}", resources_path);
-        std::process::exit(1);
-    }
+    let args = arguments::Arguments::parse();
+
+    let resources_path = args
+        .resources_dir
+        .map(|s| std::path::PathBuf::from(s))
+        .unwrap_or(resource_management::get_resource_directory_path());
+    println!("Using resources path: {}", resources_path.display());
+    resource_management::initialize_resources_directory(&resources_path, args.init_resources)
+        .expect("Failed to initialize resources directory.");
 
     let app_state = app_state::create_new_shared_state();
     app_state
