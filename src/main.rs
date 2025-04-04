@@ -22,7 +22,7 @@ async fn main() {
 
     let resources_path = args
         .resources_dir
-        .map(|s| std::path::PathBuf::from(s))
+        .map(std::path::PathBuf::from)
         .unwrap_or(resource_management::get_resource_directory_path());
     println!("Using resources path: {}", resources_path.display());
     resource_management::initialize_resources_directory(&resources_path, args.init_resources)

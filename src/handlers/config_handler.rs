@@ -252,7 +252,7 @@ mod tests {
         let app_state = create_new_shared_state();
         let app = ConfigHandler::register_routes().with_state(app_state.clone());
         set_config_oneshot(app, "show_timer", HeaderValue::from_str("true").unwrap()).await;
-        assert_eq!(app_state.lock().unwrap().config.show_timer, true);
+        assert!(app_state.lock().unwrap().config.show_timer);
     }
 
     #[tokio::test]

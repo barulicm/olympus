@@ -1,7 +1,8 @@
 use crate::version::get_version;
 use directories::ProjectDirs;
 use include_dir::{Dir, DirEntry, include_dir};
-use std::{env, path::PathBuf};
+use std::env;
+use std::path::{Path, PathBuf};
 
 const DEFAULT_RESOURCES: Dir = include_dir!("./src/resources");
 
@@ -45,7 +46,7 @@ pub fn initialize_resources_directory(
     Ok(())
 }
 
-fn check_resources_version_tag(resources_path: &PathBuf) -> Option<String> {
+fn check_resources_version_tag(resources_path: &Path) -> Option<String> {
     let version_file_path = resources_path.join("version.txt");
     if !version_file_path.exists() {
         return None;
@@ -56,7 +57,7 @@ fn check_resources_version_tag(resources_path: &PathBuf) -> Option<String> {
     }
 }
 
-fn write_version_tag(resources_path: &PathBuf) -> std::io::Result<()> {
+fn write_version_tag(resources_path: &Path) -> std::io::Result<()> {
     let version_file_path = resources_path.join("version.txt");
     let dirty = if env!("VERGEN_GIT_DIRTY") == "true" {
         " (dirty)"
@@ -68,14 +69,14 @@ fn write_version_tag(resources_path: &PathBuf) -> std::io::Result<()> {
     Ok(())
 }
 
-fn write_default_resources(resources_path: &PathBuf) -> std::io::Result<()> {
+fn write_default_resources(resources_path: &Path) -> std::io::Result<()> {
     for entry in DEFAULT_RESOURCES.entries() {
         write_resource(resources_path, entry)?;
     }
     Ok(())
 }
 
-fn write_resource(resources_path: &PathBuf, entry: &DirEntry) -> std::io::Result<()> {
+fn write_resource(resources_path: &Path, entry: &DirEntry) -> std::io::Result<()> {
     let target_path = resources_path.join(entry.path());
     if let Some(parent) = target_path.parent() {
         std::fs::create_dir_all(parent)?;
