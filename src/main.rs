@@ -34,6 +34,11 @@ async fn main() {
         .expect("Failed to lock app state to set resources path.")
         .resources_path = resources_path.clone();
 
+    let panic_handler_app_state = app_state.clone();
+    std::panic::set_hook(Box::new(move |panic_info| {
+        handle_panic(panic_info, &panic_handler_app_state);
+    }));
+
     let router = Router::<SharedAppState>::new()
         .merge(handlers::register_all_handlers())
         .with_state(app_state)
@@ -48,7 +53,6 @@ async fn main() {
         .with_graceful_shutdown(shutdown_signal())
         .await
         .expect("Failed to start the server.");
-    // TODO backup app state on uncaught exceptions & graceful shutdown
 }
 
 async fn shutdown_signal() {
@@ -73,4 +77,25 @@ async fn shutdown_signal() {
         _ = ctrl_c => {},
         _ = terminate => {},
     }
+}
+
+fn handle_panic(panic_info: &std::panic::PanicHookInfo, app_state: &SharedAppState) {
+    eprintln!("A panic occurred: {}", panic_info);
+    let app_state = app_state.lock();
+    if let Ok(app_state) = app_state {
+        let app_state_string = serde_json::to_string_pretty(&*app_state)
+            .unwrap_or(String::from("Failed to render app state."));
+        let file_name = format!(
+            "session-backup-{}.json",
+            chrono::Local::now().format("%Y-%m-%d-%H-%M-%S")
+        );
+        println!("Saving session backup to {}", file_name);
+        let res = std::fs::write(file_name, app_state_string);
+        if let Err(e) = res {
+            eprintln!("Feiled to write session backup. Error: {}", e);
+        }
+    } else {
+        eprintln!("Failed to lock app state during panic handling.");
+    }
+    std::process::exit(1);
 }

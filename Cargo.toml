@@ -10,6 +10,7 @@ license = "MIT"
 
 [dependencies]
 axum = { version = "0.8.1", features = ["ws"] }
+chrono = "0.4.40"
 clap = { version = "4.5.35", features = ["derive"] }
 csv = "1.3.1"
 directories = "6.0.0"
