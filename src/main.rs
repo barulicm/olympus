@@ -10,6 +10,7 @@ mod version;
 use app_state::SharedAppState;
 use axum::Router;
 use clap::Parser;
+use local_ip_address::list_afinet_netifas;
 use std::time::Duration;
 use tokio::signal;
 use tower_http::{services::ServeDir, timeout::TimeoutLayer};
@@ -45,14 +46,29 @@ async fn main() {
         .fallback_service(ServeDir::new(resources_path.join("static_files")))
         .layer((TimeoutLayer::new(Duration::from_secs(10)),));
 
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000")
+    let port = 8080;
+
+    let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{}", port))
         .await
         .expect("Failed to bind TCP listener.");
+
+    let network_interfaces = list_afinet_netifas().expect("Failed to list network interfaces.");
+    println!("Listening for requests at:");
+    for (_, addr) in network_interfaces {
+        if !addr.is_ipv4() || addr.to_string().starts_with("169.254.") {
+            continue;
+        }
+        println!("\thttp://{}:{}", addr, port);
+    }
+    println!();
+    println!("Press Ctrl+C to stop the server.");
 
     axum::serve(listener, router)
         .with_graceful_shutdown(shutdown_signal())
         .await
         .expect("Failed to start the server.");
+
+    println!("Server closed.");
 }
 
 async fn shutdown_signal() {
