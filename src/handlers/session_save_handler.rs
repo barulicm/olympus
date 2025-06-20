@@ -1,6 +1,6 @@
 use super::Handler;
 use crate::app_error::AppError;
-use crate::app_state::SharedAppState;
+use crate::app_state::{AppState, SharedAppState};
 use axum::{
     Router,
     extract::{Json, State},
@@ -42,12 +42,13 @@ impl SessionSaveHandler {
         Json(body): Json<Value>,
     ) -> Result<impl IntoResponse, AppError> {
         let mut app_state = app_state.lock()?;
-        let new_state = serde_json::from_value(body).map_err(|e| {
+        let mut new_state: AppState = serde_json::from_value(body).map_err(|e| {
             AppError::new(
                 StatusCode::BAD_REQUEST,
                 format!("Failed to parse session JSON: {}", e),
             )
         })?;
+        new_state.resources_path = app_state.resources_path.clone();
         *app_state = new_state;
         Ok(StatusCode::OK)
     }

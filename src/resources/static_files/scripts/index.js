@@ -329,6 +329,7 @@ function importSessionButtonClicked() {
         reader.onload = function () {
             let xhr = new XMLHttpRequest();
             xhr.open('PUT', 'session/import', true);
+            xhr.setRequestHeader("Content-Type", "application/json");
             xhr.onreadystatechange = () => {
                 if (xhr.readyState === 4) {
                     if (xhr.status === 200) {
