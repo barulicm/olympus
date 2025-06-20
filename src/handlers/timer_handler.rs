@@ -3,20 +3,40 @@ use crate::app_error::AppError;
 use crate::app_state::SharedAppState;
 use axum::{
     Json, Router,
-    extract::Extension,
+    extract::{
+        Extension,
+        ws::{Message, Utf8Bytes, WebSocket, WebSocketUpgrade},
+    },
     http::StatusCode,
     response::IntoResponse,
-    routing::{get, put},
+    routing::{any, get, put},
 };
 use serde_json::json;
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc, Mutex, mpsc};
 use std::time::Instant;
+use tokio::time;
 
 #[derive(Clone)]
-pub struct TimerHandler {
+struct TimerState {
     match_length: u64,
     timer_start_time: Instant,
     timer_running: bool,
+}
+
+impl TimerState {
+    fn default() -> Self {
+        TimerState {
+            match_length: 150,
+            timer_start_time: Instant::now(),
+            timer_running: false,
+        }
+    }
+}
+
+#[derive(Clone)]
+pub struct TimerHandler {
+    timer_state: TimerState,
+    senders: Vec<mpsc::Sender<TimerState>>,
 }
 
 type SharedTimerHandler = Arc<Mutex<TimerHandler>>;
@@ -24,15 +44,45 @@ type SharedTimerHandler = Arc<Mutex<TimerHandler>>;
 impl Handler for TimerHandler {
     fn register_routes() -> Router<SharedAppState> {
         let handler = Arc::new(Mutex::new(TimerHandler {
-            match_length: 150,
-            timer_start_time: Instant::now(),
-            timer_running: false,
+            timer_state: TimerState::default(),
+            senders: vec![],
         }));
         Router::new()
             .route("/timer", get(Self::handle_get))
             .route("/timer/start", put(Self::handle_start_timer))
             .route("/timer/stop", put(Self::handle_stop_timer))
+            .route("/timer/ws", any(Self::handle_websocket_upgrade))
             .layer(Extension(handler))
+    }
+}
+
+fn get_seconds_remaining(timer_state: &TimerState) -> u64 {
+    if timer_state.timer_running {
+        let seconds_elapsed = timer_state.timer_start_time.elapsed().as_secs();
+        if seconds_elapsed < timer_state.match_length {
+            timer_state.match_length - seconds_elapsed
+        } else {
+            0
+        }
+    } else {
+        timer_state.match_length
+    }
+}
+
+async fn run_websocket(mut socket: WebSocket, receiver: mpsc::Receiver<TimerState>) {
+    let mut timer_state = TimerState::default();
+    let mut interval = time::interval(time::Duration::from_millis(100));
+    loop {
+        let seconds_left = get_seconds_remaining(&timer_state);
+        let json_str = Json::from(json!({"time_remaining": seconds_left})).to_string();
+        let msg = Message::Text(Utf8Bytes::from(json_str));
+        if socket.send(msg).await.is_err() {
+            break;
+        }
+        if let Ok(channel_val) = receiver.try_recv() {
+            timer_state = channel_val;
+        }
+        interval.tick().await;
     }
 }
 
@@ -41,16 +91,7 @@ impl TimerHandler {
         Extension(handler): Extension<SharedTimerHandler>,
     ) -> Result<impl IntoResponse, AppError> {
         let handler = handler.lock()?;
-        let seconds_left = if handler.timer_running {
-            let seconds_elapsed = handler.timer_start_time.elapsed().as_secs();
-            if seconds_elapsed < handler.match_length {
-                handler.match_length - seconds_elapsed
-            } else {
-                0
-            }
-        } else {
-            handler.match_length
-        };
+        let seconds_left = handler.get_seconds_remaining();
         Ok((
             StatusCode::OK,
             Json::from(json!({"time_remaining": seconds_left})),
@@ -61,15 +102,14 @@ impl TimerHandler {
         Extension(handler): Extension<SharedTimerHandler>,
     ) -> Result<impl IntoResponse, AppError> {
         let mut handler = handler.lock()?;
-        if handler.timer_running {
+        if handler.timer_state.timer_running {
             return Err((
                 StatusCode::INTERNAL_SERVER_ERROR,
                 "Timer is already running",
             )
                 .into());
         }
-        handler.timer_running = true;
-        handler.timer_start_time = Instant::now();
+        handler.start_timer();
         Ok(StatusCode::OK)
     }
 
@@ -77,8 +117,46 @@ impl TimerHandler {
         Extension(handler): Extension<SharedTimerHandler>,
     ) -> Result<impl IntoResponse, AppError> {
         let mut handler = handler.lock()?;
-        handler.timer_running = false;
+        handler.stop_timer();
         Ok(StatusCode::OK)
+    }
+
+    async fn handle_websocket_upgrade(
+        Extension(handler): Extension<SharedTimerHandler>,
+        ws: WebSocketUpgrade,
+    ) -> Result<impl IntoResponse, AppError> {
+        let (sender, receiver) = mpsc::channel();
+        let mut handler = handler.lock()?;
+        let _ = sender.send(handler.timer_state.clone());
+        handler.senders.push(sender);
+        Ok(ws.on_upgrade(|socket| run_websocket(socket, receiver)))
+    }
+
+    fn send_timer_state(&mut self) {
+        let mut closed_channel_indices = vec![];
+        for (i, sender) in self.senders.iter().enumerate() {
+            if sender.send(self.timer_state.clone()).is_err() {
+                closed_channel_indices.push(i);
+            }
+        }
+        for i in closed_channel_indices {
+            self.senders.remove(i);
+        }
+    }
+
+    fn start_timer(&mut self) {
+        self.timer_state.timer_running = true;
+        self.timer_state.timer_start_time = Instant::now();
+        self.send_timer_state();
+    }
+
+    fn stop_timer(&mut self) {
+        self.timer_state.timer_running = false;
+        self.send_timer_state();
+    }
+
+    fn get_seconds_remaining(&self) -> u64 {
+        get_seconds_remaining(&self.timer_state)
     }
 }
 
