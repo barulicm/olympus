@@ -236,7 +236,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_sop_timer() {
+    async fn test_stop_timer() {
         let app_state = create_new_shared_state();
         let app = TimerHandler::register_routes().with_state(app_state);
 

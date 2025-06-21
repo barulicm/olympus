@@ -221,7 +221,7 @@ function onLoad() {
     getDisplayState();
     getGames();
     getSponsors();
-    setInterval(updateTimer, 100);
+    openTimerWebsocket('timerDisplay', 'endGameAudio', 'endAudio', 'timerButton');
 }
 
 function onTeamsFileSelected(e) {
@@ -378,33 +378,6 @@ function timerButtonClicked() {
         }
         timer_button.innerText = 'Start Timer';
     }
-}
-
-let prev_time_remaining = 0;
-
-function updateTimer() {
-    let xhr = new XMLHttpRequest();
-    xhr.open('GET', 'timer', true);
-    xhr.onreadystatechange = () => {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-            let timer_json = JSON.parse(xhr.responseText);
-            let time_remaining = timer_json.time_remaining;
-            let timer_minutes = Math.floor(time_remaining / 60);
-            let timer_seconds = time_remaining % 60;
-            document.getElementById('timerDisplay').innerText = timer_minutes.toString() + ":" + timer_seconds.toString().padStart(2, '0');
-            let timer_button = document.getElementById('timerButton');
-            if (time_remaining === 30 && prev_time_remaining > 30) {
-                document.getElementById('endGameAudio').play();
-            } else if (time_remaining === 0 && prev_time_remaining > 0) {
-                document.getElementById('endAudio').play();
-            }
-            if (time_remaining === 0) {
-                timer_button.innerText = 'Reset Timer';
-            }
-            prev_time_remaining = time_remaining;
-        }
-    }
-    xhr.send();
 }
 
 function adjustVolumes() {
