@@ -1,0 +1,219 @@
+{
+    "name": "Unearthed",
+    "description": "FIRST Lego League 2025",
+    "logo": "fll_2025_wordmark.png",
+    "missions": [
+        {
+            "name": "Equipment Inspection",
+            "questions": [
+                {
+                    "type": "bool",
+                    "description": "Equipment fits in launch area and under 12in."
+                }
+            ],
+            "scoring": "(qa ? 20 : 0)"
+        },
+        {
+            "name": "01 - Surface Brushing",
+            "questions": [
+                {
+                    "type": "number",
+                    "description": "Soil deposits completely cleared, touching the mat",
+                    "min": 0,
+                    "max": 2
+                },
+                {
+                    "type": "bool",
+                    "description": "Archeologist's brush is not touching the dig site"
+                }
+            ],
+            "scoring": "(qa * 10) + (qb ? 10 : 0)"
+        },
+        {
+            "name": "02 - Map Reveal",
+            "questions": [
+                {
+                    "type": "number",
+                    "description": "Topsoil sections copmletely cleared",
+                    "min": 0,
+                    "max": 3
+                }
+            ],
+            "scoring": "(qa * 10)"
+        },
+        {
+            "name": "03 - Minshaft Explorer",
+            "questions": [
+                {
+                    "type": "bool",
+                    "description": "Your team's minecart is on the opposing team's field"
+                },
+                {
+                    "type": "bool",
+                    "description": "<b>Bonus:</b> And the opposing team's minecart is on your team's field"
+                }
+            ],
+            "scoring": "(qa ? (30 + (qb ? 10 : 0)) : 0)"
+        },
+        {
+            "name": "04 - Careful Recovery",
+            "questions": [
+                {
+                    "type": "bool",
+                    "description": "Precious artifact is not touching the mine"
+                },
+                {
+                    "type": "bool",
+                    "description": "Both support structures are standing"
+                }
+            ],
+            "scoring": "(qa ? 30 : 0) + (qb ? 10 : 0)"
+        },
+        {
+            "name": "05 - Who Lived Here?",
+            "questions": [
+                {
+                    "type": "bool",
+                    "description": "Structure floor is completely upright"
+                }
+            ],
+            "scoring": "(qa ? 30 : 0)"
+        },
+        {
+            "name": "06 - Forge",
+            "questions": [
+                {
+                    "type": "number",
+                    "description": "One blocks not touching the forge",
+                    "min": 0,
+                    "max": 3
+                }
+            ],
+            "scoring": "(qa * 10)"
+        },
+        {
+            "name": "07 - Heavy Lifting",
+            "questions": [
+                {
+                    "type": "bool",
+                    "description": "Millstone is no longer touching its base"
+                }
+            ],
+            "scoring": "(qa ? 30 : 0)"
+        },
+        {
+            "name": "08 - Silo",
+            "questions": [
+                {
+                    "type": "number",
+                    "description": "Preserved pieces outside the silo",
+                    "min": 0,
+                    "max": 3
+                }
+            ],
+            "scoring": "(qa * 10)"
+        },
+        {
+            "name": "09 - What's On Sale?",
+            "questions": [
+                {
+                    "type": "bool",
+                    "description": "Roof is completely raised"
+                },
+                {
+                    "type": "bool",
+                    "description": "Market wares are raised"
+                }
+            ],
+            "scoring":"(qa ? 20 : 0) + (qb ? 10 : 0)"
+        },
+        {
+            "name": "10 - Tip The Scales",
+            "questions": [
+                {
+                    "type": "bool",
+                    "description": "Scale is tipped and touching the mat"
+                },
+                {
+                    "type": "bool",
+                    "description": "Scale pan is completely removed"
+                }
+            ],
+            "scoring": "(qa ? 20 : 0) + (qb ? 10 : 0)"
+        },
+        {
+            "name": "11 - Angler Artifacts",
+            "questions": [
+                {
+                    "type": "bool",
+                    "description": "Artifacts are raised above the ground layer"
+                },
+                {
+                    "type": "bool",
+                    "description": "<b>Bonus:</b> And the crane flag is at least partly lowered"
+                }
+            ],
+            "scoring": "(qa ? (20 + (qb ? 10 : 0)) : 0)"
+        },
+        {
+            "name": "12 - Salvage Operation",
+            "questions": [
+                {
+                    "type": "bool",
+                    "description": "Sand is completely cleared"
+                },
+                {
+                    "type": "bool",
+                    "description": "Ship is completely raised"
+                }
+            ],
+            "scoring": "(qa ? 20 : 0) + (qb ? 10 : 0)"
+        },
+        {
+            "name": "13 - Statue Rebuild",
+            "questions": [
+                {
+                    "type": "bool",
+                    "description": "Statue is completely raised"
+                }
+            ],
+            "scoring": "(qa ? 30 : 0)"
+        },
+        {
+            "name": "14 - Forum",
+            "questions": [
+                {
+                    "type": "number",
+                    "description": "Artifacts touching the mat and at least partly in the forum",
+                    "min": 0,
+                    "max": 7
+                }
+            ],
+            "scoring": "(qa * 5)"
+        },
+        {
+            "name": "15 - Site Marking",
+            "questions": [
+                {
+                    "type": "number",
+                    "description": "Sites with a flag at least partly inside and touching the mat",
+                    "min": 0,
+                    "max": 3
+                }
+            ],
+            "scoring": "(qa * 10)"
+        },
+        {
+            "name": "Precision Tokens",
+            "questions": [
+                {
+                    "type": "number",
+                    "description": "Number of precision tokens remaining",
+                    "min": 0,
+                    "max": 6
+                }
+            ],
+            "scoring": "(qa == 1 ? 10 : 0) + (qa == 2 ? 15 : 0) + (qa == 3 ? 25 : 0) + (qa == 4 ? 35 : 0) + (qa == 5 ? 50 : 0) + (qa == 6 ? 50 : 0)"
+        }
+    ]
+}
