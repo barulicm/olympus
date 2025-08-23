@@ -1,4 +1,5 @@
 # Olympus
+
 Unofficial score keeping software for FIRST LEGO League.
 
 ## User Documentation
@@ -7,31 +8,20 @@ User documentation is available in [this repository's wiki](https://github.com/b
 
 ## Developer Quick Start
 
-Olympus is largely written in C++, uses CMake as its build tool, and uses vcpkg for dependency management.
+Olympus is written in [Rust](https://www.rust-lang.org/). All dependencies are managed with Rust's cargo tool.
 
-### Dependencies
+You can find instructions for installing Rust on their [Getting Started page](https://www.rust-lang.org/learn/get-started).
 
-You will need these tools installed to contribute to Olympus.
-
-* [git](https://git-scm.com/)
-* [CMake](https://cmake.org/)
-* A C++ compiler
-  * Windows: [Visual Studio](https://visualstudio.microsoft.com/)
-  * Linux: [gcc](https://gcc.gnu.org/)
-
-### Clone and Build
+### Clone, Build, and Run
 
 Download the project code to your computer:
 
 ```shell
-git clone --recurse-submodules https://github.com/barulicm/olympus.git
+git clone https://github.com/barulicm/olympus.git
 ```
 
-Use CMake workflow presets to build and test for your machine:
+Use cargo to build the project and launch the Olympus server:
 
 ```shell
-# For Linux:
-cmake --workflow --preset linux-debug-buildandtest
-# For Windows:
-cmake --workflow --preset windows-debug-buildandtest
+cargo run
 ```
