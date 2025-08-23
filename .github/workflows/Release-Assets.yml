@@ -24,7 +24,7 @@ jobs:
         if: ${{github.event_name == 'release'}}
         with:
           files: |
-            ${{github.workspace}}/targets/release/olympus_*.deb
+            ${{github.workspace}}/target/release/olympus_*.deb
 
   job2:
     name: Build Windows Assets
@@ -44,7 +44,7 @@ jobs:
         if: ${{github.event_name == 'release'}}
         with:
           files: |
-            ${{github.workspace}}/targets/release/olympus_*-setup.exe
+            ${{github.workspace}}/target/release/olympus_*-setup.exe
 
   job3:
     name: Publish Docker Image
