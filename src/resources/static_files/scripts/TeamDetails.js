@@ -23,6 +23,7 @@ function onLoad() {
             let scoresRow = document.getElementById("scoresRow");
             for(let i = 0; i < scoresArr.length; i++) {
                 let cell = document.createElement("td");
+                cell.id = "scoresCell" + i;
 
                 let label = document.createElement("label");
                 label.className = "grouptitle";
@@ -40,6 +41,7 @@ function onLoad() {
             let gpScoresRow = document.getElementById("gpScoresRow");
             for(let i = 0; i < gpScoresArr.length; i++) {
                 let cell = document.createElement("td");
+                cell.id = "gpCell" + i;
 
                 let label = document.createElement("label");
                 label.className = "grouptitle";
@@ -53,8 +55,34 @@ function onLoad() {
 
                 gpScoresRow.appendChild(cell);
             }
+
+            let matchDelRow = document.getElementById("matchDelRow");
+            for(let i = 0; i < scoresArr.length; i++) {
+                let cell = document.createElement("td");
+                cell.id = "matchDelCell" + i;
+
+                let button = document.createElement("button");
+                button.classList.add("deleteButton");
+                button.id = "matchDel" + i;
+                button.title = "Delete match scores";
+                button.onclick = (e) => removeMatch(i);
+                cell.appendChild(button);
+
+                matchDelRow.appendChild(cell);
+            }
         }
     }
+}
+
+function removeMatch(index) {
+    document.getElementById("scoresCell" + index).innerHTML = "";
+    document.getElementById("gpCell" + index).innerHTML = "";
+    let delCell = document.getElementById("matchDelCell" + index);
+    delCell.innerHTML = "";
+    let label = document.createElement("t");
+    label.innerText = "Match removed";
+    label.style = "color: darkRed;";
+    delCell.appendChild(label);
 }
 
 function submitEdits() {
@@ -69,15 +97,21 @@ function submitEdits() {
     jsonData.newScores = [];
     let scoreCells = document.getElementById("scoresRow").childNodes;
     for(let i = 0; i < scoreCells.length; i++) {
-        let score = parseInt(scoreCells[i].getElementsByTagName("input")[0].value);
-        jsonData.newScores.push(score);
+        let scoreInput = scoreCells[i].getElementsByTagName("input")[0];
+        if(scoreInput != null) {
+            let score = parseInt(scoreInput.value);
+            jsonData.newScores.push(score);
+        }
     }
 
     jsonData.newGPScores = [];
     let gpScoreCells = document.getElementById("gpScoresRow").childNodes;
     for (let i = 0; i < gpScoreCells.length; i++) {
-        let score = parseInt(gpScoreCells[i].getElementsByTagName("input")[0].value);
-        jsonData.newGPScores.push(score);
+        let scoreInput = gpScoreCells[i].getElementsByTagName("input")[0];
+        if(scoreInput != null) {
+            let score = parseInt(scoreInput.value);
+            jsonData.newGPScores.push(score);
+        }
     }
 
     let xhr = new XMLHttpRequest();

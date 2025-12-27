@@ -107,3 +107,12 @@
     background: #6B9FFF;
     color:#fff;
 }
+button.deleteButton {
+    background-color: transparent;
+    background-image: url(../images/close.png);
+    background-size:32px 32px;
+    border: none;
+    height: 32px;
+    width: 32px;
+    outline:none;
+}
