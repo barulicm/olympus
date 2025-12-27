@@ -28,7 +28,13 @@ impl ScoresHandler {
     ) -> Result<impl IntoResponse, AppError> {
         let app_state = app_state.lock()?;
         let mut teams = app_state.teams.clone();
-        teams.sort_by_key(|t| t.number.clone());
+        teams.sort_by(|a,b| {
+            if a.number.len() == b.number.len() {
+                a.number.cmp(&b.number)
+            } else {
+                a.number.len().cmp(&b.number.len())
+            }
+        });
         let score_count = teams.iter().map(|t| t.scores.len()).max().unwrap_or(0);
         let mut csv_writer = csv::Writer::from_writer(vec![]);
         let mut headers = vec![
@@ -86,7 +92,13 @@ impl ScoresHandler {
     ) -> Result<impl IntoResponse, AppError> {
         let app_state = app_state.lock()?;
         let mut teams = app_state.teams.clone();
-        teams.sort_by_key(|t| t.number.clone());
+        teams.sort_by(|a,b| {
+            if a.number.len() == b.number.len() {
+                a.number.cmp(&b.number)
+            } else {
+                a.number.len().cmp(&b.number.len())
+            }
+        });
         let score_count = teams.iter().map(|t| t.scores.len()).max().unwrap_or(0);
         let mut csv_writer = csv::Writer::from_writer(vec![]);
         let mut headers = vec![String::from("team number"), String::from("team name")];
