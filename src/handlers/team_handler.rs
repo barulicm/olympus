@@ -172,7 +172,7 @@ impl TeamHandler {
             .and_then(|v| v.as_str())
             .ok_or(AppError::new(
                 StatusCode::BAD_REQUEST,
-                String::from("Missing or invalid new team number."),
+                String::from("Missing or invalid team name."),
             ))?
             .to_string();
         let new_scores = body.get("newScores").ok_or(AppError::new(
@@ -360,7 +360,7 @@ mod tests {
             .method("PUT")
             .uri("/team/edit")
             .header(header::CONTENT_TYPE, "application/json")
-            .body(Body::from(r#"{"oldTeamNumber": "1234", "newTeamNumber": "1234", "name": "Test Team", "newScores": [], "newGPScores": []}"#))
+            .body(Body::from(r#"{"oldTeamNumber": "1234", "newTeamNumber": "1234", "newTeamName": "Test Team", "newScores": [], "newGPScores": []}"#))
             .unwrap();
         let response = ServiceExt::<Request<Body>>::ready(&mut app)
             .await
@@ -374,7 +374,7 @@ mod tests {
             .method("PUT")
             .uri("/team/edit")
             .header(header::CONTENT_TYPE, "application/json")
-            .body(Body::from(r#"{"oldTeamNumber": "1234", "newTeamNumber": "", "name": "Test Team", "newScores": [], "newGPScores": []}"#))
+            .body(Body::from(r#"{"oldTeamNumber": "1234", "newTeamNumber": "", "newTeamName": "Test Team", "newScores": [], "newGPScores": []}"#))
             .unwrap();
         let response = ServiceExt::<Request<Body>>::ready(&mut app)
             .await
@@ -388,7 +388,7 @@ mod tests {
             .method("PUT")
             .uri("/team/edit")
             .header(header::CONTENT_TYPE, "application/json")
-            .body(Body::from(r#"{"oldTeamNumber": "1234", "newTeamNumber": "5678", "name": "Test Team", "newScores": [], "newGPScores": []}"#))
+            .body(Body::from(r#"{"oldTeamNumber": "1234", "newTeamNumber": "5678", "newTeamName": "Test Team", "newScores": [], "newGPScores": []}"#))
             .unwrap();
         let response = ServiceExt::<Request<Body>>::ready(&mut app)
             .await
