@@ -168,7 +168,7 @@ impl TeamHandler {
                 format!("No team with number '{}'", old_team_number),
             ))?;
         let new_team_name = body
-            .get("newTeamNumber")
+            .get("newTeamName")
             .and_then(|v| v.as_str())
             .ok_or(AppError::new(
                 StatusCode::BAD_REQUEST,
