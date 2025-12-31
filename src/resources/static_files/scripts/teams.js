@@ -6,36 +6,19 @@ function onLoad() {
     xhr.onreadystatechange = ()=>{
         if(xhr.readyState === 4 && xhr.status === 200) {
             let teamArr = JSON.parse(xhr.responseText);
-            let i;
-            for(i = 0; i  < teamArr.length; i++) {
-                // Populate Table Row
-                let tabBody = document.getElementsByTagName("tbody").item(0);
-                let row=document.createElement("tr");
-                let rankCell=document.createElement("td");
-                let numberCell=document.createElement("td");
-                let nameCell=document.createElement("td");
-                let buttonsCell=document.createElement("td");
-                rankCell.appendChild(document.createTextNode(teamArr[i].rank));
-                numberCell.appendChild(document.createTextNode(teamArr[i].number));
-                let teamNameLink = document.createElement("a");
-                let teamDetailsUrl = 'TeamDetails.html?team=' + teamArr[i].number;
-                teamNameLink.setAttribute("href", teamDetailsUrl);
-                teamNameLink.innerText = teamArr[i].name;
-                nameCell.appendChild(teamNameLink);
-                let delButton = document.createElement("button");
-                delButton.classList.add("deleteButton");
-                delButton.id = teamArr[i].number;
-                delButton.onclick = removeTeam;
-                buttonsCell.appendChild(delButton);
-                let editButton = document.createElement("button");
-                editButton.classList.add("editButton");
-                editButton.onclick = () => { window.open(teamDetailsUrl, "_self") };
-                buttonsCell.appendChild(editButton);
-                row.appendChild(rankCell);
-                row.appendChild(numberCell);
-                row.appendChild(nameCell);
-                row.appendChild(buttonsCell);
-                tabBody.insertBefore(row,tabBody.childNodes[tabBody.childNodes.length-2]);
+            let row_template = document.getElementById("rowTemplate");
+            let tab_body = document.getElementsByTagName("tbody").item(0);
+            for(let i = 0; i < teamArr.length; i++) {
+                let team = teamArr[i];
+                let teamDetailsUrl = 'TeamDetails.html?team=' + team.number;
+                let row = document.importNode(row_template.content, true);
+                row.querySelector("#rank").appendChild(document.createTextNode(team.rank));
+                row.querySelector("#number").appendChild(document.createTextNode(team.number));
+                let team_name_link = row.querySelector("#nameLink");
+                team_name_link.href = teamDetailsUrl;
+                team_name_link.appendChild(document.createTextNode(team.name));
+                row.querySelector(".editButton").onclick = () => { window.open(teamDetailsUrl, "_self")};
+                tab_body.insertBefore(row,tab_body.childNodes[tab_body.childNodes.length-2]);
             }
         }
     }

@@ -25,6 +25,15 @@
         <th scope="col" onclick="sortTable(2)">Name</th>
         <th scope="col"></th>
     </tr>
+    <template id="rowTemplate">
+        <td id="rank"></td>
+        <td id="number"></td>
+        <td><a id="nameLink"></a></td>
+        <td id="delete">
+            <button class="deleteButton" onclick="removeTeam"></button>
+            <button class="editButton"></button>
+        </td>
+    </template>
     <tr>
         <td></td>
         <td> <input type="text" name="newTeamNumber" title="Number" value="Number"> </td>
