@@ -20,69 +20,39 @@ function onLoad() {
             document.getElementById("nameCell").colSpan = scoresArr.length;
             document.getElementById("submitCell").colSpan = scoresArr.length;
 
-            let scoresRow = document.getElementById("scoresRow");
-            for(let i = 0; i < scoresArr.length; i++) {
-                let cell = document.createElement("td");
-                cell.id = "scoresCell" + i;
+            match_count = Math.max(scoresArr.length, gpScoresArr.length);
 
-                let label = document.createElement("label");
-                label.className = "grouptitle";
-                label.appendChild(document.createTextNode("Match " + (i+1) + " Score"));
-                cell.appendChild(label);
+            match_row_template = document.getElementById("matchRowTemplate");
 
-                let input = document.createElement("input");
-                input.type = "number";
-                input.value = scoresArr[i];
-                cell.appendChild(input);
+            for(let i = 0; i < match_count; i++) {
+                match_row = document.importNode(match_row_template.content, true);
 
-                scoresRow.appendChild(cell);
-            }
+                match_row.getElementById("matchRow").id += `${i}`
+                let score_cell = match_row.getElementById("scoreCell");
+                score_cell.id += `${i}`
+                score_cell.querySelector("input").value = scoresArr[i];
+                let gp_cell = match_row.getElementById("gpCell");
+                gp_cell.id += `${i}`
+                gp_cell.querySelector("input").value = gpScoresArr[i];
 
-            let gpScoresRow = document.getElementById("gpScoresRow");
-            for(let i = 0; i < gpScoresArr.length; i++) {
-                let cell = document.createElement("td");
-                cell.id = "gpCell" + i;
+                let del_button = match_row.querySelector("button");
+                del_button.onclick = (e) => removeMatch(i);
 
-                let label = document.createElement("label");
-                label.className = "grouptitle";
-                label.appendChild(document.createTextNode("Match " + (i+1) + " GP Score"));
-                cell.appendChild(label);
-
-                let input = document.createElement("input");
-                input.type = "number";
-                input.value = gpScoresArr[i];
-                cell.appendChild(input);
-
-                gpScoresRow.appendChild(cell);
-            }
-
-            let matchDelRow = document.getElementById("matchDelRow");
-            for(let i = 0; i < scoresArr.length; i++) {
-                let cell = document.createElement("td");
-                cell.id = "matchDelCell" + i;
-
-                let button = document.createElement("button");
-                button.classList.add("deleteButton");
-                button.id = "matchDel" + i;
-                button.title = "Delete match scores";
-                button.onclick = (e) => removeMatch(i);
-                cell.appendChild(button);
-
-                matchDelRow.appendChild(cell);
+                document.getElementById("matchTableBody").appendChild(match_row);
             }
         }
     }
 }
 
 function removeMatch(index) {
-    document.getElementById("scoresCell" + index).innerHTML = "";
-    document.getElementById("gpCell" + index).innerHTML = "";
-    let delCell = document.getElementById("matchDelCell" + index);
-    delCell.innerHTML = "";
+    let row = document.querySelector(`#matchRow${index}`)
     let label = document.createElement("t");
     label.innerText = "Match removed";
     label.style = "color: darkRed;";
-    delCell.appendChild(label);
+    let cell = document.createElement("td");
+    cell.appendChild(label);
+    row.innerHTML = "";
+    row.appendChild(cell);
 }
 
 function submitEdits() {
@@ -95,9 +65,9 @@ function submitEdits() {
     jsonData.newTeamName   = document.getElementById("teamName").value;
 
     jsonData.newScores = [];
-    let scoreCells = document.getElementById("scoresRow").childNodes;
+    let scoreCells = document.querySelectorAll('[id^="scoreCell"]');
     for(let i = 0; i < scoreCells.length; i++) {
-        let scoreInput = scoreCells[i].getElementsByTagName("input")[0];
+        let scoreInput = scoreCells[i].querySelector("input");
         if(scoreInput != null) {
             let score = parseInt(scoreInput.value);
             jsonData.newScores.push(score);
@@ -105,9 +75,9 @@ function submitEdits() {
     }
 
     jsonData.newGPScores = [];
-    let gpScoreCells = document.getElementById("gpScoresRow").childNodes;
+    let gpScoreCells = document.querySelectorAll('[id^="gpCell"]');
     for (let i = 0; i < gpScoreCells.length; i++) {
-        let scoreInput = gpScoreCells[i].getElementsByTagName("input")[0];
+        let scoreInput = gpScoreCells[i].querySelector("input");
         if(scoreInput != null) {
             let score = parseInt(scoreInput.value);
             jsonData.newGPScores.push(score);

@@ -32,9 +32,30 @@
                 <input type="text" id="teamName" name="teamName" value="Team Name">
             </td>
         </tr>
-        <tr id="scoresRow"></tr>
-        <tr id="gpScoresRow"></tr>
-        <tr id="matchDelRow"></tr>
+        <tr>
+            <td>
+                <label class="grouptitle">Match Scores</label>
+                <table>
+                    <tbody id="matchTableBody">
+                        <template id="matchRowTemplate">
+                            <tr id="matchRow">
+                                <td id="scoreCell">
+                                    <label class="grouptitle">Score</label>
+                                    <input type="number" value="0">
+                                </td>
+                                <td id="gpCell">
+                                    <label class="grouptitle">GP Score</label>
+                                    <input type="number" value="0">
+                                </td>
+                                <td>
+                                    <button class="deleteButton" type="button" title="Delete match scores"></button>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
         <tr>
             <td id="submitCell">
                 <input type="button" class="button" id="submitButton" onclick="submitEdits()" value="Submit">
