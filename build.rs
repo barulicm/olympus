@@ -3,6 +3,7 @@ use vergen_gitcl::{Emitter, GitclBuilder};
 fn main() {
     let git_instructions = GitclBuilder::default()
         .all()
+        .dirty(true)
         .sha(true)
         .build()
         .expect("Failed to build vergen git instructions.");
