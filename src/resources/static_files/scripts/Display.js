@@ -106,34 +106,29 @@ function getInfo() {
     };
 }
 
-function setBlackoutTop(val_in_studs) {
-    let blackoutElement = document.getElementById("blackout");
-    blackoutElement.style.setProperty("top", "calc(" + val_in_studs + " * var(--stud-size))");
-    // Set FllLogo's bottom so cropping works on logo screen too
-    let fllLogoElement = document.getElementById("fllLogoContainer");
-    fllLogoElement.style.setProperty('bottom', 'calc(100% - (' + val_in_studs + ' * var(--stud-size)))');
-    let sponsorsElement = document.getElementById("sponsorsContainer");
-    sponsorsElement.style.setProperty('bottom', 'calc(100% - (' + val_in_studs + ' * var(--stud-size)))');
+function setContainerVisibility(id, visible) {
+    let container = document.querySelector(`.${id}`);
+    if(visible === true) {
+        container.classList.remove("hidden-container");
+    } else {
+        container.classList.add("hidden-container");
+    }
+}
+
+function setScoresTableVisibility(visible) {
+    setContainerVisibility("scores-table-container", visible);
+}
+
+function setBlackoutVisibility(visible) {
+    setContainerVisibility("blackout-container", visible);
 }
 
 function setFllLogoVisibility(visible) {
-    let fllLogoElement = document.getElementById("fllLogoContainer");
-    if (visible === true) {
-        fllLogoElement.style.setProperty("top", "0");
-    } else {
-        fllLogoElement.style.setProperty("top", "100%");
-    }
+    setContainerVisibility("fll-logo-container", visible);
 }
 
 function setSponsorsVisibility(visible) {
-    let sponsorsContainer = document.getElementById("sponsorsContainer");
-    if (visible === true) {
-        sponsorsContainer.style.visibility = "visible";
-        // sponsorsContainer.style.setProperty("top", "0");
-    } else {
-        sponsorsContainer.style.visibility = "hidden";
-        // sponsorsContainer.style.setProperty("top", "100%");
-    }
+    setContainerVisibility("sponsors-container", visible);
 }
 
 function getDisplayState() {
@@ -147,22 +142,26 @@ function getDisplayState() {
                 display_state = xhr.responseText;
                 switch (display_state) {
                     case DisplayStates.ShowScores:
-                        setBlackoutTop(teams_per_page + 4);
+                        setScoresTableVisibility(true);
+                        setBlackoutVisibility(false);
                         setFllLogoVisibility(false);
                         setSponsorsVisibility(false);
                         break;
                     case DisplayStates.Blackout:
-                        setBlackoutTop(0);
+                        setScoresTableVisibility(false);
+                        setBlackoutVisibility(true);
                         setFllLogoVisibility(false);
                         setSponsorsVisibility(false);
                         break;
                     case DisplayStates.FllLogo:
-                        setBlackoutTop(teams_per_page + 4);
+                        setScoresTableVisibility(false);
+                        setBlackoutVisibility(false);
                         setFllLogoVisibility(true);
                         setSponsorsVisibility(false);
                         break;
                     case DisplayStates.Sponsors:
-                        setBlackoutTop(teams_per_page + 4);
+                        setScoresTableVisibility(false);
+                        setBlackoutVisibility(false);
                         setFllLogoVisibility(false);
                         setSponsorsVisibility(true);
                         break;
@@ -183,9 +182,9 @@ function getShowTimer() {
         if (xhr.readyState === 4) {
             if (xhr.status === 200) {
                 if (xhr.responseText === 'false') {
-                    document.getElementById('timerDisplay').style.visibility = 'hidden';
+                    document.getElementById('timer-display').style.visibility = 'hidden';
                 } else {
-                    document.getElementById('timerDisplay').style.visibility = 'visible';
+                    document.getElementById('timer-display').style.visibility = 'visible';
                 }
             } else {
                 console.error('Could not get timer config: ' + xhr.responseText);
@@ -203,11 +202,8 @@ function getTeamsPerPage() {
         if (xhr.readyState === 4) {
             if (xhr.status === 200) {
                 teams_per_page = parseInt(xhr.responseText);
-                if (document.getElementById("announcementContainer").style.display === "flex") {
+                if (document.querySelector(".announcement-container").style.display === "flex") {
                     teams_per_page -= 1;
-                }
-                if (display_state === DisplayStates.ShowScores) {
-                    setBlackoutTop(teams_per_page + 4);
                 }
             } else {
                 console.error('Could not get rows config: ' + xhr.responseText);
@@ -252,7 +248,7 @@ function updateAnnouncement() {
         if (xhr.readyState === 4) {
             if (xhr.status === 200) {
                 let announcementDetails = JSON.parse(xhr.responseText);
-                let announcementContainer = document.getElementById("announcementContainer");
+                let announcementContainer = document.querySelector(".announcement-container");
                 let body = document.getElementsByTagName("body")[0];
                 if (announcementDetails.visible) {
                     announcementContainer.style.display = "flex";
@@ -261,7 +257,7 @@ function updateAnnouncement() {
                     announcementContainer.style.display = "none";
                     body.style.height = "100%";
                 }
-                document.getElementById("announcementHeader").innerText = announcementDetails.content;
+                document.getElementById("announcement-header").innerText = announcementDetails.content;
             } else {
                 console.error('Could not get announcement: ' + xhr.responseText);
             }
@@ -277,12 +273,12 @@ function updateSponsors() {
         if (xhr.readyState === 4) {
             if (xhr.status === 200) {
                 let sponsorArr = JSON.parse(xhr.responseText)["sponsors"];
-                let sponsorList = document.getElementById("sponsorList");
+                let sponsorList = document.getElementById("sponsor-list");
                 sponsorList.innerText = "";  // clear any existing sponsor images
                 for (let i = 0; i < sponsorArr.length; i++) {
                     let sponsorImage = new Image();
                     sponsorImage.src = sponsorArr[i];
-                    sponsorImage.className = "sponsorImage";
+                    sponsorImage.className = "sponsor-image";
                     sponsorList.appendChild(sponsorImage);
                 }
             } else {
@@ -297,7 +293,7 @@ function onLoad() {
     setInterval(updateDisplayConfig, 1000);
     getInfo();
     paging_interval = setInterval(getInfo, 5000);
-    openTimerWebsocket('timerDisplay');
+    openTimerWebsocket('timer-display');
     updateAnnouncement();
     setInterval(updateAnnouncement, 1000);
     updateSponsors();

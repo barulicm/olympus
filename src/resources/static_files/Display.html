@@ -10,38 +10,52 @@
     <title>Olympus - Display</title>
 </head>
 <body onload="onLoad()">
-<div id="announcementContainer">
-    <h1 id="announcementHeader"></h1>
-</div>
-<div id="scoresTableContainer">
-    <div class="topBar">
-        <img id="logo" class="topImage" src="images/FIRSTLego_iconHorz_RGB.jpg"/>
-        <div id="logosSpacer"></div>
-        <img id="gameLogo" class="topImage" src="game/logo"/>
-        <p id="timerDisplay">0:00</p>
+<div class="root-container">
+    <div class="announcement-container">
+        <h1 id="announcement-header"></h1>
     </div>
+    <div class="content-container">
+        <div class="scores-table-container">
+            <img id="lego-logo" class="logo" src="images/FIRSTLego_iconHorz_RGB.jpg"/>
+            <img id="game-logo" class="logo" src="game/logo"/>
+            <p id="timer-display">0:00</p>
 
-    <table id="teamsTable">
-        <tbody>
-        <tr>
-            <th scope="col" id="rankHeader">Rank</th>
-            <th scope="col">Team</th>
-            <th scope="col" id="finalScoreHeader">Final</th>
-        </tr>
-        </tbody>
-    </table>
-</div>
-<div id="sponsorsContainer">
-    <h1>Thank you to our sponsors!</h1>
-    <div id="sponsorList">
-        <!-- populated in javascript -->
+            <table id="scores-table">
+                <tbody>
+                <tr>
+                    <th scope="col" id="rank-header">Rank</th>
+                    <th scope="col">Team</th>
+                    <template id="score-header-template">
+                        <th scope="col" class="score-header">0</th>
+                    </template>
+                    <th scope="col" id="final-score-header">Final</th>
+                </tr>
+                <template id="score-table-row-template">
+                    <td><!--rank--></td>
+                    <td class="team-name-cell"><!--team--></td>
+                    <template id="score-table-score-cell-template">
+                        <td></td>
+                    </template>
+                    <td><!--final score--></td>
+                </template>
+                </tbody>
+            </table>
+        </div>
+        <div class="sponsors-container">
+            <h1>Thank you to our sponsors!</h1>
+            <div id="sponsor-list">
+                <template id="sponsor-image-template">
+                    <img class="sponsor-image"/>
+                </template>
+            </div>
+        </div>
+        <div class="blackout-container">
+            <!-- nothing here -->
+        </div>
+        <div class="fll-logo-container">
+            <img src="images/FIRSTLego_IconVert_RGB.png"/>
+        </div>
     </div>
-</div>
-<div id="blackout">
-    <!-- nothing here -->
-</div>
-<div id="fllLogoContainer">
-    <img src="images/FIRSTLego_IconVert_RGB.png"/>
 </div>
 </body>
 </html>

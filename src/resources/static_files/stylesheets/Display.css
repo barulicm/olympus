@@ -1,162 +1,191 @@
-:root {
-    --stud-size: calc(100vw / 32); /* background is 32 studs wide*/
-}
-
-.topBar {
-    display: flex;
-    margin-left: var(--stud-size);
-    margin-right: var(--stud-size);
-}
-
-.topImage {
-    margin: 0;
-    height: calc((2 * var(--stud-size)) - 20px);
-    padding: 6px;
-    border: 4px solid;
-    border-image: url(../images/white_tile_slice.png) 4 fill;
-    border-image-repeat: stretch;
-}
-
-#logosSpacer {
-    width: calc(7 * var(--stud-size));
-}
-
-#timerDisplay {
-    margin: 0;
-    margin-left: auto;
-    height: calc(( 2 * var(--stud-size) ) - 20px);
-    width: 280px;
-    font-size: calc(( 2 * var(--stud-size) ) - 20px);
-    padding: 6px 6px 6px 6px;
-    border: 4px solid;
-    border-image: url(../images/white_tile_slice.png) 4 fill;
-    border-image-repeat: stretch;
-    text-align: center;
-}
-
 html, body {
-    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     margin: 0;
-    background-image: url("../images/lego_plate_background.png");
-    background-repeat: repeat-y;
-    background-size: 100% auto;
+    padding: 0;
+    box-sizing: border-box;
+    height: 100vh;
+    overflow: hidden;
+    background-color: black;
     font-family: "Lucida Console", Courier, monospace;
 }
 
-table {
-    border: none;
-    table-layout: fixed;
-    width: calc(30 * var(--stud-size));
-    margin-left:auto;
-    margin-right:auto;
-    margin-top:0;
-    border-spacing: 0;
-    font-size: calc(var(--stud-size) - 10px);
-}
-
-th {
-    color: black;
-    border: 4px solid;
-    border-image: url(../images/red_tile_slice.png) 4 fill;
-    border-image-repeat: stretch;
-}
-
-th, td {
-    text-align: left;
-    overflow: hidden;
-    padding: 2px 1px 0 1px;
-}
-
-tr {
-    height: var(--stud-size);
-}
-
-td {
-    border: 4px solid;
-    border-image: url(../images/white_tile_slice.png) 4 fill;
-    border-image-repeat: stretch;
-}
-
-tr:nth-child(odd) > td{
-    border: 4px solid;
-    border-image: url(../images/grey_tile_slice.png) 4 fill;
-    border-image-repeat: stretch;
-}
-
-#rankHeader {
-    width: calc((3 * var(--stud-size)) - 10px);
-}
-
-#finalScoreHeader {
-    width: calc((3 * var(--stud-size)) - 10px);
-}
-
-.RoundHeader {
-    width: calc((2 * var(--stud-size)) - 10px);
-}
-
-#scoresTableContainer {
-    overflow: hidden;
-    /*resize: vertical;*/
-    height: 100%;
-}
-
-#blackout {
-    background-color: black;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    top: 100%;
-}
-
-#fllLogoContainer {
-    background-color: white;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
+.root-container {
+    /* Enforce aspect ratio fit */
+    width: 100vw;
+    height: 56.25vw;  /*16:9*/
+    max-height: 100vh;
+    max-width: 177.78vh;
+    margin: auto;
+    position: absolute;
     top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    /* Style content */
+    display: flex;
+    flex-direction: column;
+}
+
+.announcement-container {
+    background-color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 5.556%;
+}
+
+.content-container {
+    flex-grow: 1;
+    display: flex;
+}
+
+.blackout-container {
+    flex-grow: 1;
+    background-color: black;
+}
+
+.fll-logo-container {
+    flex-grow: 1;
+    background-color: white;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-#fllLogoContainer >img {
+.fll-logo-container >img {
     height: 80%;
 }
 
-#announcementContainer {
+.sponsors-container {
+    flex-grow: 1;
     background-color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: var(--stud-size)
-}
-
-#announcementHeader {
-    margin: 0;
-}
-
-#sponsorsContainer {
-    background-color: white;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    top: 0;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
 }
 
-#sponsorsList {
+#sponsor-list {
     display: flex;
     align-content: center;
     align-items: center;
+    padding: 0;
+    padding-left: 3%;
+    padding-right: 3%;
 }
 
-#sponsorList img {
-    margin: 10px;
+#sponsor-list img {
+    margin: 2%;
+    max-width: 100%;
+    height: auto;
+    min-width: 0;
+}
+
+.scores-table-container {
+    flex-grow: 1;
+    background-image: url("../images/lego_plate_background.png");
+    background-repeat: repeat-y;
+    background-size: 100% auto;
+    display: grid;
+    grid-template-columns: 3.125% auto 1fr auto 1fr 15.625% 3.125%;
+    grid-template-rows: 11.111% auto 1fr;
+    grid-template-areas:
+        ". lego-logo ..... game-logo ..... timer ."
+        ". table     table table     table table ."
+        ". ......... ..... ......... ..... ..... .";
+}
+
+.logo {
+    box-sizing: border-box;
+    margin: 0;
+    height: 11.111%;
+    padding: 6px;
+    border: 4px solid;
+    border-image: url(../images/white_tile_slice.png) 4 fill;
+    border-image-repeat: stretch;
+}
+
+#lego-logo {
+    grid-area: lego-logo;
+    height: 100%;
+    width: auto;
+    object-fit: contain;
+}
+
+#game-logo {
+    grid-area: game-logo;
+    height: 100%;
+    width: auto;
+    max-width: 25vw;
+    object-fit: contain;
+}
+
+#timer-display {
+    grid-area: timer;
+    box-sizing: border-box;
+    height: 100%;
+    width: 100%;
+    font-size: 100%;
+    margin: 0;
+    padding: 6px;
+    border: 4px solid;
+    border-image: url(../images/white_tile_slice.png) 4 fill;
+    border-image-repeat: stretch;
+    text-align: center;
+}
+
+#scores-table {
+    grid-area: table;
+    border: none;
+    table-layout: fixed;
+    width: 100%;
+    margin-left:auto;
+    margin-right:auto;
+    margin-top:0;
+    border-spacing: 0;
+    font-size: calc(3.125vw - 10px);
+}
+
+#scores-table th {
+    text-align: left;
+    overflow: hidden;
+    padding: 2px 1px 0 1px;
+    color: black;
+    border: 4px solid;
+    border-image: url(../images/red_tile_slice.png) 4 fill;
+    border-image-repeat: stretch;
+}
+
+#scores-table td {
+    text-align: left;
+    overflow: hidden;
+    padding: 2px 1px 0 1px;
+    border: 4px solid;
+    border-image: url(../images/white_tile_slice.png) 4 fill;
+    border-image-repeat: stretch;
+}
+
+#scores-table tr:nth-child(odd) > td {
+    border: 4px solid;
+    border-image: url(../images/grey_tile_slice.png) 4 fill;
+    border-image-repeat: stretch;
+}
+
+#rank-header {
+    width: calc((3 * var(--stud-size)) - 10px);
+}
+
+.score-header {
+    width: calc((2 * var(--stud-size)) - 10px);
+}
+
+#final-score-header {
+    width: calc((3 * var(--stud-size)) - 10px);
+}
+
+.hidden-container {
+    display: none;
 }
