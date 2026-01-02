@@ -6,7 +6,7 @@ const DisplayStates = {
 }
 
 let current_top_team = 0;
-let teams_per_page = 8;
+const teams_per_page = 14;
 let display_state = DisplayStates.ShowScores;
 let paging_interval = null;
 let seconds_per_page = 5;
@@ -28,75 +28,38 @@ function getInfo() {
                 return 0;
             });
 
-            let round_count = Math.max(...teamArr.map(team => team.scores.length))
+            let round_count = Math.max(...teamArr.map(team => team.scores.length));
+            let team_number_length = Math.max(...teamArr.map(team => team.number.length));
 
-            let tabBody = document.getElementsByTagName("tbody").item(0);
-            while (tabBody.firstChild) {
-                tabBody.removeChild(tabBody.lastChild);
-            }
+            let table_contents = document.querySelector("#table-contents-template").content.cloneNode(true);
 
-            let headerRow = document.createElement("tr");
-
-            let rankHeader = document.createElement("th");
-            rankHeader.innerText = "Rank";
-            rankHeader.attributes["scope"] = "col";
-            rankHeader.classList.add("threeStud");
-            rankHeader.id = "rankHeader";
-            headerRow.appendChild(rankHeader);
-
-            let teamNameHeader = document.createElement("th");
-            teamNameHeader.innerText = "Team";
-            teamNameHeader.attributes["scope"] = "col";
-            teamNameHeader.id = "teamNameHeader";
-            headerRow.appendChild(teamNameHeader);
-
+            let final_score_header = table_contents.querySelector("#final-score-header");
             for (let i = 0; i < round_count; i++) {
-                let roundHeader = document.createElement("th");
-                roundHeader.innerText = "R" + (i + 1);
-                roundHeader.attributes["scope"] = "col";
-                roundHeader.classList.add("RoundHeader");
-                headerRow.appendChild(roundHeader);
+                let round_header = table_contents.querySelector("#round-header-template").content.cloneNode(true);
+                round_header.querySelector("th").appendChild(document.createTextNode("R" + (i+1)));
+                table_contents.querySelector("#header-row").insertBefore(round_header, final_score_header);
             }
-
-            let finalScoreHeader = document.createElement("th");
-            finalScoreHeader.innerText = "Final";
-            finalScoreHeader.attributes["scope"] = "col";
-            finalScoreHeader.classList.add("threeStud");
-            finalScoreHeader.id = "finalScoreHeader";
-            headerRow.appendChild(finalScoreHeader);
-
-            tabBody.appendChild(headerRow);
 
             for (let i = current_top_team; i < Math.min(current_top_team + teams_per_page, teamArr.length); i++) {
-                // Populate Table Row
-                row = document.createElement("tr");
-
-                rankCell = document.createElement("td");
-                rankCell.appendChild(document.createTextNode(teamArr[i].rank));
-                row.appendChild(rankCell);
-
-                teamCell = document.createElement("td");
-                teamCell.style.whiteSpace = 'pre';
-                // teamCell.appendChild(document.createTextNode(teamArr[i].number.padStart(5, ' ') + "  " + teamArr[i].name.substr(0,10)));
-                teamCell.appendChild(document.createTextNode(teamArr[i].number.padStart(5, ' ') + "  " + teamArr[i].name));
-                row.appendChild(teamCell);
-
+                let team = teamArr[i];
+                let row = table_contents.querySelector("#score-table-row-template").content.cloneNode(true);
+                row.querySelector("#rank-cell").appendChild(document.createTextNode(team.rank));
+                row.querySelector("#team-name-cell").appendChild(document.createTextNode(team.number.padStart(team_number_length, ' ') + "  " + team.name));
+                let final_score_cell = row.querySelector("#final-score-cell");
+                final_score_cell.appendChild(document.createTextNode(team.displayScore));
                 for (let r = 0; r < round_count; r++) {
-                    roundCell = document.createElement("td");
-                    if (teamArr[i].scores.length > r) {
-                        roundCell.appendChild(document.createTextNode(teamArr[i].scores[r]));
+                    let round_cell = document.createElement("td");
+                    if (r < team.scores.length) {
+                        round_cell.appendChild(document.createTextNode(team.scores[r]));
                     } else {
-                        roundCell.appendChild(document.createTextNode(" "));
+                        round_cell.appendChild(document.createTextNode(" "));
                     }
-                    row.appendChild(roundCell);
+                    row.querySelector("tr").insertBefore(round_cell, final_score_cell);
                 }
-
-                scoreCell = document.createElement("td");
-                scoreCell.appendChild(document.createTextNode(teamArr[i].displayScore));
-                row.appendChild(scoreCell);
-
-                tabBody.appendChild(row);
+                table_contents.appendChild(row);
             }
+
+            document.querySelector("tbody").replaceChildren(table_contents);
 
             current_top_team += teams_per_page;
             if (current_top_team >= teamArr.length) {
@@ -193,25 +156,6 @@ function getShowTimer() {
     }
 }
 
-function getTeamsPerPage() {
-    let xhr = new XMLHttpRequest();
-    xhr.open('GET', 'config', true);
-    xhr.setRequestHeader('name', 'rows_on_display');
-    xhr.send();
-    xhr.onreadystatechange = () => {
-        if (xhr.readyState === 4) {
-            if (xhr.status === 200) {
-                teams_per_page = parseInt(xhr.responseText);
-                if (document.querySelector(".announcement-container").style.display === "flex") {
-                    teams_per_page -= 1;
-                }
-            } else {
-                console.error('Could not get rows config: ' + xhr.responseText);
-            }
-        }
-    }
-}
-
 function getSecondsPerPage() {
     let xhr = new XMLHttpRequest();
     xhr.open('GET', 'config', true);
@@ -236,7 +180,6 @@ function getSecondsPerPage() {
 function updateDisplayConfig() {
     getDisplayState();
     getShowTimer();
-    getTeamsPerPage();
     getSecondsPerPage();
 }
 
@@ -288,7 +231,27 @@ function updateSponsors() {
     }
 }
 
+function scaleTimerText() {
+    
+    let timerDisplay = document.querySelector("#timer-display");
+    const computedStyle = window.getComputedStyle(timerDisplay);
+    const padding = parseFloat(computedStyle.paddingTop) + parseFloat(computedStyle.paddingBottom);
+    const fontSize = timerDisplay.clientHeight - padding;
+    timerDisplay.style.fontSize = fontSize + "px";
+}
+
+function scaleScoresTableText() {
+
+}
+
+function onResize(event) {
+    scaleTimerText();
+    scaleScoresTableText();
+}
+
 function onLoad() {
+    onResize();
+    addEventListener('resize', onResize);
     updateDisplayConfig();
     setInterval(updateDisplayConfig, 1000);
     getInfo();

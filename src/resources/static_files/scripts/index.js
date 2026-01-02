@@ -30,23 +30,6 @@ function getShowTimer() {
     }
 }
 
-function getRowsPerDisplay() {
-    let xhr = new XMLHttpRequest();
-    xhr.open('GET', 'config', true);
-    xhr.setRequestHeader('name', 'rows_on_display');
-    xhr.send();
-
-    xhr.onreadystatechange = () => {
-        if (xhr.readyState === 4) {
-            if (xhr.status === 200) {
-                document.getElementById('rowsPerDisplay').value = parseInt(xhr.responseText);
-            } else {
-                alert('Request failed: ' + xhr.responseText);
-            }
-        }
-    }
-}
-
 function getDisplaySecondsPerPage() {
     let xhr = new XMLHttpRequest();
     xhr.open('GET', 'config', true);
@@ -216,7 +199,6 @@ function onLoad() {
     checkForNewRelease();
     queryHasTeams();
     getShowTimer();
-    getRowsPerDisplay();
     getDisplaySecondsPerPage();
     getDisplayState();
     getGames();
@@ -400,21 +382,6 @@ function setShowTimer() {
         if (xhr.readyState === 4 && xhr.status !== 200) {
             alert('Request failed: ' + xhr.responseText);
             document.getElementById('showTimerCheckbox').checked = !document.getElementById('showTimerCheckbox').checked;
-        }
-    }
-}
-
-function setRowsPerDisplay() {
-    let value = document.getElementById('rowsPerDisplay').value;
-    let xhr = new XMLHttpRequest();
-    xhr.open('PUT', 'config', true);
-    xhr.setRequestHeader('name', 'rows_on_display');
-    xhr.setRequestHeader('value', value);
-    xhr.send();
-
-    xhr.onreadystatechange = () => {
-        if (xhr.readyState === 4 && xhr.status !== 200) {
-            alert('Request failed: ' + xhr.responseText);
         }
     }
 }

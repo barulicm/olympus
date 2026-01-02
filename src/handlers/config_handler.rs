@@ -38,7 +38,6 @@ impl ConfigHandler {
         let value = match name {
             "competition_name" => Some(config.competition_name.clone()),
             "show_timer" => Some(config.show_timer.to_string()),
-            "rows_on_display" => Some(config.rows_on_display.to_string()),
             "display_seconds_per_page" => Some(config.display_seconds_per_page.to_string()),
             "display_state" => Some(config.display_state.to_string()),
             _ => None,
@@ -83,12 +82,6 @@ impl ConfigHandler {
                 config.show_timer = value
                     .parse::<bool>()
                     .map_err(|_| (StatusCode::BAD_REQUEST, "Could not parse bool from value"))?;
-                Ok(())
-            }
-            "rows_on_display" => {
-                config.rows_on_display = value
-                    .parse::<usize>()
-                    .map_err(|_| (StatusCode::BAD_REQUEST, "Could not parse usize from value"))?;
                 Ok(())
             }
             "display_seconds_per_page" => {
@@ -141,7 +134,6 @@ mod tests {
         let config = &mut app_state.lock().unwrap().config;
         config.competition_name = String::from("Test Competition");
         config.show_timer = true;
-        config.rows_on_display = 5;
         config.display_seconds_per_page = 10;
         config.display_state = DisplayState::ShowScores;
     }
@@ -253,19 +245,6 @@ mod tests {
         let app = ConfigHandler::register_routes().with_state(app_state.clone());
         set_config_oneshot(app, "show_timer", HeaderValue::from_str("true").unwrap()).await;
         assert!(app_state.lock().unwrap().config.show_timer);
-    }
-
-    #[tokio::test]
-    async fn set_rows_on_display() {
-        let app_state = create_new_shared_state();
-        let app = ConfigHandler::register_routes().with_state(app_state.clone());
-        set_config_oneshot(
-            app,
-            "rows_on_display",
-            HeaderValue::from_str("100").unwrap(),
-        )
-        .await;
-        assert_eq!(app_state.lock().unwrap().config.rows_on_display, 100);
     }
 
     #[tokio::test]

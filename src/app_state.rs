@@ -35,7 +35,6 @@ impl AppState {
 pub struct Config {
     pub show_timer: bool,
     pub competition_name: String,
-    pub rows_on_display: usize,
     pub display_state: DisplayState,
     pub display_seconds_per_page: u64,
 }
@@ -45,7 +44,6 @@ impl Default for Config {
         Config {
             show_timer: false,
             competition_name: "FLL Competition".to_string(),
-            rows_on_display: 14,
             display_state: DisplayState::ShowScores,
             display_seconds_per_page: 5,
         }

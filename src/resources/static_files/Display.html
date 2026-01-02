@@ -20,24 +20,28 @@
             <img id="game-logo" class="logo" src="game/logo"/>
             <p id="timer-display">0:00</p>
 
-            <table id="scores-table">
-                <tbody>
-                <tr>
+            <template id="table-contents-template">
+                <tr id="header-row">
                     <th scope="col" id="rank-header">Rank</th>
                     <th scope="col">Team</th>
-                    <template id="score-header-template">
-                        <th scope="col" class="score-header">0</th>
+                    <template id="round-header-template">
+                        <th scope="col" class="round-header"></th>
                     </template>
                     <th scope="col" id="final-score-header">Final</th>
                 </tr>
                 <template id="score-table-row-template">
-                    <td><!--rank--></td>
-                    <td class="team-name-cell"><!--team--></td>
-                    <template id="score-table-score-cell-template">
-                        <td></td>
-                    </template>
-                    <td><!--final score--></td>
+                    <tr>
+                        <td id="rank-cell"></td>
+                        <td id="team-name-cell" class="team-name-cell" style="white-space: pre;"></td>
+                        <!-- round cells -->
+                        <td id="final-score-cell"></td>
+                    </tr>
                 </template>
+            </template>
+
+            <table id="scores-table">
+                <tbody>
+                    <!--populated with template above-->
                 </tbody>
             </table>
         </div>
