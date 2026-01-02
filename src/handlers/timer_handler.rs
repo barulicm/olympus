@@ -133,15 +133,8 @@ impl TimerHandler {
     }
 
     fn send_timer_state(&mut self) {
-        let mut closed_channel_indices = vec![];
-        for (i, sender) in self.senders.iter().enumerate() {
-            if sender.send(self.timer_state.clone()).is_err() {
-                closed_channel_indices.push(i);
-            }
-        }
-        for i in closed_channel_indices {
-            self.senders.remove(i);
-        }
+        self.senders
+            .retain(|sender| sender.send(self.timer_state.clone()).is_ok());
     }
 
     fn start_timer(&mut self) {
