@@ -45,7 +45,7 @@ impl Default for Config {
             show_timer: false,
             competition_name: "FLL Competition".to_string(),
             display_state: DisplayState::ShowScores,
-            display_seconds_per_page: 5,
+            display_seconds_per_page: 10,
         }
     }
 }
