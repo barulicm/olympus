@@ -10,7 +10,7 @@ function onLoad() {
             let tab_body = document.getElementsByTagName("tbody").item(0);
             for(let i = 0; i < teamArr.length; i++) {
                 let team = teamArr[i];
-                let teamDetailsUrl = 'TeamDetails.html?team=' + team.number;
+                let teamDetailsUrl = 'team_details.html?team=' + team.number;
                 let row = document.importNode(row_template.content, true);
                 row.querySelector("#rank").appendChild(document.createTextNode(team.rank));
                 row.querySelector("#number").appendChild(document.createTextNode(team.number));

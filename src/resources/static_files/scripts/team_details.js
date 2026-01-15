@@ -92,7 +92,7 @@ function submitEdits() {
         if(xhr.readyState === 4) {
             if(xhr.status === 200) {
                 alert("Edits Saved");
-                location.replace('TeamDetails.html?team=' + newTeamNumber);
+                location.replace('team_details.html?team=' + newTeamNumber);
             } else {
                 alert("Submitting team edits failed.\nStatus: " + xhr.status + "\nMessage: " + xhr.responseText);
             }

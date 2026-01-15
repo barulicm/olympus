@@ -15,8 +15,8 @@ pub struct GeneratedFilesHandler;
 impl Handler for GeneratedFilesHandler {
     fn register_routes() -> Router<SharedAppState> {
         Router::new()
-            .route("/Scorecard.html", get(Self::get_scorecard_html))
-            .route("/ScoreCalculator.js", get(Self::get_score_calculator_js))
+            .route("/scorecard.html", get(Self::get_scorecard_html))
+            .route("/score_calculator.js", get(Self::get_score_calculator_js))
     }
 }
 
@@ -41,7 +41,7 @@ impl GeneratedFilesHandler {
                 my_app_state
                     .resources_path
                     .join("static_files")
-                    .join("Scorecard.html"),
+                    .join("scorecard.html"),
             ) {
                 Ok(html) => Ok((StatusCode::OK, [(header::CONTENT_TYPE, "text/html")], html)),
                 Err(_) => Err((
@@ -100,7 +100,7 @@ mod tests {
 
         let req = Request::builder()
             .method("GET")
-            .uri("/Scorecard.html")
+            .uri("/scorecard.html")
             .body(Body::empty())
             .unwrap();
         let response = app.oneshot(req).await.unwrap();
@@ -126,7 +126,7 @@ mod tests {
 
         let req = Request::builder()
             .method("GET")
-            .uri("/ScoreCalculator.js")
+            .uri("/score_calculator.js")
             .body(Body::empty())
             .unwrap();
         let response = app.oneshot(req).await.unwrap();

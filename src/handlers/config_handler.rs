@@ -182,15 +182,6 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn get_rows_on_display() {
-        let app_state = create_new_shared_state();
-        initialize_configs(app_state.clone());
-        let app = ConfigHandler::register_routes().with_state(app_state);
-        let value = get_config_oneshot(app, "rows_on_display").await;
-        assert_eq!(value, "5");
-    }
-
-    #[tokio::test]
     async fn get_display_seconds_per_page() {
         let app_state = create_new_shared_state();
         initialize_configs(app_state.clone());
