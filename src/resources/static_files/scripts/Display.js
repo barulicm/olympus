@@ -6,7 +6,7 @@ const DisplayStates = {
 }
 
 let current_top_team = 0;
-const teams_per_page = 14;
+const teams_per_page = 15;
 let display_state = DisplayStates.ShowScores;
 let paging_interval = null;
 let seconds_per_page = 5;

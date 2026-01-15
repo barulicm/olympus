@@ -86,9 +86,10 @@ html, body {
 
 .scores-table-container {
     flex-grow: 1;
-    background-image: url("../images/lego_plate_background.png");
+    background-image: url("../images/olympus_unearthed_theme_background.png");
     background-repeat: repeat-y;
     background-size: 100% auto;
+    /* background-color: #e5ae32; */
     display: grid;
     grid-template-columns: 3.125% auto 1fr auto 1fr 15.625% 3.125%;
     grid-template-rows: 11.111% auto 1fr;
@@ -109,6 +110,7 @@ html, body {
 }
 
 #lego-logo {
+    display: none;
     grid-area: lego-logo;
     height: 100%;
     width: auto;
@@ -116,6 +118,7 @@ html, body {
 }
 
 #game-logo {
+    display: none;
     grid-area: game-logo;
     height: 100%;
     width: auto;
@@ -126,13 +129,12 @@ html, body {
 #timer-display {
     grid-area: timer;
     box-sizing: border-box;
-    height: 100%;
+    height: 8vh;
     width: 100%;
     margin: 0;
+    margin-top: 3vh;
     padding: min(1%, 6px);
-    border: 4px solid;
-    border-image: url(../images/white_tile_slice.png) 4 fill;
-    border-image-repeat: stretch;
+    padding-right: 10vw;
     text-align: center;
 }
 
@@ -145,32 +147,34 @@ html, body {
     margin-right:auto;
     margin-top:0;
     border-spacing: 0;
-    font-size: calc(3.125vw - 10px);
+    font-size: calc(3.125vw - 14px);
 }
 
 #scores-table th {
     text-align: left;
     overflow: hidden;
-    padding: 2px 1px 0 1px;
+    padding: 2px;
     color: black;
-    border: 4px solid;
-    border-image: url(../images/red_tile_slice.png) 4 fill;
-    border-image-repeat: stretch;
+    border: 1px solid;
+    border-color: #b74525;
+    background-color: #ea572e;
+    /* border-image: url(../images/red_tile_slice.png) 4 fill;
+    border-image-repeat: stretch; */
 }
 
 #scores-table td {
     text-align: left;
     overflow: hidden;
-    padding: 2px 1px 0 1px;
-    border: 4px solid;
-    border-image: url(../images/white_tile_slice.png) 4 fill;
-    border-image-repeat: stretch;
+    padding: 2px;
+    background-color: #dbdbdb;
+    border: 1px solid;
+    border-color: #a8a8a8;
 }
 
 #scores-table tr:nth-child(odd) > td {
-    border: 4px solid;
-    border-image: url(../images/grey_tile_slice.png) 4 fill;
-    border-image-repeat: stretch;
+    background-color: #ffffff;
+    border: 1px solid;
+    border-color: #a8a8a8;
 }
 
 #rank-header {
