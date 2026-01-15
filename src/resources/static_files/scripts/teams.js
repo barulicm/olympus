@@ -14,6 +14,7 @@ function onLoad() {
                 let row = document.importNode(row_template.content, true);
                 row.querySelector("#rank").appendChild(document.createTextNode(team.rank));
                 row.querySelector("#number").appendChild(document.createTextNode(team.number));
+                row.querySelector("#deleteButton").onclick = () => { removeTeam(team.number); };
                 let team_name_link = row.querySelector("#nameLink");
                 team_name_link.href = teamDetailsUrl;
                 team_name_link.appendChild(document.createTextNode(team.name));
@@ -24,8 +25,7 @@ function onLoad() {
     }
 }
 
-function removeTeam(evt) {
-    let teamNumber = evt.target.id;
+function removeTeam(teamNumber) {
     let jsonData = {};
     jsonData.number = teamNumber;
     let jsonString = JSON.stringify(jsonData);
