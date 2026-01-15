@@ -231,7 +231,7 @@ function onTeamsFileSelected(e) {
                     foundEmptyNumber = true;
                     continue;
                 }
-                var team_name = tokens[1].replace(/[^a-z0-9 -]/gi, '');
+                var team_name = tokens[1];
                 sendAddTeam(team_name, team_number, false, false);
             }
             location.reload();
