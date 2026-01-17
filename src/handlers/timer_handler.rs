@@ -59,11 +59,7 @@ impl Handler for TimerHandler {
 fn get_seconds_remaining(timer_state: &TimerState) -> u64 {
     if timer_state.timer_running {
         let seconds_elapsed = timer_state.timer_start_time.elapsed().as_secs();
-        if seconds_elapsed < timer_state.match_length {
-            timer_state.match_length - seconds_elapsed
-        } else {
-            0
-        }
+        timer_state.match_length.saturating_sub(seconds_elapsed)
     } else {
         timer_state.match_length
     }

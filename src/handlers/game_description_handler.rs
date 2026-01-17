@@ -112,11 +112,9 @@ impl GameDescriptionHandler {
                 continue;
             }
             let game_description = GameDescription::from_path(&path);
-            if let Ok(game_description) = game_description {
-                if game_description.name == body {
-                    app_state.game_description = Some(game_description);
-                    return Ok((StatusCode::OK, ""));
-                }
+            if let Ok(game_description) = game_description && game_description.name == body {
+                app_state.game_description = Some(game_description);
+                return Ok((StatusCode::OK, ""));
             }
         }
         Ok((StatusCode::BAD_REQUEST, "No game with requested name."))
