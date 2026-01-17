@@ -83,7 +83,15 @@ impl TeamHandler {
                 String::from("Missing or invalid team number."),
             ))?
             .to_string();
-        let new_team = Team::new(team_number, team_name);
+        let tournament_name = body
+            .get("tournament")
+            .and_then(|v| v.as_str())
+            .ok_or(AppError::new(
+                StatusCode::BAD_REQUEST,
+                String::from("Missing or invalid tournament name"),
+            ))?
+            .to_string();
+        let new_team = Team::new(team_number, team_name, tournament_name);
         if new_team.number.is_empty() {
             return Err((
                 StatusCode::BAD_REQUEST,
@@ -175,6 +183,14 @@ impl TeamHandler {
                 String::from("Missing or invalid team name."),
             ))?
             .to_string();
+        let new_tournament = body
+            .get("newTournament")
+            .and_then(|v| v.as_str())
+            .ok_or(AppError::new(
+                StatusCode::BAD_REQUEST,
+                String::from("Missing or invalid tournament"),
+            ))?
+            .to_string();
         let new_scores = body.get("newScores").ok_or(AppError::new(
             StatusCode::BAD_REQUEST,
             String::from("Missing new scores."),
@@ -188,6 +204,7 @@ impl TeamHandler {
 
         team.number = new_team_number.to_string();
         team.name = new_team_name;
+        team.tournament = new_tournament;
         team.scores = new_scores;
         team.gp_scores = new_gp_scores;
         Ok((StatusCode::OK, "Team edits saved."))
@@ -225,8 +242,16 @@ mod tests {
     async fn get_teams() {
         let app_state = create_new_shared_state();
         app_state.lock().unwrap().teams = vec![
-            Team::new(String::from("1234"), String::from("Test Team 1")),
-            Team::new(String::from("5678"), String::from("Test Team 2")),
+            Team::new(
+                String::from("1234"),
+                String::from("Test Team 1"),
+                String::from("A"),
+            ),
+            Team::new(
+                String::from("5678"),
+                String::from("Test Team 2"),
+                String::from("B"),
+            ),
         ];
         let app = TeamHandler::register_routes().with_state(app_state);
 
@@ -247,14 +272,16 @@ mod tests {
                 "scores": [],
                 "gpScores": [],
                 "displayScore": 0,
-                "rank": 0
+                "rank": 0,
+                "tournament": "A"
             }, {
                 "number": "5678",
                 "name": "Test Team 2",
                 "scores": [],
                 "gpScores": [],
                 "displayScore": 0,
-                "rank": 0
+                "rank": 0,
+                "tournament": "B"
             }])
         );
     }
@@ -263,8 +290,16 @@ mod tests {
     async fn get_specific_team() {
         let app_state = create_new_shared_state();
         app_state.lock().unwrap().teams = vec![
-            Team::new(String::from("1234"), String::from("Test Team 1")),
-            Team::new(String::from("5678"), String::from("Test Team 2")),
+            Team::new(
+                String::from("1234"),
+                String::from("Test Team 1"),
+                String::from("A"),
+            ),
+            Team::new(
+                String::from("5678"),
+                String::from("Test Team 2"),
+                String::from("B"),
+            ),
         ];
         let app = TeamHandler::register_routes().with_state(app_state);
 
@@ -285,7 +320,8 @@ mod tests {
                 "scores": [],
                 "gpScores": [],
                 "displayScore": 0,
-                "rank": 0
+                "rank": 0,
+                "tournament": "B"
             })
         );
     }
@@ -301,7 +337,7 @@ mod tests {
             .method("PUT")
             .uri("/team/add")
             .header(header::CONTENT_TYPE, "application/json")
-            .body(Body::from(r#"{"number": "1234", "name": "Test Team"}"#))
+            .body(Body::from(r#"{"number": "1234", "name": "Test Team", "tournament": "A"}"#))
             .unwrap();
         let response = ServiceExt::<Request<Body>>::ready(&mut app)
             .await
@@ -313,6 +349,7 @@ mod tests {
         let team = app_state.lock().unwrap().teams.first().unwrap().clone();
         assert_eq!(team.number, "1234");
         assert_eq!(team.name, "Test Team");
+        assert_eq!(team.tournament, "A");
 
         let req = Request::builder()
             .method("PUT")
@@ -349,8 +386,16 @@ mod tests {
     async fn edit_team() {
         let app_state = create_new_shared_state();
         app_state.lock().unwrap().teams = vec![
-            Team::new(String::from("1234"), String::from("Test Team 1")),
-            Team::new(String::from("5678"), String::from("Test Team 2")),
+            Team::new(
+                String::from("1234"),
+                String::from("Test Team 1"),
+                String::from("A"),
+            ),
+            Team::new(
+                String::from("5678"),
+                String::from("Test Team 2"),
+                String::from("B"),
+            ),
         ];
         let mut app = TeamHandler::register_routes()
             .with_state(app_state.clone())
@@ -360,7 +405,7 @@ mod tests {
             .method("PUT")
             .uri("/team/edit")
             .header(header::CONTENT_TYPE, "application/json")
-            .body(Body::from(r#"{"oldTeamNumber": "1234", "newTeamNumber": "1234", "newTeamName": "Test Team", "newScores": [], "newGPScores": []}"#))
+            .body(Body::from(r#"{"oldTeamNumber": "1234", "newTeamNumber": "1234", "newTeamName": "Test Team", "newScores": [], "newGPScores": [], "newTournament": ""}"#))
             .unwrap();
         let response = ServiceExt::<Request<Body>>::ready(&mut app)
             .await
@@ -374,7 +419,7 @@ mod tests {
             .method("PUT")
             .uri("/team/edit")
             .header(header::CONTENT_TYPE, "application/json")
-            .body(Body::from(r#"{"oldTeamNumber": "1234", "newTeamNumber": "", "newTeamName": "Test Team", "newScores": [], "newGPScores": []}"#))
+            .body(Body::from(r#"{"oldTeamNumber": "1234", "newTeamNumber": "", "newTeamName": "Test Team", "newScores": [], "newGPScores": [], "newTournament": ""}"#))
             .unwrap();
         let response = ServiceExt::<Request<Body>>::ready(&mut app)
             .await
@@ -388,7 +433,7 @@ mod tests {
             .method("PUT")
             .uri("/team/edit")
             .header(header::CONTENT_TYPE, "application/json")
-            .body(Body::from(r#"{"oldTeamNumber": "1234", "newTeamNumber": "5678", "newTeamName": "Test Team", "newScores": [], "newGPScores": []}"#))
+            .body(Body::from(r#"{"oldTeamNumber": "1234", "newTeamNumber": "5678", "newTeamName": "Test Team", "newScores": [], "newGPScores": [], "newTournament": ""}"#))
             .unwrap();
         let response = ServiceExt::<Request<Body>>::ready(&mut app)
             .await
@@ -402,8 +447,11 @@ mod tests {
     #[tokio::test]
     async fn remove_team() {
         let app_state = create_new_shared_state();
-        app_state.lock().unwrap().teams =
-            vec![Team::new(String::from("1234"), String::from("Test Team"))];
+        app_state.lock().unwrap().teams = vec![Team::new(
+            String::from("1234"),
+            String::from("Test Team"),
+            String::from(""),
+        )];
         let mut app = TeamHandler::register_routes()
             .with_state(app_state.clone())
             .into_service();
@@ -423,8 +471,11 @@ mod tests {
         assert_eq!(response.status(), StatusCode::OK);
         assert!(app_state.lock().unwrap().teams.is_empty());
 
-        app_state.lock().unwrap().teams =
-            vec![Team::new(String::from("1234"), String::from("Test Team"))];
+        app_state.lock().unwrap().teams = vec![Team::new(
+            String::from("1234"),
+            String::from("Test Team"),
+            String::from(""),
+        )];
 
         let req = Request::builder()
             .method("PUT")

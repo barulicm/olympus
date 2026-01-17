@@ -68,10 +68,11 @@ pub struct Team {
     #[serde(rename = "displayScore")]
     pub display_score: i64,
     pub rank: i64,
+    pub tournament: String,
 }
 
 impl Team {
-    pub fn new(number: String, name: String) -> Self {
+    pub fn new(number: String, name: String, tournament: String) -> Self {
         Self {
             number,
             name,
@@ -79,6 +80,7 @@ impl Team {
             gp_scores: vec![],
             display_score: 0,
             rank: 0,
+            tournament,
         }
     }
 }

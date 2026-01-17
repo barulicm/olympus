@@ -14,6 +14,7 @@ function onLoad() {
                 let row = document.importNode(row_template.content, true);
                 row.querySelector("#rank").appendChild(document.createTextNode(team.rank));
                 row.querySelector("#number").appendChild(document.createTextNode(team.number));
+                row.querySelector("#tournament").appendChild(document.createTextNode(team.tournament));
                 row.querySelector("#deleteButton").onclick = () => { removeTeam(team.number); };
                 let team_name_link = row.querySelector("#nameLink");
                 team_name_link.href = teamDetailsUrl;
@@ -46,13 +47,14 @@ function removeTeam(teamNumber) {
 }
 
 function addTeam() {
-    sendAddTeam(document.getElementsByName("newTeamName")[0].value,document.getElementsByName("newTeamNumber")[0].value, true, true);
+    sendAddTeam(document.getElementsByName("newTeamName")[0].value, document.getElementsByName("newTeamNumber")[0].value, document.getElementsByName("newTeamTournament")[0].value, true, true);
 }
 
-function sendAddTeam(teamName, teamNumber, reload, async) {
+function sendAddTeam(teamName, teamNumber, tournament, reload, async) {
     let jsonTeam = {};
     jsonTeam.name = teamName;
     jsonTeam.number = teamNumber;
+    jsonTeam.tournament = tournament
     let jsonString = JSON.stringify(jsonTeam);
 
     let xhr = new XMLHttpRequest();

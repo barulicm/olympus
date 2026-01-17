@@ -234,6 +234,7 @@ mod tests {
             gp_scores: vec![2, 3, 4],
             display_score: 25,
             rank: 1,
+            tournament: "".to_string(),
         };
         app_state.lock().unwrap().teams.push(team);
         let app = ScoresHandler::register_routes().with_state(app_state);
@@ -260,6 +261,7 @@ mod tests {
             gp_scores: vec![2, 3, 4],
             display_score: 25,
             rank: 1,
+            tournament: "".to_string(),
         };
         app_state.lock().unwrap().teams.push(team);
         let app = ScoresHandler::register_routes().with_state(app_state);
@@ -280,7 +282,7 @@ mod tests {
     #[tokio::test]
     async fn submit_score() {
         let app_state = create_new_shared_state();
-        let team = Team::new(String::from("1234"), String::from("Test Team"));
+        let team = Team::new(String::from("1234"), String::from("Test Team"), "".to_string());
         app_state.lock().unwrap().teams.push(team);
         let app = ScoresHandler::register_routes().with_state(app_state.clone());
 
@@ -311,6 +313,7 @@ mod tests {
                 gp_scores: vec![2, 2],
                 display_score: 0,
                 rank: 0,
+                tournament: "".to_string(),
             },
             Team {
                 number: String::from("5678"),
@@ -319,6 +322,7 @@ mod tests {
                 gp_scores: vec![2, 2],
                 display_score: 0,
                 rank: 0,
+                tournament: "".to_string(),
             },
             Team {
                 number: String::from("9012"),
@@ -327,6 +331,7 @@ mod tests {
                 gp_scores: vec![2, 2],
                 display_score: 0,
                 rank: 0,
+                tournament: "".to_string(),
             },
         ];
         let app = ScoresHandler::register_routes().with_state(app_state.clone());

@@ -100,7 +100,7 @@ mod tests {
             .lock()
             .unwrap()
             .teams
-            .push(Team::new(String::from("1234"), String::from("Test Team")));
+            .push(Team::new(String::from("1234"), String::from("Test Team"), "".to_string()));
 
         let value = get_control_query(&mut app, "hasTeams").await;
         assert_eq!(

@@ -23,6 +23,7 @@
         <th scope="col" onclick="sortTable(0)">Rank</th>
         <th scope="col" onclick="sortTable(1)">Number</th>
         <th scope="col" onclick="sortTable(2)">Name</th>
+        <th scope="col" onclick="sortTable(3)">Tournament</th>
         <th scope="col"></th>
     </tr>
     <template id="rowTemplate">
@@ -30,6 +31,7 @@
             <td id="rank"></td>
             <td id="number"></td>
             <td><a id="nameLink"></a></td>
+            <td id="tournament"></td>
             <td id="delete">
                 <button class="deleteButton" id="deleteButton"></button>
                 <button class="editButton"></button>
@@ -40,6 +42,7 @@
         <td></td>
         <td> <input type="text" name="newTeamNumber" title="Number" value="Number"> </td>
         <td> <input type="text" name="newTeamName" title="Name" value="Name"> </td>
+        <td> <input type="text" name="newTeamTournament" title="Tournament" value="Tournament"></td>
         <td> <button class="addButton" onclick="addTeam()"></button> </td>
     </tr>
 </tbody>
