@@ -37,6 +37,7 @@ pub struct Config {
     pub competition_name: String,
     pub display_state: DisplayState,
     pub display_seconds_per_page: u64,
+    pub display_split_by_tournament: bool,
 }
 
 impl Default for Config {
@@ -46,6 +47,7 @@ impl Default for Config {
             competition_name: "FLL Competition".to_string(),
             display_state: DisplayState::ShowScores,
             display_seconds_per_page: 10,
+            display_split_by_tournament: false,
         }
     }
 }
