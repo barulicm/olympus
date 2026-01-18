@@ -4,7 +4,7 @@ use crate::app_state::{DisplayState, SharedAppState};
 use axum::{
     Router,
     extract::State,
-    http::{StatusCode, header::HeaderMap},
+    http::{StatusCode, header, header::HeaderMap},
     response::IntoResponse,
     routing::{get, put},
 };
@@ -15,6 +15,7 @@ impl Handler for ConfigHandler {
     fn register_routes() -> Router<SharedAppState> {
         Router::new()
             .route("/config", get(Self::handle_get))
+            .route("/config/all", get(Self::handle_get_all))
             .route("/config", put(Self::handle_put))
     }
 }
@@ -47,6 +48,23 @@ impl ConfigHandler {
             Some(value) => Ok((StatusCode::OK, value)),
             None => Err((StatusCode::BAD_REQUEST, "Config not found").into()),
         }
+    }
+
+    async fn handle_get_all(
+        State(app_state): State<SharedAppState>,
+    ) -> Result<impl IntoResponse, AppError> {
+        let config = &app_state.lock()?.config;
+        let response_body = serde_json::to_string(&config).map_err(|e| {
+            AppError::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                format!("Failed to serialize teams: {}", e),
+            )
+        });
+        Ok((
+            StatusCode::OK,
+            [(header::CONTENT_TYPE, "application/json")],
+            response_body,
+        ))
     }
 
     async fn handle_put(
@@ -136,6 +154,7 @@ mod tests {
     use axum::http::{HeaderValue, Request, StatusCode};
     use http_body_util::BodyExt;
     use tower::ServiceExt;
+    use serde_json::{Value, json};
 
     fn initialize_configs(app_state: SharedAppState) {
         let config = &mut app_state.lock().unwrap().config;
@@ -214,6 +233,32 @@ mod tests {
         let app = ConfigHandler::register_routes().with_state(app_state);
         let value = get_config_oneshot(app, "display_split_by_tournament").await;
         assert_eq!(value, "true");
+    }
+
+    #[tokio::test]
+    async fn get_all() {
+        let app_state = create_new_shared_state();
+        initialize_configs(app_state.clone());
+        let app = ConfigHandler::register_routes().with_state(app_state);
+        let req = Request::builder()
+            .method("GET")
+            .uri("/config/all")
+            .body(Body::empty())
+            .unwrap();
+        let response = app.oneshot(req).await.unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+        let body = response.into_body().collect().await.unwrap().to_bytes();
+        let body: Value = serde_json::from_slice(&body).unwrap();
+        assert_eq!(
+            body,
+            json!({
+                "competition_name": "Test Competition",
+                "display_seconds_per_page": 15,
+                "display_split_by_tournament": true,
+                "display_state": "ShowScores",
+                "show_timer": true
+            })
+        );
     }
 
     #[tokio::test]
