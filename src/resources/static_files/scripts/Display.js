@@ -10,7 +10,6 @@ let config = {
     competition_name: '',
     display_state: DisplayStates.FllLogo,
     display_seconds_per_page: 10,
-    display_split_by_tournament: false,
 };
 
 let display_state = DisplayStates.ShowScores;
@@ -41,15 +40,18 @@ function updateTablePages() {
 
             round_count = Math.max(...teams.map(t => t.scores.length));
 
+            const tournaments = new Set(teams.map(t => t.tournament));
+            const multi_tournament = tournaments.size > 1;
+
             const header_row_height = parseFloat(window.getComputedStyle(document.querySelector('#scores-table th')).height);
             const table_max_height = parseFloat(window.getComputedStyle(document.querySelector('#scores-table')).maxHeight);
-            const header_row_count = config.display_split_by_tournament ? 2 : 1;
+            const header_row_count = multi_tournament ? 2 : 1;
             const page_size = Math.floor(table_max_height / header_row_height) - header_row_count;
         
             table_pages.length = 0;    
             table_page_index = 0;
 
-            let split_function = config.display_split_by_tournament ? t => t.tournament : t => null;
+            let split_function = multi_tournament ? t => t.tournament : t => null;
 
             const teams_grouped = Object.groupBy(teams, split_function);
 
@@ -103,7 +105,7 @@ function renderTablePage() {
         tournament_header.classList.add('tournament-header');
         tournament_header_row.appendChild(tournament_header);
         let header_row = table_contents.querySelector('#header-row');
-        table_contents.insertBefore(tournament_header_row, header_row);
+        table_contents.querySelector('tbody').insertBefore(tournament_header_row, header_row);
     }
 
     let final_score_header = table_contents.querySelector("#final-score-header");
@@ -111,6 +113,13 @@ function renderTablePage() {
         let round_header = table_contents.querySelector("#round-header-template").content.cloneNode(true);
         round_header.querySelector("th").appendChild(document.createTextNode("R" + (i+1)));
         table_contents.querySelector("#header-row").insertBefore(round_header, final_score_header);
+    }
+
+    let final_score_col = table_contents.querySelector(".final-score-col");
+    for (let i = 0; i < round_count; i++) {
+        let round_col = document.createElement("col");
+        round_col.classList.add("round-col");
+        table_contents.querySelector("colgroup").insertBefore(round_col, final_score_col);
     }
 
     for (const team of teams) {
@@ -128,10 +137,10 @@ function renderTablePage() {
             }
             row.querySelector("tr").insertBefore(round_cell, final_score_cell);
         }
-        table_contents.appendChild(row);
+        table_contents.querySelector('tbody').appendChild(row);
     }
 
-    document.querySelector("tbody").replaceChildren(table_contents);
+    document.querySelector("#scores-table").replaceChildren(table_contents);
 }
 
 function setContainerVisibility(id, visible) {

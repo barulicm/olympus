@@ -47,23 +47,6 @@ function getDisplaySecondsPerPage() {
     }
 }
 
-function getSplitByTournament() {
-    let xhr = new XMLHttpRequest();
-    xhr.open('GET', 'config', true);
-    xhr.setRequestHeader('name', 'display_split_by_tournament');
-    xhr.send();
-
-    xhr.onreadystatechange = () => {
-        if (xhr.readyState === 4) {
-            if (xhr.status === 200) {
-                document.getElementById('splitByTournamentCheckbox').checked = xhr.responseText === 'true';
-            } else {
-                alert('Request failed: ' + xhr.responseText);
-            }
-        }
-    }
-}
-
 function getDisplayState() {
     let xhr = new XMLHttpRequest();
     xhr.open('GET', 'config', true);
@@ -217,7 +200,6 @@ function onLoad() {
     queryHasTeams();
     getShowTimer();
     getDisplaySecondsPerPage();
-    getSplitByTournament();
     getDisplayState();
     getGames();
     getSponsors();
@@ -391,22 +373,6 @@ function setDisplaySecondsPerPage() {
     xhr.onreadystatechange = () => {
         if (xhr.readyState === 4 && xhr.status !== 200) {
             alert('Request failed: ' + xhr.responseText);
-        }
-    }
-}
-
-function setSplitByTournament() {
-    let split_by_tournament = document.getElementById('splitByTournamentCheckbox').checked;
-    let xhr = new XMLHttpRequest();
-    xhr.open('PUT', 'config', true);
-    xhr.setRequestHeader('name', 'display_split_by_tournament');
-    xhr.setRequestHeader('value', split_by_tournament);
-    xhr.send();
-
-    xhr.onreadystatechange = () => {
-        if (xhr.readyState === 4 && xhr.status !== 200) {
-            alert('Request failed: ' + xhr.responseText);
-            document.getElementById('splitByTournamentCheckbox').checked = !document.getElementById('splitByTournamentCheckbox').checked;
         }
     }
 }

@@ -21,25 +21,37 @@
             <p id="timer-display">0:00</p>
 
             <template id="table-contents-template">
-                <tr id="header-row">
-                    <th scope="col" id="rank-header">Rank</th>
-                    <th scope="col">Team</th>
-                    <template id="round-header-template">
-                        <th scope="col" class="round-header"></th>
-                    </template>
-                    <th scope="col" id="final-score-header">Final</th>
-                </tr>
-                <template id="score-table-row-template">
-                    <tr>
-                        <td id="rank-cell"></td>
-                        <td id="team-name-cell" class="team-name-cell" style="white-space: pre;"></td>
-                        <!-- round cells -->
-                        <td id="final-score-cell"></td>
+                <colgroup>
+                    <col class="rank-col">
+                    <col class="team-col">
+                    <col class="final-score-col">
+                </colgroup>
+                <tbody>
+                    <tr id="header-row">
+                        <th scope="col" id="rank-header">Rank</th>
+                        <th scope="col">Team</th>
+                        <template id="round-header-template">
+                            <th scope="col" class="round-header"></th>
+                        </template>
+                        <th scope="col" id="final-score-header">Final</th>
                     </tr>
-                </template>
+                    <template id="score-table-row-template">
+                        <tr>
+                            <td id="rank-cell"></td>
+                            <td id="team-name-cell" class="team-name-cell" style="white-space: pre;"></td>
+                            <!-- round cells -->
+                            <td id="final-score-cell"></td>
+                        </tr>
+                    </template>
+                </tbody>
             </template>
 
             <table id="scores-table">
+                <colgroup>
+                    <col class="rank-col">
+                    <col class="team-col">
+                    <col class="final-score-col">
+                </colgroup>
                 <tbody>
                     <tr id="header-row">
                         <th scope="col" id="rank-header">Rank</th>

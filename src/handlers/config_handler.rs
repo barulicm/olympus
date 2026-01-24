@@ -41,7 +41,6 @@ impl ConfigHandler {
             "show_timer" => Some(config.show_timer.to_string()),
             "display_seconds_per_page" => Some(config.display_seconds_per_page.to_string()),
             "display_state" => Some(config.display_state.to_string()),
-            "display_split_by_tournament" => Some(config.display_split_by_tournament.to_string()),
             _ => None,
         };
         match value {
@@ -128,12 +127,6 @@ impl ConfigHandler {
                     Err(e) => Err(e),
                 }
             }
-            "display_split_by_tournament" => {
-                config.display_split_by_tournament = value
-                    .parse::<bool>()
-                    .map_err(|_| (StatusCode::BAD_REQUEST, "Could not parse bool from value"))?;
-                Ok(())
-            }
             _ => Err((
                 StatusCode::BAD_REQUEST,
                 format!("Unrecognized config name: {}", name),
@@ -162,7 +155,6 @@ mod tests {
         config.show_timer = true;
         config.display_seconds_per_page = 15;
         config.display_state = DisplayState::ShowScores;
-        config.display_split_by_tournament = true;
     }
 
     async fn get_config_oneshot(app: Router, config_name: &str) -> String {
@@ -227,15 +219,6 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn get_display_split_by_tournament() {
-        let app_state = create_new_shared_state();
-        initialize_configs(app_state.clone());
-        let app = ConfigHandler::register_routes().with_state(app_state);
-        let value = get_config_oneshot(app, "display_split_by_tournament").await;
-        assert_eq!(value, "true");
-    }
-
-    #[tokio::test]
     async fn get_all() {
         let app_state = create_new_shared_state();
         initialize_configs(app_state.clone());
@@ -254,7 +237,6 @@ mod tests {
             json!({
                 "competition_name": "Test Competition",
                 "display_seconds_per_page": 15,
-                "display_split_by_tournament": true,
                 "display_state": "ShowScores",
                 "show_timer": true
             })
@@ -326,22 +308,6 @@ mod tests {
         assert_eq!(
             app_state.lock().unwrap().config.display_state,
             DisplayState::FllLogo
-        );
-    }
-
-    #[tokio::test]
-    async fn set_display_split_by_tournament() {
-        let app_state = create_new_shared_state();
-        let app = ConfigHandler::register_routes().with_state(app_state.clone());
-        set_config_oneshot(
-            app,
-            "display_split_by_tournament",
-            HeaderValue::from_str("false").unwrap(),
-        )
-        .await;
-        assert_eq!(
-            app_state.lock().unwrap().config.display_split_by_tournament,
-            false
         );
     }
 

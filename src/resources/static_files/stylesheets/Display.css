@@ -186,6 +186,16 @@ html, body {
     border-color: #a8a8a8;
 }
 
+.rank-col {
+    width: 10%;
+}
+.round-col {
+    width: 6.667%;
+}
+.final-score-col {
+    width: 10%;
+}
+
 #rank-header {
     box-sizing: border-box;
     width: 10%;
