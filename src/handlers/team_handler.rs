@@ -16,6 +16,7 @@ impl Handler for TeamHandler {
     fn register_routes() -> Router<SharedAppState> {
         Router::new()
             .route("/team/add", put(Self::handle_add_team))
+            .route("/team/add_csv", put(Self::handle_add_csv))
             .route("/team/remove", put(Self::handle_remove_team))
             .route("/team/edit", put(Self::handle_edit_team))
             .route("/team/{team_number}", get(Self::handle_get))
@@ -109,6 +110,30 @@ impl TeamHandler {
                 .into());
         }
         app_state.teams.push(new_team);
+        Ok(StatusCode::OK)
+    }
+
+    async fn handle_add_csv(
+        State(app_state): State<SharedAppState>,
+        body: String,
+    ) -> Result<impl IntoResponse, AppError> {
+        let mut csv_reader = csv::ReaderBuilder::new().from_reader(body.as_bytes());
+        let mut app_state = app_state.lock()?;
+        let mut new_teams = Vec::<Team>::new();
+        for result in csv_reader.deserialize() {
+            let new_team: Team =
+                result.map_err(|e| AppError::new(StatusCode::BAD_REQUEST, e.to_string()))?;
+            let old_team = app_state.teams.iter().find(|t| t.number == new_team.number);
+            if let Some(ot) = old_team {
+                return Err((
+                    StatusCode::BAD_REQUEST,
+                    format!("Another team is already using team number {0}", ot.number),
+                )
+                    .into());
+            }
+            new_teams.push(new_team);
+        }
+        app_state.teams.append(&mut new_teams);
         Ok(StatusCode::OK)
     }
 
@@ -220,6 +245,7 @@ mod tests {
     use http_body_util::BodyExt;
     use serde_json::{Value, json};
     use tower::{Service, ServiceExt};
+    use indoc::indoc;
 
     #[tokio::test]
     async fn defaults_to_no_teams() {
@@ -337,7 +363,9 @@ mod tests {
             .method("PUT")
             .uri("/team/add")
             .header(header::CONTENT_TYPE, "application/json")
-            .body(Body::from(r#"{"number": "1234", "name": "Test Team", "tournament": "A"}"#))
+            .body(Body::from(
+                r#"{"number": "1234", "name": "Test Team", "tournament": "A"}"#,
+            ))
             .unwrap();
         let response = ServiceExt::<Request<Body>>::ready(&mut app)
             .await
@@ -380,6 +408,48 @@ mod tests {
             .await
             .unwrap();
         assert_eq!(response.status(), StatusCode::BAD_REQUEST);
+    }
+
+    #[tokio::test]
+    async fn add_csv() {
+        let app_state = create_new_shared_state();
+        let mut app = TeamHandler::register_routes()
+            .with_state(app_state.clone())
+            .into_service();
+
+        let csv_content = indoc! {"
+            number,name,tournament
+            1234,Test Team,A
+            5678,Team 2,A
+            9012,Another Team,B
+            3456,MORE TEAMS,B
+        "};
+
+        let req = Request::builder()
+            .method("PUT")
+            .uri("/team/add_csv")
+            .header(header::CONTENT_TYPE, "text/csv")
+            .body(Body::from(csv_content))
+            .unwrap();
+        let response = ServiceExt::<Request<Body>>::ready(&mut app)
+            .await
+            .unwrap()
+            .call(req)
+            .await
+            .unwrap();
+        assert_eq!(
+            response.status(),
+            StatusCode::OK,
+            "Unexpected status code in response: {}. With body: {:?}",
+            response.status(),
+            response.into_body().collect().await.unwrap().to_bytes()
+        );
+        let teams = app_state.lock().unwrap().teams.clone();
+        println!("{:?}", teams);
+        assert!(teams.iter().any(|t| { t.number == "1234" && t.name == "Test Team" && t.tournament == "A" }));
+        assert!(teams.iter().any(|t| { t.number == "5678" && t.name == "Team 2" && t.tournament == "A" }));
+        assert!(teams.iter().any(|t| { t.number == "9012" && t.name == "Another Team" && t.tournament == "B" }));
+        assert!(teams.iter().any(|t| { t.number == "3456" && t.name == "MORE TEAMS" && t.tournament == "B" }));
     }
 
     #[tokio::test]

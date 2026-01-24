@@ -5,68 +5,133 @@ const DisplayStates = {
     Sponsors: "Sponsors"
 }
 
-let current_top_team = 0;
-const teams_per_page = 15;
+let config = {
+    show_timer: false,
+    competition_name: '',
+    display_state: DisplayStates.FllLogo,
+    display_seconds_per_page: 10,
+    display_split_by_tournament: false,
+};
+
 let display_state = DisplayStates.ShowScores;
 let paging_interval = null;
-let seconds_per_page = 5;
+let seconds_per_page = 10;
 
-function getInfo() {
+let table_pages = [];
+let table_page_index = 0;
+
+let round_count = 0;
+
+function byRank(teamA, teamB) {
+    var keyA = teamA.rank;
+    var keyB = teamB.rank;
+    if (keyA < keyB) return -1;
+    if (keyA > keyB) return 1;
+    return 0;
+}
+
+function updateTablePages() {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', 'team/all', true);
     xhr.send();
 
     xhr.onreadystatechange = () => {
         if (xhr.readyState === 4 && xhr.status === 200) {
-            var teamArr = JSON.parse(xhr.responseText);
+            var teams = JSON.parse(xhr.responseText);
 
-            teamArr.sort(function (a, b) {
-                var keyA = a.rank;
-                var keyB = b.rank;
-                if (keyA < keyB) return -1;
-                if (keyA > keyB) return 1;
-                return 0;
-            });
+            round_count = Math.max(...teams.map(t => t.scores.length));
 
-            let round_count = Math.max(...teamArr.map(team => team.scores.length));
-            let team_number_length = Math.max(...teamArr.map(team => team.number.length));
+            const header_row_height = parseFloat(window.getComputedStyle(document.querySelector('#scores-table th')).height);
+            const table_max_height = parseFloat(window.getComputedStyle(document.querySelector('#scores-table')).maxHeight);
+            const header_row_count = config.display_split_by_tournament ? 2 : 1;
+            const page_size = Math.floor(table_max_height / header_row_height) - header_row_count;
+        
+            table_pages.length = 0;    
+            table_page_index = 0;
 
-            let table_contents = document.querySelector("#table-contents-template").content.cloneNode(true);
+            let split_function = config.display_split_by_tournament ? t => t.tournament : t => null;
 
-            let final_score_header = table_contents.querySelector("#final-score-header");
-            for (let i = 0; i < round_count; i++) {
-                let round_header = table_contents.querySelector("#round-header-template").content.cloneNode(true);
-                round_header.querySelector("th").appendChild(document.createTextNode("R" + (i+1)));
-                table_contents.querySelector("#header-row").insertBefore(round_header, final_score_header);
-            }
+            const teams_grouped = Object.groupBy(teams, split_function);
 
-            for (let i = current_top_team; i < Math.min(current_top_team + teams_per_page, teamArr.length); i++) {
-                let team = teamArr[i];
-                let row = table_contents.querySelector("#score-table-row-template").content.cloneNode(true);
-                row.querySelector("#rank-cell").appendChild(document.createTextNode(team.rank));
-                row.querySelector("#team-name-cell").appendChild(document.createTextNode(team.number.padStart(team_number_length, ' ') + "  " + team.name));
-                let final_score_cell = row.querySelector("#final-score-cell");
-                final_score_cell.appendChild(document.createTextNode(team.displayScore));
-                for (let r = 0; r < round_count; r++) {
-                    let round_cell = document.createElement("td");
-                    if (r < team.scores.length) {
-                        round_cell.appendChild(document.createTextNode(team.scores[r]));
-                    } else {
-                        round_cell.appendChild(document.createTextNode(" "));
-                    }
-                    row.querySelector("tr").insertBefore(round_cell, final_score_cell);
+            for (const [tournament, group] of Object.entries(teams_grouped)) {
+                group.sort(byRank);
+                for(let i = 0; i < group.length; i+= page_size) {
+                    table_pages.push({
+                        tournament: tournament,
+                        teams: group.slice(i, i + page_size)
+                    });
                 }
-                table_contents.appendChild(row);
             }
 
-            document.querySelector("tbody").replaceChildren(table_contents);
-
-            current_top_team += teams_per_page;
-            if (current_top_team >= teamArr.length) {
-                current_top_team = 0;
-            }
+            renderTablePage();
         }
     };
+}
+
+function advanceTablePage() {
+    table_page_index++;
+    if (table_pages.length == 0 || table_page_index >= table_pages.length) {
+        updateTablePages();
+        return;
+    }
+    renderTablePage();
+}
+
+function renderTablePage() {
+    if (table_page_index >= table_pages.length) {
+        return;
+    }
+
+    const page = table_pages[table_page_index];
+
+    if(page === null) {
+        return;
+    }
+
+    const tournament = page.tournament;
+    const teams = page.teams;
+
+    let team_number_length = Math.max(...teams.map(team => team.number.length));
+
+    let table_contents = document.querySelector("#table-contents-template").content.cloneNode(true);
+
+    if (tournament !== "null") {
+        let tournament_header_row = document.createElement("tr");
+        let tournament_header = document.createElement("th");
+        tournament_header.appendChild(document.createTextNode("Tournament " + tournament));
+        tournament_header.colSpan = 3 + round_count;
+        tournament_header.classList.add('tournament-header');
+        tournament_header_row.appendChild(tournament_header);
+        let header_row = table_contents.querySelector('#header-row');
+        table_contents.insertBefore(tournament_header_row, header_row);
+    }
+
+    let final_score_header = table_contents.querySelector("#final-score-header");
+    for (let i = 0; i < round_count; i++) {
+        let round_header = table_contents.querySelector("#round-header-template").content.cloneNode(true);
+        round_header.querySelector("th").appendChild(document.createTextNode("R" + (i+1)));
+        table_contents.querySelector("#header-row").insertBefore(round_header, final_score_header);
+    }
+
+    for (const team of teams) {
+        let row = table_contents.querySelector("#score-table-row-template").content.cloneNode(true);
+        row.querySelector("#rank-cell").appendChild(document.createTextNode(team.rank));
+        row.querySelector("#team-name-cell").appendChild(document.createTextNode(team.number.padStart(team_number_length, ' ') + "  " + team.name));
+        let final_score_cell = row.querySelector("#final-score-cell");
+        final_score_cell.appendChild(document.createTextNode(team.displayScore));
+        for (let r = 0; r < round_count; r++) {
+            let round_cell = document.createElement("td");
+            if (r < team.scores.length) {
+                round_cell.appendChild(document.createTextNode(team.scores[r]));
+            } else {
+                round_cell.appendChild(document.createTextNode(" "));
+            }
+            row.querySelector("tr").insertBefore(round_cell, final_score_cell);
+        }
+        table_contents.appendChild(row);
+    }
+
+    document.querySelector("tbody").replaceChildren(table_contents);
 }
 
 function setContainerVisibility(id, visible) {
@@ -94,93 +159,68 @@ function setSponsorsVisibility(visible) {
     setContainerVisibility("sponsors-container", visible);
 }
 
-function getDisplayState() {
+function getConfig() {
     let xhr = new XMLHttpRequest();
-    xhr.open('GET', 'config', true);
-    xhr.setRequestHeader('name', 'display_state');
+    xhr.open('GET', 'config/all', true);
     xhr.send();
     xhr.onreadystatechange = () => {
-        if (xhr.readyState === 4) {
+        if(xhr.readyState === 4) {
             if (xhr.status === 200) {
-                display_state = xhr.responseText;
-                switch (display_state) {
-                    case DisplayStates.ShowScores:
-                        setScoresTableVisibility(true);
-                        setBlackoutVisibility(false);
-                        setFllLogoVisibility(false);
-                        setSponsorsVisibility(false);
-                        break;
-                    case DisplayStates.Blackout:
-                        setScoresTableVisibility(false);
-                        setBlackoutVisibility(true);
-                        setFllLogoVisibility(false);
-                        setSponsorsVisibility(false);
-                        break;
-                    case DisplayStates.FllLogo:
-                        setScoresTableVisibility(false);
-                        setBlackoutVisibility(false);
-                        setFllLogoVisibility(true);
-                        setSponsorsVisibility(false);
-                        break;
-                    case DisplayStates.Sponsors:
-                        setScoresTableVisibility(false);
-                        setBlackoutVisibility(false);
-                        setFllLogoVisibility(false);
-                        setSponsorsVisibility(true);
-                        break;
-                }
+                config = JSON.parse(xhr.responseText);
             } else {
-                console.error('Could not get display state config: ' + xhr.responseText);
+                console.error('Could not get display config: ' + xhr.responseText);
             }
         }
     }
 }
 
-function getShowTimer() {
-    let xhr = new XMLHttpRequest();
-    xhr.open('GET', 'config', true);
-    xhr.setRequestHeader('name', 'show_timer');
-    xhr.send();
-    xhr.onreadystatechange = () => {
-        if (xhr.readyState === 4) {
-            if (xhr.status === 200) {
-                if (xhr.responseText === 'false') {
-                    document.getElementById('timer-display').style.visibility = 'hidden';
-                } else {
-                    document.getElementById('timer-display').style.visibility = 'visible';
-                }
-            } else {
-                console.error('Could not get timer config: ' + xhr.responseText);
-            }
-        }
+function updateDisplayState() {
+    switch (config.display_state) {
+        case DisplayStates.ShowScores:
+            setScoresTableVisibility(true);
+            setBlackoutVisibility(false);
+            setFllLogoVisibility(false);
+            setSponsorsVisibility(false);
+            break;
+        case DisplayStates.Blackout:
+            setScoresTableVisibility(false);
+            setBlackoutVisibility(true);
+            setFllLogoVisibility(false);
+            setSponsorsVisibility(false);
+            break;
+        case DisplayStates.FllLogo:
+            setScoresTableVisibility(false);
+            setBlackoutVisibility(false);
+            setFllLogoVisibility(true);
+            setSponsorsVisibility(false);
+            break;
+        case DisplayStates.Sponsors:
+            setScoresTableVisibility(false);
+            setBlackoutVisibility(false);
+            setFllLogoVisibility(false);
+            setSponsorsVisibility(true);
+            break;
     }
 }
 
-function getSecondsPerPage() {
-    let xhr = new XMLHttpRequest();
-    xhr.open('GET', 'config', true);
-    xhr.setRequestHeader('name', 'display_seconds_per_page');
-    xhr.send();
-    xhr.onreadystatechange = () => {
-        if (xhr.readyState === 4) {
-            if (xhr.status === 200) {
-                let new_seconds_per_page = parseInt(xhr.responseText);
-                if (new_seconds_per_page !== seconds_per_page) {
-                    seconds_per_page = new_seconds_per_page;
-                    clearInterval(paging_interval);
-                    paging_interval = setInterval(getInfo, seconds_per_page * 1000);
-                }
-            } else {
-                console.error('Could not get seconds per page config: ' + xhr.responseText);
-            }
-        }
+function updateTimerVisibility() {
+    document.querySelector('#timer-display').style.visibility = config.show_timer ? 'visible' : 'hidden';
+}
+
+function updatePagingInterval() {
+    let new_seconds_per_page = config.display_seconds_per_page;
+    if (new_seconds_per_page != seconds_per_page) {
+        seconds_per_page = new_seconds_per_page;
+        clearInterval(paging_interval);
+        paging_interval = setInterval(advanceTablePage, seconds_per_page * 1000);
     }
 }
 
 function updateDisplayConfig() {
-    getDisplayState();
-    getShowTimer();
-    getSecondsPerPage();
+    getConfig();
+    updateDisplayState();
+    updateTimerVisibility();
+    updatePagingInterval();
 }
 
 function updateAnnouncement() {
@@ -254,8 +294,8 @@ function onLoad() {
     addEventListener('resize', onResize);
     updateDisplayConfig();
     setInterval(updateDisplayConfig, 1000);
-    getInfo();
-    paging_interval = setInterval(getInfo, 5000);
+    advanceTablePage();
+    paging_interval = setInterval(advanceTablePage, 5000);
     openTimerWebsocket('timer-display');
     updateAnnouncement();
     setInterval(updateAnnouncement, 1000);

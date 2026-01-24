@@ -60,16 +60,19 @@ pub enum DisplayState {
     Sponsors,
 }
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct Team {
     pub number: String,
     pub name: String,
+    #[serde(default)]
     pub scores: Vec<i64>,
-    #[serde(rename = "gpScores")]
+    #[serde(rename = "gpScores", default)]
     pub gp_scores: Vec<i64>,
-    #[serde(rename = "displayScore")]
+    #[serde(rename = "displayScore", default)]
     pub display_score: i64,
+    #[serde(default)]
     pub rank: i64,
+    #[serde(default)]
     pub tournament: String,
 }
 

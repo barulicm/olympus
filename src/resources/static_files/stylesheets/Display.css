@@ -143,6 +143,7 @@ html, body {
     border: none;
     table-layout: fixed;
     width: 100%;
+    max-height: 77vh;
     margin-left:auto;
     margin-right:auto;
     margin-top:0;
@@ -150,7 +151,7 @@ html, body {
     font-size: calc(3.125vw - 14px);
 }
 
-#scores-table th {
+#header-row th {
     text-align: left;
     overflow: hidden;
     padding: 2px;
@@ -158,8 +159,16 @@ html, body {
     border: 1px solid;
     border-color: #b74525;
     background-color: #ea572e;
-    /* border-image: url(../images/red_tile_slice.png) 4 fill;
-    border-image-repeat: stretch; */
+}
+
+.tournament-header {
+    text-align: center;
+    overflow: hidden;
+    padding: 2px;
+    color: black;
+    border: 1px solid;
+    border-color: #334a52;
+    background-color: #598290;
 }
 
 #scores-table td {

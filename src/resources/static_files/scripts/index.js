@@ -47,6 +47,23 @@ function getDisplaySecondsPerPage() {
     }
 }
 
+function getSplitByTournament() {
+    let xhr = new XMLHttpRequest();
+    xhr.open('GET', 'config', true);
+    xhr.setRequestHeader('name', 'display_split_by_tournament');
+    xhr.send();
+
+    xhr.onreadystatechange = () => {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                document.getElementById('splitByTournamentCheckbox').checked = xhr.responseText === 'true';
+            } else {
+                alert('Request failed: ' + xhr.responseText);
+            }
+        }
+    }
+}
+
 function getDisplayState() {
     let xhr = new XMLHttpRequest();
     xhr.open('GET', 'config', true);
@@ -200,6 +217,7 @@ function onLoad() {
     queryHasTeams();
     getShowTimer();
     getDisplaySecondsPerPage();
+    getSplitByTournament();
     getDisplayState();
     getGames();
     getSponsors();
@@ -215,26 +233,7 @@ function onTeamsFileSelected(e) {
     reader.onload = (function (theFile) {
         return function (e) {
             var contents = e.target.result;
-            var lines = contents.split("\n");
-            var foundEmptyNumber = false;
-            for (var i = 0; i < lines.length; i++) {
-                if (lines[i].length === 0) {
-                    // Skip empty lines
-                    continue;
-                }
-                var tokens = lines[i].split(",");
-                var team_number = tokens[0].replace(/[^0-9]/gi, '');
-                if (!team_number) {
-                    if (!foundEmptyNumber) {
-                        alert("Some teams in your file have no team number. These will be skipped.");
-                    }
-                    foundEmptyNumber = true;
-                    continue;
-                }
-                var team_name = tokens[1];
-                sendAddTeam(team_name, team_number, false, false);
-            }
-            location.reload();
+            sendAddTeamsCsv(contents, true, false);
         };
     })(file);
 
@@ -249,27 +248,22 @@ function importTeams() {
     fileInput.click();
 }
 
-function sendAddTeam(teamName, teamNumber, reload, async) {
-    var jsonTeam = {};
-    jsonTeam.name = teamName;
-    jsonTeam.number = teamNumber;
-    var jsonString = JSON.stringify(jsonTeam);
-
+function sendAddTeamsCsv(csv_content, reload, async) {
     var xhr = new XMLHttpRequest();
-    xhr.open('PUT', 'team/add', async);
-    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.open('PUT', 'team/add_csv', async);
+    xhr.setRequestHeader("Content-Type", "text/csv");
     xhr.onreadystatechange = () => {
         if (xhr.readyState === 4) {
             if (xhr.status === 200) {
-                if (reload) {
+                if(reload) {
                     location.reload();
                 }
             } else {
-                alert("Adding team " + teamNumber + " failed. Status code " + xhr.status + '. ' + xhr.responseText);
+                alert("Importing teams failed. Status code " + xhr.status + ". " + xhr.responseText);
             }
         }
-    }
-    xhr.send(jsonString);
+    };
+    xhr.send(csv_content);
 }
 
 function rerankTeamsButtonClicked() {
@@ -397,6 +391,22 @@ function setDisplaySecondsPerPage() {
     xhr.onreadystatechange = () => {
         if (xhr.readyState === 4 && xhr.status !== 200) {
             alert('Request failed: ' + xhr.responseText);
+        }
+    }
+}
+
+function setSplitByTournament() {
+    let split_by_tournament = document.getElementById('splitByTournamentCheckbox').checked;
+    let xhr = new XMLHttpRequest();
+    xhr.open('PUT', 'config', true);
+    xhr.setRequestHeader('name', 'display_split_by_tournament');
+    xhr.setRequestHeader('value', split_by_tournament);
+    xhr.send();
+
+    xhr.onreadystatechange = () => {
+        if (xhr.readyState === 4 && xhr.status !== 200) {
+            alert('Request failed: ' + xhr.responseText);
+            document.getElementById('splitByTournamentCheckbox').checked = !document.getElementById('splitByTournamentCheckbox').checked;
         }
     }
 }
