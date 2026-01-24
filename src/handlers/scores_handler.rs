@@ -204,11 +204,17 @@ impl ScoresHandler {
         }
         teams.sort_by_key(|t| t.display_score);
         teams.reverse();
+        teams.sort_by_key(|t| t.tournament.clone());
         let mut rank = 1;
-        teams[0].rank = rank;
-        for i in 1..teams.len() {
-            if teams[i].display_score < teams[i - 1].display_score {
-                rank += 1;
+        let mut tournament_start_index = 0;
+        for i in 0..teams.len() {
+            let tournament_changed = teams[i].tournament != teams[i.saturating_sub(1)].tournament;
+            let score_changed = teams[i].display_score != teams[i.saturating_sub(1)].display_score;
+            if i > 0 && tournament_changed {
+                tournament_start_index = i;
+            }
+            if i > 0 && (score_changed || tournament_changed) {
+                rank = (i.saturating_sub(tournament_start_index) + 1) as i64;
             }
             teams[i].rank = rank;
         }
