@@ -12,6 +12,7 @@ function onLoad() {
 
             document.getElementById("teamNumber").value = team.number;
             document.getElementById("teamName").value = team.name;
+            document.getElementById("tournament").value = team.tournament;
 
             let scoresArr = team.scores;
             let gpScoresArr = team.gpScores;
@@ -63,6 +64,7 @@ function submitEdits() {
     let newTeamNumber = document.getElementById("teamNumber").value;
     jsonData.newTeamNumber = newTeamNumber;
     jsonData.newTeamName   = document.getElementById("teamName").value;
+    jsonData.newTournament = document.getElementById("tournament").value;
 
     jsonData.newScores = [];
     let scoreCells = document.querySelectorAll('[id^="scoreCell"]');
