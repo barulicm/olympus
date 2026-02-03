@@ -203,6 +203,7 @@ function onLoad() {
     getDisplayState();
     getGames();
     getSponsors();
+    getAnnouncement();
     openTimerWebsocket('timerDisplay', 'endGameAudio', 'endAudio', 'timerButton');
 }
 
@@ -403,6 +404,24 @@ function setAnnouncement() {
     xhr.onreadystatechange = () => {
         if (xhr.readyState === 4 && xhr.status !== 200) {
             alert('Request failed: ' + xhr.responseText);
+        }
+    }
+}
+
+function getAnnouncement() {
+    let xhr = new XMLHttpRequest();
+    xhr.open('GET', 'announcement', true);
+    xhr.send();
+
+    xhr.onreadystatechange = () => {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                let announcementDetails = JSON.parse(xhr.responseText);
+                document.querySelector('#showAnnouncement').checked = announcementDetails.visible;
+                document.querySelector('#announcementContent').value = announcementDetails.content;
+            } else {
+                alert('Request failed: ' + xhr.responseText);
+            }
         }
     }
 }
