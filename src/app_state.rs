@@ -15,6 +15,7 @@ pub struct AppState {
     pub game_description: Option<GameDescription>,
     pub teams: Vec<Team>,
     pub sponsor_logos: Vec<String>,
+    pub display_theme: String,
     #[serde(skip)]
     pub resources_path: std::path::PathBuf,
 }
@@ -26,6 +27,7 @@ impl AppState {
             game_description: None,
             teams: Vec::new(),
             sponsor_logos: Vec::new(),
+            display_theme: "plate".to_string(),
             resources_path: std::path::PathBuf::new(),
         }
     }

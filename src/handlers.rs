@@ -7,6 +7,7 @@ mod scores_handler;
 mod session_save_handler;
 mod sponsors_handler;
 mod team_handler;
+mod theme_handler;
 mod timer_handler;
 
 use crate::app_state::SharedAppState;
@@ -26,6 +27,7 @@ pub fn register_all_handlers() -> Router<SharedAppState> {
         .merge(session_save_handler::SessionSaveHandler::register_routes())
         .merge(sponsors_handler::SponsorsHandler::register_routes())
         .merge(team_handler::TeamHandler::register_routes())
+        .merge(theme_handler::ThemeHandler::register_routes())
         .merge(timer_handler::TimerHandler::register_routes())
         .merge(generated_files_handler::GeneratedFilesHandler::register_routes())
 }
