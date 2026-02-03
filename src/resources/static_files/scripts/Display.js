@@ -241,13 +241,20 @@ function updateAnnouncement() {
             if (xhr.status === 200) {
                 let announcementDetails = JSON.parse(xhr.responseText);
                 let announcementContainer = document.querySelector(".announcement-container");
-                let body = document.getElementsByTagName("body")[0];
+                let contentContainer = document.querySelector(".content-container");
+                let rootContainer = document.querySelector(".root-container");
                 if (announcementDetails.visible) {
                     announcementContainer.style.display = "flex";
-                    body.style.height = "calc(100% - var(--stud-size))";
+                    let announcementHeight = parseFloat(window.getComputedStyle(announcementContainer).height);
+                    let rootHeight = parseFloat(window.getComputedStyle(rootContainer).height);
+                    let contentHeight = rootHeight - announcementHeight;
+                    let contentWidth = contentHeight * (16.0 / 9.0);
+                    contentContainer.style.height = contentHeight + "px";
+                    contentContainer.style.width = contentWidth + "px";
                 } else {
                     announcementContainer.style.display = "none";
-                    body.style.height = "100%";
+                    contentContainer.style.height = "100%";
+                    contentContainer.style.width = "100%";
                 }
                 document.getElementById("announcement-header").innerText = announcementDetails.content;
             } else {
