@@ -120,11 +120,75 @@ function sendGameChoice() {
             if (xhr.status === 200) {
                 location.reload();
             } else {
-                alert("Adding team " + teamNumber + " failed. Status code " + xhr.status + '. ' + xhr.responseText);
+                alert("Choosing game failed. Status code " + xhr.status + ". " + xhr.responseText);
             }
         }
     }
     xhr.send(chosenGameName);
+}
+
+function getActiveTheme() {
+    let themeSelect = document.querySelector('#displayTheme');
+    let xhr = new XMLHttpRequest();
+    xhr.open('GET', 'theme/meta', true);
+    xhr.send();
+    xhr.onreadystatechange = () => {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                let gameMetadata = JSON.parse(xhr.responseText);
+                themeSelect.value = gameMetadata.name;
+            } else if (xhr.status === 204) {
+                // No game selected
+                let option = document.createElement("option");
+                option.innerText = "NOT SELECTED";
+                option.setAttribute("value", "");
+                themeSelect.appendChild(option);
+                themeSelect.value = "";
+            } else {
+                alert('Request failed: ' + xhr.responseText);
+            }
+        }
+    }
+}
+
+function getAvailableThemes() {
+    let themeSelect = document.querySelector('#displayTheme');
+    themeSelect.innerHTML = '';
+    let xhr = new XMLHttpRequest();
+    xhr.open('GET', 'theme/available_themes', true);
+    xhr.send();
+    xhr.onreadystatechange = () => {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                let themesArr = JSON.parse(xhr.responseText);
+                for (let i = 0; i < themesArr.length; i++) {
+                    let option = document.createElement("option");
+                    option.innerText = themesArr[i].display_name;
+                    option.setAttribute("value", themesArr[i].name);
+                    themeSelect.appendChild(option);
+                }
+                getActiveTheme();
+            } else {
+                alert('Request failed: ' + xhr.responseText);
+            }
+        }
+    }
+}
+
+function setDisplayTheme() {
+    let chosenThemeName = document.querySelector('#displayTheme').value;
+    let xhr = new XMLHttpRequest();
+    xhr.open('PUT', 'theme/choose', true);
+    xhr.onreadystatechange = () => {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                location.reload();
+            } else {
+                alert("Setting display theme failed. Status code " + xhr.status + ". " + xhr.responseText);
+            }
+        }
+    }
+    xhr.send(chosenThemeName);
 }
 
 function getSponsors() {
@@ -204,6 +268,7 @@ function onLoad() {
     getGames();
     getSponsors();
     getAnnouncement();
+    getAvailableThemes();
     openTimerWebsocket('timerDisplay', 'endGameAudio', 'endAudio', 'timerButton');
 }
 
