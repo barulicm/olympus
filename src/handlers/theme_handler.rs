@@ -1,17 +1,16 @@
-use std::path::PathBuf;
-
 use super::Handler;
 use crate::app_error::AppError;
 use crate::app_state::SharedAppState;
 use axum::{
     Router,
     extract::State,
-    http::{header, StatusCode},
+    http::{StatusCode, header},
     response::IntoResponse,
     routing::{get, put},
 };
 use serde::Deserialize;
 use serde_json::{Value, json};
+use std::path::Path;
 
 const THEME_DIR_NAME: &str = "themes";
 const METADATA_FILENAME: &str = "theme.json";
@@ -27,7 +26,7 @@ struct ThemeMetadata {
 impl ThemeMetadata {
     fn from_path(path: &std::path::PathBuf) -> std::io::Result<Self> {
         let file_contents = std::fs::read_to_string(path)?;
-        let json_value = serde_json::from_str(&file_contents.as_str())?;
+        let json_value = serde_json::from_str(file_contents.as_str())?;
         Ok(json_value)
     }
 }
@@ -43,7 +42,7 @@ impl Handler for ThemeHandler {
 }
 
 impl ThemeHandler {
-    fn is_valid_theme_path(path: &PathBuf) -> bool {
+    fn is_valid_theme_path(path: &Path) -> bool {
         path.is_dir() && path.join(METADATA_FILENAME).exists()
     }
 
@@ -110,7 +109,11 @@ impl ThemeHandler {
             .join(THEME_DIR_NAME)
             .join(&app_state.display_theme);
         let file_contents = std::fs::read_to_string(theme_dir.join("style.css"))?;
-        Ok((StatusCode::OK, [(header::CONTENT_TYPE, "text/css")], file_contents))
+        Ok((
+            StatusCode::OK,
+            [(header::CONTENT_TYPE, "text/css")],
+            file_contents,
+        ))
     }
 
     async fn set_theme(
@@ -124,11 +127,11 @@ impl ThemeHandler {
             if !ThemeHandler::is_valid_theme_path(&path) {
                 continue;
             }
-            if let Some(theme_name) = entry.file_name().to_str() {
-                if theme_name == body {
-                    app_state.display_theme = body;
-                    return Ok((StatusCode::OK, ""));
-                }
+            if let Some(theme_name) = entry.file_name().to_str()
+                && theme_name == body
+            {
+                app_state.display_theme = body;
+                return Ok((StatusCode::OK, ""));
             }
         }
         Ok((StatusCode::BAD_REQUEST, "No theme with requested name."))
@@ -141,7 +144,7 @@ mod tests {
     use super::*;
     use crate::app_state::create_new_shared_state;
     use axum::body::Body;
-    use axum::http::{HeaderValue, Request, StatusCode, header};
+    use axum::http::{Request, StatusCode, header};
     use http_body_util::BodyExt;
     use serde_json::{Value, json};
     use tower::ServiceExt;
@@ -233,8 +236,7 @@ mod tests {
             "text/css"
         );
         let body = response.into_body().collect().await.unwrap().to_bytes();
-        let expected_bytes =
-            include_bytes!("../../src/test_resources/themes/test_theme/style.css");
+        let expected_bytes = include_bytes!("../../src/test_resources/themes/test_theme/style.css");
         assert_eq!(&body[..], expected_bytes);
     }
 
@@ -255,12 +257,6 @@ mod tests {
             .unwrap();
         let response = app.oneshot(req).await.unwrap();
         assert_eq!(response.status(), StatusCode::OK);
-        assert_eq!(
-            app_state
-                .lock()
-                .unwrap()
-                .display_theme,
-            "test_theme"
-        );
+        assert_eq!(app_state.lock().unwrap().display_theme, "test_theme");
     }
 }
