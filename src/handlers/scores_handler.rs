@@ -49,7 +49,7 @@ impl ScoresHandler {
         csv_writer.write_record(headers).map_err(|e| {
             AppError::new(
                 StatusCode::INTERNAL_SERVER_ERROR,
-                format!("Failed to add csv record: {}", e),
+                format!("Failed to add header record: {}", e),
             )
         })?;
         for team in teams {
@@ -59,12 +59,15 @@ impl ScoresHandler {
                 .iter()
                 .map(|s| s.to_string())
                 .collect::<Vec<_>>();
+            if score_strings.len() < score_count {
+                score_strings.resize(score_count, "".to_string());
+            }
             record.append(&mut score_strings);
             record.push(team.display_score.to_string());
             csv_writer.write_record(record).map_err(|e| {
                 AppError::new(
                     StatusCode::INTERNAL_SERVER_ERROR,
-                    format!("Failed to add csv record: {}", e),
+                    format!("Failed to add team record: {}", e),
                 )
             })?;
         }
@@ -108,7 +111,7 @@ impl ScoresHandler {
         csv_writer.write_record(headers).map_err(|e| {
             AppError::new(
                 StatusCode::INTERNAL_SERVER_ERROR,
-                format!("Failed to add csv record: {}", e),
+                format!("Failed to add header record: {}", e),
             )
         })?;
         for team in teams {
@@ -118,11 +121,14 @@ impl ScoresHandler {
                 .iter()
                 .map(|s| s.to_string())
                 .collect::<Vec<_>>();
+            if score_strings.len() < score_count {
+                score_strings.resize(score_count, "".to_string());
+            }
             record.append(&mut score_strings);
             csv_writer.write_record(record).map_err(|e| {
                 AppError::new(
                     StatusCode::INTERNAL_SERVER_ERROR,
-                    format!("Failed to add csv record: {}", e),
+                    format!("Failed to add team record: {}", e),
                 )
             })?;
         }
