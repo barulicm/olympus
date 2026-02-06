@@ -1,6 +1,6 @@
 [package]
 name = "olympus"
-version = "2025.3.0"
+version = "2026.1.0"
 edition = "2024"
 authors = ["Matthew Barulic"]
 description = "Score keeping software for FIRST LEGO League."

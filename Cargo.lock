@@ -870,7 +870,7 @@ dependencies = [
 
 [[package]]
 name = "olympus"
-version = "2025.3.0"
+version = "2026.1.0"
 dependencies = [
  "axum",
  "chrono",
