@@ -1,7 +1,5 @@
+use anyhow::Result;
 use vergen_gitcl::{Emitter, GitclBuilder};
-
-#[cfg(windows)]
-use winres;
 
 fn capture_git_state() {
     let git_instructions = GitclBuilder::default()
@@ -18,16 +16,20 @@ fn capture_git_state() {
 }
 
 #[cfg(windows)]
-fn set_executable_icon() {
+fn set_executable_icon() -> std::io::Result<()> {
     let mut res = winres::WindowsResource::new();
     res.set_icon("Olympus.ico");
-    res.compile().unwrap();
+    res.compile()?;
+    Ok(())
 }
 
 #[cfg(not(windows))]
-fn set_executable_icon() {}
+fn set_executable_icon() -> std::io::Result<()> {
+    Ok(())
+}
 
-fn main() {
+fn main() -> Result<()> {
     capture_git_state();
-    set_executable_icon();
+    set_executable_icon()?;
+    Ok(())
 }
