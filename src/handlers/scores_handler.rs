@@ -28,16 +28,18 @@ impl ScoresHandler {
     ) -> Result<impl IntoResponse, AppError> {
         let app_state = app_state.lock()?;
         let mut teams = app_state.teams.clone();
-        teams.sort_by(|a,b| {
+        teams.sort_by(|a, b| {
             if a.number.len() == b.number.len() {
                 a.number.cmp(&b.number)
             } else {
                 a.number.len().cmp(&b.number.len())
             }
         });
+        teams.sort_by(|a, b| a.tournament.cmp(&b.tournament));
         let score_count = teams.iter().map(|t| t.scores.len()).max().unwrap_or(0);
         let mut csv_writer = csv::Writer::from_writer(vec![]);
         let mut headers = vec![
+            String::from("tournament"),
             String::from("rank"),
             String::from("team number"),
             String::from("team name"),
@@ -53,7 +55,12 @@ impl ScoresHandler {
             )
         })?;
         for team in teams {
-            let mut record = vec![team.rank.to_string(), team.number, team.name];
+            let mut record = vec![
+                team.tournament,
+                team.rank.to_string(),
+                team.number,
+                team.name,
+            ];
             let mut score_strings = team
                 .scores
                 .iter()
@@ -95,16 +102,21 @@ impl ScoresHandler {
     ) -> Result<impl IntoResponse, AppError> {
         let app_state = app_state.lock()?;
         let mut teams = app_state.teams.clone();
-        teams.sort_by(|a,b| {
+        teams.sort_by(|a, b| {
             if a.number.len() == b.number.len() {
                 a.number.cmp(&b.number)
             } else {
                 a.number.len().cmp(&b.number.len())
             }
         });
+        teams.sort_by(|a, b| a.tournament.cmp(&b.tournament));
         let score_count = teams.iter().map(|t| t.scores.len()).max().unwrap_or(0);
         let mut csv_writer = csv::Writer::from_writer(vec![]);
-        let mut headers = vec![String::from("team number"), String::from("team name")];
+        let mut headers = vec![
+            String::from("tournament"),
+            String::from("team number"),
+            String::from("team name"),
+        ];
         for i in 1..=score_count {
             headers.push(format!("match {}", i).as_str().to_string());
         }
@@ -115,7 +127,7 @@ impl ScoresHandler {
             )
         })?;
         for team in teams {
-            let mut record = vec![team.number, team.name];
+            let mut record = vec![team.tournament, team.number, team.name];
             let mut score_strings = team
                 .gp_scores
                 .iter()
@@ -246,7 +258,7 @@ mod tests {
             gp_scores: vec![2, 3, 4],
             display_score: 25,
             rank: 1,
-            tournament: "".to_string(),
+            tournament: "A".to_string(),
         };
         app_state.lock().unwrap().teams.push(team);
         let app = ScoresHandler::register_routes().with_state(app_state);
@@ -259,7 +271,7 @@ mod tests {
         let response = app.oneshot(req).await.unwrap();
         assert_eq!(response.status(), StatusCode::OK);
         let body = response.into_body().collect().await.unwrap().to_bytes();
-        let expected_body = b"rank,team number,team name,match 1,match 2,match 3,final score\n1,1234,Test Team,10,0,25,25\n";
+        let expected_body = b"tournament,rank,team number,team name,match 1,match 2,match 3,final score\nA,1,1234,Test Team,10,0,25,25\n";
         assert_eq!(&body[..], expected_body);
     }
 
@@ -273,7 +285,7 @@ mod tests {
             gp_scores: vec![2, 3, 4],
             display_score: 25,
             rank: 1,
-            tournament: "".to_string(),
+            tournament: "A".to_string(),
         };
         app_state.lock().unwrap().teams.push(team);
         let app = ScoresHandler::register_routes().with_state(app_state);
@@ -287,14 +299,18 @@ mod tests {
         assert_eq!(response.status(), StatusCode::OK);
         let body = response.into_body().collect().await.unwrap().to_bytes();
         let expected_body =
-            b"team number,team name,match 1,match 2,match 3\n1234,Test Team,2,3,4\n";
+            b"tournament,team number,team name,match 1,match 2,match 3\nA,1234,Test Team,2,3,4\n";
         assert_eq!(&body[..], expected_body);
     }
 
     #[tokio::test]
     async fn submit_score() {
         let app_state = create_new_shared_state();
-        let team = Team::new(String::from("1234"), String::from("Test Team"), "".to_string());
+        let team = Team::new(
+            String::from("1234"),
+            String::from("Test Team"),
+            "".to_string(),
+        );
         app_state.lock().unwrap().teams.push(team);
         let app = ScoresHandler::register_routes().with_state(app_state.clone());
 
