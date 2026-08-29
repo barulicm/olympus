@@ -1,0 +1,250 @@
+{
+    "name": "BIOGLOW",
+    "description": "2026 FIRST Lego League",
+    "logo": "fll_2026_logo.png",
+    "missions": [
+        {
+            "name": "Equipment Inspection",
+            "questions": [
+                {
+                    "type": "bool",
+                    "description": "The robot and all equipment fit completely in one launch area and under the height limit"
+                }
+            ],
+            "scoring": "(qa ? 20 : 0)"
+        },
+        {
+            "name": "Precision Tokens",
+            "questions": [
+                {
+                    "type": "number",
+                    "description": "Number of precision tokens remaining",
+                    "min": 0,
+                    "max": 6
+                }
+            ],
+            "scoring": "(qa == 1 ? 10 : 0) + (qa == 2 ? 15 : 0) + (qa == 3 ? 25 : 0) + (qa == 4 ? 35 : 0) + (qa == 5 ? 50 : 0) + (qa == 6 ? 50 : 0)"
+        },
+        {
+            "name": "01 - Drone Survey",
+            "questions": [
+                {
+                    "type": "bool",
+                    "description": "The drone is no longer touching the mat"
+                },
+                {
+                    "type": "bool",
+                    "description": "<b>Bonus:</b> and the LiDAR map is completely flipped over, with the scan marker at least partly in the survey area"
+                }
+            ],
+            "scoring": "(qa ? (20 + (qb ? 10 : 0)) : 0)"
+        },
+        {
+            "name": "02 - Exploding Seeds",
+            "questions": [
+                {
+                    "type": "number",
+                    "description": "Number of seeds no longer touching the stalk",
+                    "min": 0,
+                    "max": 3
+                }
+            ],
+            "scoring": "(qa * 10)"
+        },
+        {
+            "name": "03 - Flip The Rock",
+            "questions": [
+                {
+                    "type": "bool",
+                    "description": "The research flag is down"
+                },
+                {
+                    "type": "bool",
+                    "description": "<b>Bonus:</b> and the rock has been returned to its original starting position"
+                }
+            ],
+            "scoring": "(qa ? (20 + (qb ? 10 : 0)) : 0)"
+        },
+        {
+            "name": "04 - Lucky Leaves",
+            "questions": [
+                {
+                    "type": "number",
+                    "description": "Number of leaves no longer touching the nest",
+                    "min": 0,
+                    "max": 2
+                },
+                {
+                    "type": "bool",
+                    "description": "The katydid is completely in the leaf habitat"
+                },
+                {
+                    "type": "bool",
+                    "description": "<b>Bonus:</b> and the katydid remained in its original position throughout the match"
+                }
+            ],
+            "scoring": "(qb ? ((qa >= 1 ? 10 : 0) + (qa == 2 && qc ? 20 : 0)) : 0)"
+        },
+        {
+            "name": "05 - Reaching Roots",
+            "questions": [
+                {
+                    "type": "enum",
+                    "description": "The plant root is extended",
+                    "options": ["No", "Partially", "Completely"]
+                }
+            ],
+            "scoring": "(qa == \"Partially\" ? 10 : 0) + (qa == \"Completely\" ? 20 : 0)"
+        },
+        {
+            "name": "06 - Leafcutter Frenzy",
+            "questions": [
+                {
+                    "type": "bool",
+                    "description": "The ant is touching the nest"
+                },
+                {
+                    "type": "number",
+                    "description": "Number of leaf fragments contained within the nest",
+                    "min": 0,
+                    "max": 4
+                }
+            ],
+            "scoring": "(qa ? (qb * 10) : 0)"
+        },
+        {
+            "name": "07 - Humongous Fungus",
+            "questions": [
+                {
+                    "type": "bool",
+                    "description": "The mycelium is completely extended"
+                },
+                {
+                    "type": "number",
+                    "description": "<b>Bonus:</b> Number of connections formed between one team's extended mycelium and the opposing team's fully extended plant root",
+                    "min": 0,
+                    "max": 2
+                }
+            ],
+            "scoring": "(qa ? (20 + (qb * 10)) : 0)"
+        },
+        {
+            "name": "08 - Tangled",
+            "questions": [
+                {
+                    "type": "bool",
+                    "description": "The vine is touching the mat"
+                }
+            ],
+            "scoring": "(qa ? 30 : 0)"
+        },
+        {
+            "name": "09 - Research Platform",
+            "questions": [
+                {
+                    "type": "bool",
+                    "description": "The research platform is raised"
+                },
+                {
+                    "type": "bool",
+                    "description": "The camera trap is deployed"
+                },
+                {
+                    "type": "bool",
+                    "description": "The seed is no longer touching the tree"
+                }
+            ],
+            "scoring": "(qa ? 10 : 0) + (qb ? 10 : 0) + (qc ? 10 : 0)"
+        },
+        {
+            "name": "10 - Fragile Microhabitats",
+            "questions": [
+                {
+                    "type": "bool",
+                    "description": "The spider habitat is in its original starting position"
+                },
+                {
+                    "type": "bool",
+                    "description": "The snail habitat is in its original starting position"
+                }
+            ],
+            "scoring": "(qa ? 10 : 0) + (qb ? 10 : 0)"
+        },
+        {
+            "name": "11 - Window To The Past",
+            "questions": [
+                {
+                    "type": "bool",
+                    "description": "The root cover is down, touching the mat"
+                }
+            ],
+            "scoring": "(qa ? 20 : 0)"
+        },
+        {
+            "name": "12 - Forest Elder",
+            "questions": [
+                {
+                    "type": "bool",
+                    "description": "The cane is completely raised, touching the tree"
+                },
+                {
+                    "type": "bool",
+                    "description": "The support tie is around the post"
+                }
+            ],
+            "scoring": "(qa ? 20 : 0) + (qb ? 10 : 0)"
+        },
+        {
+            "name": "13 - Keystone Species",
+            "questions": [
+                {
+                    "type": "bool",
+                    "description": "Your keystone species is on the restoration platform, and the young trees are raised"
+                }
+            ],
+            "scoring": "(qa ? 30 : 0)"
+        },
+        {
+            "name": "14 - Seeds Of Renewal",
+            "questions": [
+                {
+                    "type": "number",
+                    "description": "Number of seeds contained within the replantation station",
+                    "min": 0,
+                    "max": 4
+                },
+                {
+                    "type": "number",
+                    "description": "<b>Bonus:</b> and touching the mat",
+                    "min": 0,
+                    "max": 4
+                }
+            ],
+            "scoring": "(qa * 5) + (qb * 5)",
+            "validation": "qb <= qa"
+        },
+        {
+            "name": "15 - Biocentric Architecture",
+            "questions": [
+                {
+                    "type": "bool",
+                    "description": "The nesting canopy is raised"
+                },
+                {
+                    "type": "bool",
+                    "description": "The garden skylight is completely in"
+                },
+                {
+                    "type": "bool",
+                    "description": "The compost hatch is completely opened, touching the mat"
+                },
+                {
+                    "type": "enum",
+                    "description": "Dock location",
+                    "options": ["Mine", "City", "Farm"]
+                }
+            ],
+            "scoring": "(qa ? 10 : 0) + (qb ? 10 : 0) + (qc ? 10 : 0) + (qd == \"Mine\" && qa ? 10 : 0) + (qd == \"City\" && qb ? 10 : 0) + (qd == \"Farm\" && qc ? 10 : 0)"
+        }
+    ]
+}
