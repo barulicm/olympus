@@ -36,6 +36,16 @@
     margin-bottom: 30px;
     border-radius: 3px;
 }
+.form-style-7 td.invalid-mission{
+    background-color: #ffcccc;
+}
+.form-style-7 input[type="button"]:disabled,
+.form-style-7 input[type="button"]:disabled:hover{
+    background: #B0B0B0;
+    border-bottom-color: #909090;
+    color: #E0E0E0;
+    cursor: not-allowed;
+}
 .form-style-7 td > .grouptitle{
     /*display: block;*/
     float: left;

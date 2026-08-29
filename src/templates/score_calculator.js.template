@@ -21,3 +21,48 @@ function calculateScore({{ for q_id in question_ids }}{q_id}{{ if not @last }},{
 
   return score;
 }
+
+function validateScorecard({{ for q_id in question_ids }}{q_id}{{ if not @last }},{{ endif }}{{ endfor }})
+\{
+  let validity = \{};
+
+  {{ for mission in missions}}
+  \{
+    {{ for question in mission.questions }}
+    {{ if question.is_bool }}
+    let q{ question.in_mission_id } = { question.id } === 'y';
+    {{ endif }}
+    {{ if question.is_enum }}
+    let q{ question.in_mission_id } = { question.id };
+    {{ endif }}
+    {{ if question.is_number }}
+    let q{ question.in_mission_id } = parseInt({ question.id });
+    {{ endif }}
+    {{ endfor }}
+    validity["{ mission.id }"] = Boolean({ mission.validation_expression | unescaped });
+  }
+  {{ endfor }}
+
+  return validity;
+}
+
+function onScorecardChange()
+\{
+  let form = document.getElementById("scorecardForm");
+  let questionValues = [{{ for q_id in question_ids }}form.elements["{q_id}"].value{{ if not @last }}, {{ endif }}{{ endfor }}];
+
+  document.getElementById("scoreOutput").value = calculateScore(...questionValues);
+
+  let validity = validateScorecard(...questionValues);
+  let allValid = true;
+  for (let missionId in validity) \{
+    let block = document.getElementById(missionId + "Block");
+    if (validity[missionId]) \{
+      block.classList.remove("invalid-mission");
+    } else \{
+      block.classList.add("invalid-mission");
+      allValid = false;
+    }
+  }
+  document.getElementById("submitButton").disabled = !allValid;
+}

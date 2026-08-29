@@ -10,7 +10,7 @@
   <title>Olympus - Scorecard</title>
 </head>
 
-<body onload="onLoad()">
+<body onload="onLoad(); onScorecardChange()">
   <div class="navigation">
     <a class="navigation" href="index.html">Home</a>
     <a class="navigation" href="teams.html">Teams</a>
@@ -20,7 +20,7 @@
     <a class="navigation" href="timer_display.html">Timer</a>
   </div>
   <img id="logo" src="game/logo" />
-  <form class="form-style-7" onchange="scoreOutput.value=calculateScore({{ for q_id in question_ids }}{q_id}.value{{ if not @last }},{{ endif }}{{ endfor }})">
+  <form class="form-style-7" id="scorecardForm" onchange="onScorecardChange()">
     <h1>Scorecard</h1>
     <table>
       <tbody>
@@ -42,7 +42,7 @@
 
         {{ for mission in missions}}
         <tr>
-          <td colspan=3>
+          <td colspan=3 id="{ mission.id }Block">
             <label class="grouptitle">{ mission.name }</label>
             {{ for question in mission.questions }}
             <div class="switch-field">

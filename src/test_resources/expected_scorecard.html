@@ -10,7 +10,7 @@
   <title>Olympus - Scorecard</title>
 </head>
 
-<body onload="onLoad()">
+<body onload="onLoad(); onScorecardChange()">
   <div class="navigation">
     <a class="navigation" href="index.html">Home</a>
     <a class="navigation" href="teams.html">Teams</a>
@@ -20,7 +20,7 @@
     <a class="navigation" href="timer_display.html">Timer</a>
   </div>
   <img id="logo" src="game/logo" />
-  <form class="form-style-7" onchange="scoreOutput.value=calculateScore(M0a.value,M1a.value,M2a.value)">
+  <form class="form-style-7" id="scorecardForm" onchange="onScorecardChange()">
     <h1>Scorecard</h1>
     <table>
       <tbody>
@@ -42,7 +42,7 @@
 
         
         <tr>
-          <td colspan=3>
+          <td colspan=3 id="M0Block">
             <label class="grouptitle">Test Bool Mission</label>
             
             <div class="switch-field">
@@ -60,7 +60,7 @@
         </tr>
         
         <tr>
-          <td colspan=3>
+          <td colspan=3 id="M1Block">
             <label class="grouptitle">Test Number Mission</label>
             
             <div class="switch-field">
@@ -87,7 +87,7 @@
         </tr>
         
         <tr>
-          <td colspan=3>
+          <td colspan=3 id="M2Block">
             <label class="grouptitle">Test Enum Mission</label>
             
             <div class="switch-field">

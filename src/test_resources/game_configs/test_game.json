@@ -23,7 +23,8 @@
           "max": 3
         }
       ],
-      "scoring": "(qa * 5)"
+      "scoring": "(qa * 5)",
+      "validation": "qa <= 2"
     },
     {
       "name": "Test Enum Mission",
@@ -38,7 +39,8 @@
           ]
         }
       ],
-      "scoring": "(qa == \"Option A\" ? 10 : 0)"
+      "scoring": "(qa == \"Option A\" ? 10 : 0)",
+      "validation": "qa != \"Option C\""
     }
   ]
 }
