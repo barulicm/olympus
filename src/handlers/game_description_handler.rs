@@ -30,7 +30,7 @@ impl GameDescriptionHandler {
     ) -> Result<impl IntoResponse, AppError> {
         let app_state = app_state.lock()?;
         let game_configs_dir = app_state.resources_path.join("game_configs");
-        let available_games = std::fs::read_dir(game_configs_dir)?
+        let mut available_games = std::fs::read_dir(game_configs_dir)?
             .filter(|e| {
                 let path = e.as_ref().map(|v| v.path()).unwrap_or_default();
                 path.is_file() && path.extension().unwrap_or_default() == "json"
@@ -51,6 +51,10 @@ impl GameDescriptionHandler {
                 }
             })
             .collect::<Vec<Value>>();
+        available_games.sort_by(|a,b| {
+            // Sort by description, descending
+            b["description"].as_str().cmp(&a["description"].as_str())
+        });
         Ok((StatusCode::OK, serde_json::to_string(&available_games)?))
     }
 
